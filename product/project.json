@@ -1,0 +1,98 @@
+{
+  "folder": "05-keyhelix",
+  "name": "KeyHelix",
+  "rank": 10,
+  "score": 5.8,
+  "verdict": "برای یادگیری و استفادهٔ خصوصی قابل‌بررسی؛ سرویس عمومی اسرار را آخر بساز.",
+  "user": "توسعه‌دهندهٔ مستقل و تیم کوچک با OpenBao",
+  "pain": "استفادهٔ امن از secret store و چرخش دسترسی برای تیم کوچک پیچیده است",
+  "value": "کنسول سادهٔ secret workflow روی provider معتبر",
+  "wedge": "UX کنترل دسترسی، audit و recovery روی OpenBao؛ بدون رمزنگاری سفارشی",
+  "alternatives": "OpenBao و ابزارهای مدیریت اسرار موجود",
+  "source_ids": [
+    "openbao"
+  ],
+  "mvp": [
+    "یک OpenBao خصوصی با KV v2 و storage پایدار",
+    "Go BFF و UI بدون persistence اسرار در مرورگر",
+    "step-up برای reveal و تغییر policy",
+    "audit و backup/restore provider"
+  ],
+  "later": [
+    "ارائهٔ عمومی vault چندمستاجری",
+    "envelope encryption سفارشی v7",
+    "zero knowledge vault",
+    "dynamic secret integrations گسترده"
+  ],
+  "stack": [
+    "Go BFF",
+    "OpenBao KV v2 and durable storage",
+    "React UI",
+    "OIDC identity provider"
+  ],
+  "mode": "private-web",
+  "stores": {
+    "OpenBao": "secret bytes, versions, leases and provider authorization; durable backend, never dev mode",
+    "SQLite": "optional UI metadata and session fingerprints only; never secret values",
+    "Separate audit sink": "provider audit and signed checkpoints where independently configured"
+  },
+  "removed": [
+    "Laravel",
+    "PostgreSQL application DB",
+    "Valkey",
+    "custom application encryption layer"
+  ],
+  "limits": {
+    "users": 5,
+    "secret_payload_max_kib": 64,
+    "reveal_step_up_seconds": 120,
+    "session_ttl_minutes": 15
+  },
+  "hardware": "private host هدف 2 vCPU / 4 GiB RAM / 20 GiB encrypted disk؛ OpenBao نیاز به lifecycle و backup مستقل دارد.",
+  "weeks": "8–14 هفته به‌اضافهٔ بررسی مستقل پیش از دادهٔ حساس",
+  "risks": [
+    "مدیر سرور/provider در مدل اعتماد توان دسترسی دارد؛ zero-knowledge نیست",
+    "از دست‌دادن root/key با backup ciphertext جبران نمی‌شود",
+    "موفقیت API provider را پیش از audit لازم نباید durable success نامید"
+  ],
+  "uat": [
+    "با هویت کم‌اختیار فقط مسیر مجاز reveal شود؛ bypass و object access نامجاز شکست بخورد",
+    "provider قطع شود؛ reveal خطا دهد و plaintext از cache برنگردد",
+    "backup همراه کلیدهای recovery در محیط جدا restore و revoke آزمون شود"
+  ],
+  "domain": {
+    "primary": "secret-metadata",
+    "fields": {
+      "vault_id": "id",
+      "secret_path": "text",
+      "provider_version": "int",
+      "classification": "text",
+      "rotation_status": "text"
+    },
+    "invariants": [
+      "Provider owns secret bytes",
+      "No plaintext persistence or telemetry",
+      "Fresh step-up and provider authorization before reveal"
+    ]
+  },
+  "version": "0.0.0",
+  "status": "WEB_FOUNDATION",
+  "source_implemented": true,
+  "market_validation": "UNVALIDATED",
+  "assumption": "Browser application first; optional CLI/worker remains an engine adapter. Web foundation does not satisfy domain release gates.",
+  "engine_implemented": false,
+  "previous_engine_mode": "provider-backed-private",
+  "web_application": {
+    "status": "foundation_implemented",
+    "deployment_profile": "private-web",
+    "frontend": "React + TypeScript + Vite",
+    "web_runtime": "Node.js static shell; no engine proxy",
+    "default_engine_enabled": false,
+    "preview_storage": "tab memory only",
+    "offline_supported": false,
+    "engine_status": "planned",
+    "source": "apps/web/src/main.tsx",
+    "existing_backend": null
+  },
+  "web_version": "0.0.1"
+}

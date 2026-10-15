@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:parsa-security:keyhelix:config:v1",
+  "title": "KeyHelix Configuration v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "APP_ENV": {
+      "type": "string",
+      "enum": [
+        "local",
+        "test",
+        "staging",
+        "production"
+      ]
+    },
+    "SERVICE_NAME": {
+      "type": "string",
+      "const": "keyhelix"
+    },
+    "DATABASE_DSN_REF": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Secret/reference URI; never embed production credentials in config."
+    },
+    "VALKEY_DSN_REF": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Secret/reference URI; never embed production credentials in config."
+    },
+    "OTEL_EXPORTER_OTLP_ENDPOINT": {
+      "type": "string",
+      "format": "uri"
+    },
+    "LOG_LEVEL": {
+      "type": "string",
+      "enum": [
+        "debug",
+        "info",
+        "warning",
+        "error"
+      ]
+    },
+    "OPENBAO_ADDR": {
+      "type": "string",
+      "minLength": 1
+    },
+    "OPENBAO_TOKEN_REF": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Secret/reference URI. Do not commit secret material."
+    },
+    "OPENBAO_KEK_MOUNT": {
+      "type": "string",
+      "minLength": 1
+    },
+    "OBJECT_STORE_ENDPOINT": {
+      "type": "string",
+      "minLength": 1
+    },
+    "OBJECT_STORE_BUCKET": {
+      "type": "string",
+      "minLength": 1
+    },
+    "SECRET_PLAINTEXT_LOGGING": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "APP_ENV",
+    "SERVICE_NAME",
+    "DATABASE_DSN_REF",
+    "VALKEY_DSN_REF",
+    "OTEL_EXPORTER_OTLP_ENDPOINT"
+  ]
+}

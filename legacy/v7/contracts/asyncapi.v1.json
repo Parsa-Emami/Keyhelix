@@ -1,0 +1,288 @@
+{
+  "asyncapi": "3.1.0",
+  "id": "urn:parsa-security:keyhelix:events:v1",
+  "info": {
+    "title": "KeyHelix Events",
+    "version": "1.0.0",
+    "description": "Canonical application event contract. Delivery is at-least-once; consumers must be idempotent and deduplicate by event id."
+  },
+  "defaultContentType": "application/json",
+  "channels": {
+    "event_secret_version_created_v1": {
+      "address": "secret.version_created.v1",
+      "messages": {
+        "SecretVersionCreatedV1Message": {
+          "$ref": "#/components/messages/SecretVersionCreatedV1Message"
+        }
+      }
+    },
+    "event_secret_revealed_v1": {
+      "address": "secret.revealed.v1",
+      "messages": {
+        "SecretRevealedV1Message": {
+          "$ref": "#/components/messages/SecretRevealedV1Message"
+        }
+      }
+    },
+    "event_grant_created_v1": {
+      "address": "grant.created.v1",
+      "messages": {
+        "GrantCreatedV1Message": {
+          "$ref": "#/components/messages/GrantCreatedV1Message"
+        }
+      }
+    },
+    "event_grant_revoked_v1": {
+      "address": "grant.revoked.v1",
+      "messages": {
+        "GrantRevokedV1Message": {
+          "$ref": "#/components/messages/GrantRevokedV1Message"
+        }
+      }
+    },
+    "event_key_rotation_started_v1": {
+      "address": "key.rotation_started.v1",
+      "messages": {
+        "KeyRotationStartedV1Message": {
+          "$ref": "#/components/messages/KeyRotationStartedV1Message"
+        }
+      }
+    },
+    "event_key_envelope_rewrapped_v1": {
+      "address": "key.envelope_rewrapped.v1",
+      "messages": {
+        "KeyEnvelopeRewrappedV1Message": {
+          "$ref": "#/components/messages/KeyEnvelopeRewrappedV1Message"
+        }
+      }
+    },
+    "event_key_rotation_completed_v1": {
+      "address": "key.rotation_completed.v1",
+      "messages": {
+        "KeyRotationCompletedV1Message": {
+          "$ref": "#/components/messages/KeyRotationCompletedV1Message"
+        }
+      }
+    },
+    "event_audit_checkpoint_signed_v1": {
+      "address": "audit.checkpoint_signed.v1",
+      "messages": {
+        "AuditCheckpointSignedV1Message": {
+          "$ref": "#/components/messages/AuditCheckpointSignedV1Message"
+        }
+      }
+    }
+  },
+  "operations": {
+    "send_secret_version_created_v1": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/event_secret_version_created_v1"
+      },
+      "messages": [
+        {
+          "$ref": "#/channels/event_secret_version_created_v1/messages/SecretVersionCreatedV1Message"
+        }
+      ]
+    },
+    "send_secret_revealed_v1": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/event_secret_revealed_v1"
+      },
+      "messages": [
+        {
+          "$ref": "#/channels/event_secret_revealed_v1/messages/SecretRevealedV1Message"
+        }
+      ]
+    },
+    "send_grant_created_v1": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/event_grant_created_v1"
+      },
+      "messages": [
+        {
+          "$ref": "#/channels/event_grant_created_v1/messages/GrantCreatedV1Message"
+        }
+      ]
+    },
+    "send_grant_revoked_v1": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/event_grant_revoked_v1"
+      },
+      "messages": [
+        {
+          "$ref": "#/channels/event_grant_revoked_v1/messages/GrantRevokedV1Message"
+        }
+      ]
+    },
+    "send_key_rotation_started_v1": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/event_key_rotation_started_v1"
+      },
+      "messages": [
+        {
+          "$ref": "#/channels/event_key_rotation_started_v1/messages/KeyRotationStartedV1Message"
+        }
+      ]
+    },
+    "send_key_envelope_rewrapped_v1": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/event_key_envelope_rewrapped_v1"
+      },
+      "messages": [
+        {
+          "$ref": "#/channels/event_key_envelope_rewrapped_v1/messages/KeyEnvelopeRewrappedV1Message"
+        }
+      ]
+    },
+    "send_key_rotation_completed_v1": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/event_key_rotation_completed_v1"
+      },
+      "messages": [
+        {
+          "$ref": "#/channels/event_key_rotation_completed_v1/messages/KeyRotationCompletedV1Message"
+        }
+      ]
+    },
+    "send_audit_checkpoint_signed_v1": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/event_audit_checkpoint_signed_v1"
+      },
+      "messages": [
+        {
+          "$ref": "#/channels/event_audit_checkpoint_signed_v1/messages/AuditCheckpointSignedV1Message"
+        }
+      ]
+    }
+  },
+  "components": {
+    "messages": {
+      "SecretVersionCreatedV1Message": {
+        "name": "secret.version_created.v1",
+        "title": "secret.version_created.v1",
+        "payload": {
+          "$ref": "#/components/schemas/EventEnvelope"
+        }
+      },
+      "SecretRevealedV1Message": {
+        "name": "secret.revealed.v1",
+        "title": "secret.revealed.v1",
+        "payload": {
+          "$ref": "#/components/schemas/EventEnvelope"
+        }
+      },
+      "GrantCreatedV1Message": {
+        "name": "grant.created.v1",
+        "title": "grant.created.v1",
+        "payload": {
+          "$ref": "#/components/schemas/EventEnvelope"
+        }
+      },
+      "GrantRevokedV1Message": {
+        "name": "grant.revoked.v1",
+        "title": "grant.revoked.v1",
+        "payload": {
+          "$ref": "#/components/schemas/EventEnvelope"
+        }
+      },
+      "KeyRotationStartedV1Message": {
+        "name": "key.rotation_started.v1",
+        "title": "key.rotation_started.v1",
+        "payload": {
+          "$ref": "#/components/schemas/EventEnvelope"
+        }
+      },
+      "KeyEnvelopeRewrappedV1Message": {
+        "name": "key.envelope_rewrapped.v1",
+        "title": "key.envelope_rewrapped.v1",
+        "payload": {
+          "$ref": "#/components/schemas/EventEnvelope"
+        }
+      },
+      "KeyRotationCompletedV1Message": {
+        "name": "key.rotation_completed.v1",
+        "title": "key.rotation_completed.v1",
+        "payload": {
+          "$ref": "#/components/schemas/EventEnvelope"
+        }
+      },
+      "AuditCheckpointSignedV1Message": {
+        "name": "audit.checkpoint_signed.v1",
+        "title": "audit.checkpoint_signed.v1",
+        "payload": {
+          "$ref": "#/components/schemas/EventEnvelope"
+        }
+      }
+    },
+    "schemas": {
+      "EventEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "specversion",
+          "id",
+          "source",
+          "type",
+          "time",
+          "subject",
+          "data"
+        ],
+        "properties": {
+          "specversion": {
+            "type": "string",
+            "const": "1.0"
+          },
+          "id": {
+            "type": "string",
+            "minLength": 16
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "secret.version_created.v1",
+              "secret.revealed.v1",
+              "grant.created.v1",
+              "grant.revoked.v1",
+              "key.rotation_started.v1",
+              "key.envelope_rewrapped.v1",
+              "key.rotation_completed.v1",
+              "audit.checkpoint_signed.v1"
+            ]
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "traceparent": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "datacontenttype": {
+            "type": "string",
+            "const": "application/json"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}
