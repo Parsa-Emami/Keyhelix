@@ -1,0 +1,35 @@
+{
+  "project": "KeyHelix",
+  "status": "planned acceptance contract; not executed domain proof",
+  "input": "repository-authored synthetic licensed fixtures",
+  "steps": [
+    "Authenticate synthetic owner",
+    "scoped write",
+    "fresh step-up reveal",
+    "revoke other user",
+    "provider outage test",
+    "restore isolated provider from proper recovery material."
+  ],
+  "expected_invariants": [
+    "Provider owns secret bytes",
+    "No plaintext persistence or telemetry",
+    "Fresh step-up and provider authorization before reveal"
+  ],
+  "negative_uat": [
+    "با هویت کم‌اختیار فقط مسیر مجاز reveal شود؛ bypass و object access نامجاز شکست بخورد",
+    "provider قطع شود؛ reveal خطا دهد و plaintext از cache برنگردد",
+    "backup همراه کلیدهای recovery در محیط جدا restore و revoke آزمون شود"
+  ],
+  "clean_host_commands": [
+    "git clone https://github.com/Parsa-Emami/Keyhelix.git",
+    "cd Keyhelix",
+    "npm run setup",
+    "npm start"
+  ],
+  "requires_at_C30": [
+    "real engine and required local providers",
+    "the entire workflow",
+    "restart and restore",
+    "no paid/cloud account or sibling clone"
+  ]
+}
