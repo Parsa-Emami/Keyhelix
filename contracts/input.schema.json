@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:parsa:keyhelix:input:0",
+  "title": "secret-metadata planning draft",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "vault_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "secret_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "provider_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "classification": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "rotation_status": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    }
+  },
+  "required": [
+    "vault_id",
+    "secret_path",
+    "provider_version",
+    "classification",
+    "rotation_status"
+  ]
+}

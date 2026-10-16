@@ -1,0 +1,6 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @parsa-emami/keyhelix-web@0.0.1 test:clone
+> node scripts/clone-smoke.mjs
+
+{"passed":true,"stagedTree":"a627ead95fa4f87eb2cfd83d8001ef4293231707","proof":"real git clone -> npm run setup -> web startup","coreReady":false}

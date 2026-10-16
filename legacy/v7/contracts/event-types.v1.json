@@ -1,0 +1,17 @@
+{
+  "project": "KeyHelix",
+  "envelope": "CloudEvents-compatible 1.0 profile",
+  "delivery": "at-least-once",
+  "ordering": "not globally guaranteed; per-aggregate sequencing when documented",
+  "deduplication": "required by event id",
+  "types": [
+    "secret.version_created.v1",
+    "secret.revealed.v1",
+    "grant.created.v1",
+    "grant.revoked.v1",
+    "key.rotation_started.v1",
+    "key.envelope_rewrapped.v1",
+    "key.rotation_completed.v1",
+    "audit.checkpoint_signed.v1"
+  ]
+}

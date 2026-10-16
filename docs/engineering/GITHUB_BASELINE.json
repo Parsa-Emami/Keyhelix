@@ -1,0 +1,13 @@
+{
+  "repository": "Parsa-Emami/Keyhelix",
+  "reviewed_commit": "e336e555af32533cc89661ab36c12a189df6a95b",
+  "existing_file_count": 78,
+  "existing_runtime": "architecture scaffold only",
+  "protected_files_sha256": {
+    ".env.example": "419faaf26798d6a7fc98070354ba0570c9ca941b4796375bc4c4f485ad8b7c02"
+  },
+  "skipped_input_archival_config_paths": [
+    "legacy/v7/.env.example"
+  ],
+  "preservation": "All existing protected files remain at their original paths with identical bytes. Supplied archival env duplicates were omitted to avoid creating extra config files."
+}

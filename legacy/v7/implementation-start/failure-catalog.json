@@ -1,0 +1,19 @@
+{
+  "project": "KeyHelix",
+  "failures": [
+    "OpenBao outage",
+    "wrong key version",
+    "corrupted ciphertext",
+    "AAD mismatch",
+    "partial rewrap",
+    "revocation race",
+    "audit checkpoint failure",
+    "recovery-root loss"
+  ],
+  "required_result": [
+    "invariants preserved",
+    "observable failure",
+    "bounded retries",
+    "recovery/reconciliation succeeds"
+  ]
+}

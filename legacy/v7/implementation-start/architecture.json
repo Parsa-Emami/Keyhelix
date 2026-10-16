@@ -1,0 +1,31 @@
+{
+  "project": "KeyHelix",
+  "version": "v1-reference",
+  "risk": "CRITICAL",
+  "runtime": [
+    "Laravel 13",
+    "PHP sodium extension/libsodium",
+    "OpenBao reference KEK/signing provider",
+    "PostgreSQL 18",
+    "Valkey",
+    "ObjectStore for signed audit checkpoints",
+    "OpenTelemetry with secret redaction"
+  ],
+  "final_decisions": [
+    "v1 trust model is server-side envelope encryption. Client-side zero-knowledge encryption is not mixed into v1 and would require a separate major architecture.",
+    "Each secret version receives a fresh random 256-bit DEK and XChaCha20-Poly1305 AEAD nonce. DEKs are wrapped by a versioned KEK provider key.",
+    "OpenBao is the reference production KEK/Transit provider. A local development provider exists only for non-production tests and is clearly marked unsafe for production.",
+    "AAD is canonical and versioned: vault_id, secret_id, secret_version, owner_scope, classification, algorithm_version. AAD mismatch is integrity failure.",
+    "Plaintext is never persisted, queued, cached, indexed, traced or logged. Sensitive request fields are excluded at the telemetry instrumentation boundary.",
+    "Passkey/WebAuthn + MFA/step-up is required for reveal/export/key rotation/member privilege changes according to policy.",
+    "Recovery restores account control, not lost cryptographic roots. If the KEK provider root is irrecoverably lost, ciphertext is intentionally unrecoverable.",
+    "Audit events are hash-chained; periodic Merkle/checkpoint roots are signed through OpenBao Transit and stored separately for tamper evidence.",
+    "Algorithm agility is carried in KeyEnvelope v1; no custom primitives are implemented."
+  ],
+  "data_ownership": {
+    "PostgreSQL": "ciphertext envelopes, metadata, policy, audit records",
+    "OpenBao": "KEK/signing root operations, never DB plaintext",
+    "Valkey": "non-secret ephemeral rate/session data only",
+    "ObjectStore": "signed audit checkpoints/exports, encrypted only"
+  }
+}
