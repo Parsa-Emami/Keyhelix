@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic expected output for C02 resource metadata validation.",
+  "license": "Apache-2.0",
+  "case": "locked-linux-profile",
+  "expected": {
+    "profile": "linux/amd64",
+    "verified_resources": [
+      "node-runtime",
+      "npm-cli",
+      "go-toolchain",
+      "podman-provider"
+    ],
+    "not_selected": [
+      "oci-image",
+      "grammar",
+      "rule"
+    ],
+    "engine_execution_verified": false
+  }
+}

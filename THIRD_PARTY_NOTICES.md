@@ -75,10 +75,19 @@ Updated 2026-10-16. These current web facts come from the committed npm lockfile
 | `typescript` | 7.0.2 | Apache-2.0 |
 | `vite` | 8.3.4 | MIT |
 
-## Planned engine resources
+## Locked engine and toolchain resources (C02)
 
-- https://openbao.org/docs/
-- https://www.keycloak.org/documentation
+| Resource | Version | Declared license | Upstream release / source |
+|---|---|---|---|
+| `Node.js` | 24.19.0 | MIT | https://nodejs.org/dist/v24.19.0/ |
+| `npm` | 11.9.0 | Artistic-2.0 | https://registry.npmjs.org/npm/-/npm-11.9.0.tgz |
+| `Go` | 1.27.2 | BSD-3-Clause | https://go.dev/dl/go1.27.2.linux-amd64.tar.gz |
+| `Podman` | 4.9.3 | Apache-2.0 | https://launchpad.net/ubuntu/+source/libpod/4.9.3+ds1-1ubuntu0.2 |
+
+## Planned provider resources (C07-C08)
+
+- https://openbao.org/docs/ (OpenBao, MPL-2.0)
+- https://www.keycloak.org/documentation (Keycloak, Apache-2.0)
 - https://openid.net/specs/openid-connect-core-1_0.html
 
-Resolve exact pins and licenses at C02; upstream resources are not claimed installed by this document.
+Exact container image hashes and deployment manifests are locked at C07-C08; upstream resources are not claimed installed by this document.

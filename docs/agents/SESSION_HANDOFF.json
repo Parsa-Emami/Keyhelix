@@ -2,23 +2,24 @@
   "project": "KeyHelix",
   "date": "2026-10-16",
   "base_commit": "a43495a9c2a4f19e101a7ededec54aaf07a7cec4",
-  "scope": "Frozen repository-owned reference workflow, synthetic fixture contracts and reference validator (C01)",
+  "scope": "Locked reproducible open-source resources, toolchain integrity and metadata validator (C02)",
   "core_tasks_verified": [
-    "C01"
+    "C01",
+    "C02"
   ],
   "commands": [
     "npm run validate:plan",
-    "node scripts/verify-reference.mjs",
+    "node scripts/verify-resources.mjs",
     "npm test",
     "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
     "python3 scripts/validate_repo.py",
     "python3 scripts/plan.py validate"
   ],
-  "validation_results": "docs/evidence/C01.json",
-  "final_source_identity": "sha256:289ef5441c047aad87411e2eceab8e6ba28243bede79681159109204e29cd19c",
+  "validation_results": "docs/evidence/C02.json",
+  "final_source_identity": "sha256:c70f313671638287840e036ae08f55192c31565a0035bef8b257e1076b3f92ed",
   "protected_paths_changed": [],
   "current_core_ready": false,
-  "next_task": "C02",
+  "next_task": "C03",
   "next_command": "npm run plan -- next",
-  "continuation": "C01 frozen specification and metadata validator are verified locally. Proceed with C02 to lock reproducible open-source resources."
+  "continuation": "C01 reference specification and C02 reproducible toolchain locks are verified locally. Proceed with C03 to implement unified local engine setup and launch."
 }

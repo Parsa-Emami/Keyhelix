@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C02",
+  "date": "2026-10-25",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Locked reproducible open-source resources, package lock, toolchain integrity and metadata validator; no engine execution certified",
+  "commit_id": "C02",
+  "base_commit": "0d127713e9c4807fda638c4551dc14cc1da96e8d",
+  "git_commit_created": false,
+  "source_identity": "sha256:c70f313671638287840e036ae08f55192c31565a0035bef8b257e1076b3f92ed",
+  "source_identity_method": "SHA-256 over sorted C02-owned source/generated path bytes, NUL separators and each file SHA-256; excludes progress and evidence to avoid recursive self-reference",
+  "environment": {
+    "os": "Linux x86_64 (Ubuntu 24.04 environment)",
+    "node": "v24.19.0",
+    "npm": "11.9.0",
+    "python": "3.12.3",
+    "go": "go version go1.26.2 linux/amd64",
+    "podman": "podman version 4.9.3",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_available_bytes": 26068246528,
+      "filesystem_available_bytes": 128281104384
+    }
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C02/expected-output.json": "c8d69d736c1ed02060b64dac3b0ab3cf407318606d846dff9496d634ac8f3d32",
+    "tests/fixtures/keyhelix/C02/invalid.json": "18940f074bc6820e43f5f3c5eb3429ae8d85a8abb059c9b6d6c6d0a3397d1f7e",
+    "tests/fixtures/keyhelix/C02/positive.json": "9aa09fe132180299f0e18ebac2d3755f2588fdfa6a38154ab31378529bab269b"
+  },
+  "fixture_provenance_license": "All three fixtures are repository-authored synthetic data; each declares Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "node scripts/verify-resources.mjs",
+      "exit_code": 0,
+      "result": "Resource metadata, recorded probes, and fixture digests are valid; this does not verify engine execution."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "13 Node tests passed."
+    },
+    {
+      "command": "node --test tests/web/resource-contract.test.mjs",
+      "exit_code": 0,
+      "result": "3 tests passed, including exact versioned resources, floating resources, missing official metadata, mismatched integrity and unavailable required resources."
+    },
+    {
+      "command": "npm run typecheck",
+      "exit_code": 0,
+      "result": "TypeScript check completed."
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "result": "Vite production build completed."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "6 engineering CI source regression tests passed."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "Validated 84 JSON files and repository contract invariants."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "PLAN VALIDATION PASSED — 40 intents, coverage and progress checked; no application runtime tests performed."
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "result": "No whitespace errors."
+    }
+  ],
+  "results": {
+    "resource_metadata_validator": "passed",
+    "web_lockfile_integrity": "verified",
+    "domain_engine": "not implemented",
+    "remote_github_actions": "not run"
+  },
+  "observed_limitations": [
+    "C02 locks toolchain and provider resource metadata only; it does not certify engine execution, vault operations, or container launch.",
+    "Container images for self-hosted OpenBao and Keycloak are deferred to their designated adapter cards C07-C08.",
+    "No lint script is defined in package.json."
+  ],
+  "rollback_or_recovery_observation": "Toolchain metadata and fixture-only change; no application state or user data modified.",
+  "core_ready": false
+}

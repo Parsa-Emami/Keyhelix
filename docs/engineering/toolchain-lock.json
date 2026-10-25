@@ -1,28 +1,144 @@
 {
-  "verified_on": "2026-10-15",
-  "scope": "web foundation only",
-  "runtime": {
-    "node": "24.19.0",
-    "npm": "11.9.0"
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "verified_on": "2026-10-25",
+  "profile": {
+    "os": "linux",
+    "architecture": "amd64",
+    "reference_distribution": "Ubuntu 24.04 LTS (Noble)"
   },
-  "dependencies": {
-    "react": "19.3.1",
-    "react-dom": "19.3.1"
+  "web_lockfile": {
+    "path": "package-lock.json",
+    "sha256": "a2f18967d533fd9f8cc680d3a1ad9e44bf8a1bc405468305992f877aae77f254",
+    "dependencies": {
+      "react": "19.3.1",
+      "react-dom": "19.3.1",
+      "vite": "8.3.4",
+      "typescript": "7.0.2",
+      "@types/react": "19.3.0",
+      "@types/react-dom": "19.3.0",
+      "@playwright/test": "1.64.1"
+    },
+    "registry": "https://registry.npmjs.org/"
   },
-  "devDependencies": {
-    "vite": "8.3.4",
-    "typescript": "7.0.2",
-    "@types/react": "19.3.0",
-    "@types/react-dom": "19.3.0",
-    "@playwright/test": "1.64.1"
-  },
-  "registry_source": "https://registry.npmjs.org/",
-  "official_sources": [
-    "https://nodejs.org/api/http.html",
-    "https://vite.dev/guide/",
-    "https://react.dev/",
-    "https://playwright.dev/docs/intro"
+  "resources": [
+    {
+      "id": "node-runtime",
+      "required": true,
+      "version": "24.19.0",
+      "platform": "linux/amd64",
+      "artifact_url": "https://nodejs.org/dist/v24.19.0/node-v24.19.0-linux-x64.tar.xz",
+      "integrity": {
+        "algorithm": "sha256",
+        "expected": "14b342e71204f811bde6153be8e04b62aef63c236fef92b55f9c83154b409647",
+        "observed": "14b342e71204f811bde6153be8e04b62aef63c236fef92b55f9c83154b409647"
+      },
+      "source_url": "https://github.com/nodejs/node/tree/v24.19.0",
+      "license": "MIT",
+      "license_url": "https://github.com/nodejs/node/blob/v24.19.0/LICENSE",
+      "source_build": "Use the official v24.19.0 source tag and the documented Unix build prerequisites and ./configure && make steps; inspect deps/* license notices when redistributing a built runtime.",
+      "probe": {
+        "command": "node --version",
+        "exit_code": 0,
+        "version": "v24.19.0"
+      }
+    },
+    {
+      "id": "npm-cli",
+      "required": true,
+      "version": "11.9.0",
+      "runtime": "Node 24.19.0; CLI is invoked separately because that Node archive bundles npm 11.17.0",
+      "artifact_url": "https://registry.npmjs.org/npm/-/npm-11.9.0.tgz",
+      "integrity": {
+        "algorithm": "sha512",
+        "expected": "sha512-BBZoU926FCypj4b7V7ElinxsWcy4Kss88UG3ejFYmKyq7Uc5XnT34Me2nEhgCOaL5qY4HvGu5aI92C4OYd7NaA==",
+        "observed": "sha512-BBZoU926FCypj4b7V7ElinxsWcy4Kss88UG3ejFYmKyq7Uc5XnT34Me2nEhgCOaL5qY4HvGu5aI92C4OYd7NaA=="
+      },
+      "source_url": "https://github.com/npm/cli/tree/v11.9.0",
+      "license": "Artistic-2.0",
+      "license_url": "https://github.com/npm/cli/blob/v11.9.0/LICENSE",
+      "source_build": "Check out the npm/cli v11.9.0 tag, install its locked dependencies with the existing pinned Node/npm runtime (`npm ci --ignore-scripts`), then run `node bin/npm-cli.js --version`; npm is JavaScript and has no compilation step.",
+      "probe": {
+        "command": "npm --version",
+        "exit_code": 0,
+        "version": "11.9.0"
+      }
+    },
+    {
+      "id": "go-toolchain",
+      "required": true,
+      "version": "1.27.2",
+      "platform": "linux/amd64",
+      "artifact_url": "https://proxy.golang.org/golang.org/toolchain/@v/v0.0.1-go1.27.2.linux-amd64.zip",
+      "integrity": {
+        "algorithm": "go-module-h1",
+        "expected": "h1:N6Xv/1OLzI0jVVkUwkrxHRZc/GCTARUo6idcngKwlDE=",
+        "observed": "h1:N6Xv/1OLzI0jVVkUwkrxHRZc/GCTARUo6idcngKwlDE=",
+        "verification_source": "https://sum.golang.org/lookup/golang.org/toolchain@v0.0.1-go1.27.2.linux-amd64"
+      },
+      "official_release_archive": {
+        "url": "https://go.dev/dl/go1.27.2.linux-amd64.tar.gz",
+        "sha256": "ecbadb99091a3f46e31f5f934b068b1864eafa7995211b39eaddf76996045fe5"
+      },
+      "source_url": "https://go.googlesource.com/go/+/refs/tags/go1.27.2",
+      "license": "BSD-3-Clause",
+      "license_url": "https://go.dev/LICENSE",
+      "source_build": "Bootstrap with Go 1.26.2 linux/amd64 (official archive SHA-256 990e6b4bbba816dc3ee129eaeaf4b42f17c2800b88a2166c265ac1a200262282), check out the go1.27.2 source tag and run src/make.bash with GOROOT_BOOTSTRAP set to that toolchain.",
+      "probe": {
+        "command": "go version",
+        "exit_code": 0,
+        "version": "go version go1.26.2 linux/amd64"
+      }
+    },
+    {
+      "id": "podman-provider",
+      "required": true,
+      "version": "4.9.3",
+      "package_version": "4.9.3+ds1-1ubuntu0.2",
+      "platform": "Ubuntu 24.04 LTS, amd64",
+      "artifact_url": "https://archive.ubuntu.com/ubuntu/pool/universe/libp/libpod/podman_4.9.3+ds1-1ubuntu0.2_amd64.deb",
+      "integrity": {
+        "algorithm": "sha256",
+        "expected": "e5c1c37e387ed14c352a744a75fbb79fb2f82573ca7bf36886e3b7333fc9ef1a",
+        "observed": "e5c1c37e387ed14c352a744a75fbb79fb2f82573ca7bf36886e3b7333fc9ef1a"
+      },
+      "source_url": "https://launchpad.net/ubuntu/+source/libpod/4.9.3+ds1-1ubuntu0.2",
+      "license": "Apache-2.0",
+      "license_url": "https://github.com/containers/podman/blob/v4.9.3/LICENSE",
+      "source_build": "Fetch the matching Ubuntu libpod source package via `apt-get source podman` or git clone the v4.9.3 tag, install go-md2man and build prerequisites, and run `make binary`.",
+      "probe": {
+        "command": "podman --version",
+        "exit_code": 0,
+        "version": "podman version 4.9.3"
+      }
+    }
   ],
-  "lockfile": "package-lock.json",
-  "engine_toolchain": "pending project-specific C02 evidence"
+  "not_applicable": [
+    {
+      "id": "oci-image",
+      "reason": "Container base images for self-hosted OpenBao and Keycloak are selected in later provider adapter tasks C07-C08."
+    },
+    {
+      "id": "grammar",
+      "reason": "KeyHelix does not employ an external domain query grammar."
+    },
+    {
+      "id": "rule",
+      "reason": "Access policy syntax and authorization matrices are defined internally within the Go engine in C04 and C17."
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "tests/fixtures/keyhelix/C02/positive.json",
+      "sha256": "9aa09fe132180299f0e18ebac2d3755f2588fdfa6a38154ab31378529bab269b"
+    },
+    {
+      "path": "tests/fixtures/keyhelix/C02/invalid.json",
+      "sha256": "18940f074bc6820e43f5f3c5eb3429ae8d85a8abb059c9b6d6c6d0a3397d1f7e"
+    },
+    {
+      "path": "tests/fixtures/keyhelix/C02/expected-output.json",
+      "sha256": "c8d69d736c1ed02060b64dac3b0ab3cf407318606d846dff9496d634ac8f3d32"
+    }
+  ]
 }

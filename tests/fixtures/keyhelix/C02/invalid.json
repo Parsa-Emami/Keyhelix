@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic negative case; no external artifacts or user data.",
+  "license": "Apache-2.0",
+  "case": "reject-mutable-unlicensed-resource",
+  "resource": {
+    "version": "latest",
+    "artifact_url": "https://registry.example.invalid/tool:latest",
+    "integrity": null,
+    "source_url": "",
+    "license": ""
+  },
+  "expected_failure": "A floating artifact without an approved source, license and matching immutable integrity record is rejected."
+}

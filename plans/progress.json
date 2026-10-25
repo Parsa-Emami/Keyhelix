@@ -15,10 +15,12 @@
     },
     {
       "id": "C02",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C02.json"
+      ],
+      "source_identity": "sha256:c70f313671638287840e036ae08f55192c31565a0035bef8b257e1076b3f92ed",
+      "notes": "C02 reproducible toolchain resources and metadata validator verified locally; this does not certify workflow engine execution."
     },
     {
       "id": "C03",

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic toolchain inventory example; derived from the C01 reference contract and contains no host credentials or user data.",
+  "license": "Apache-2.0",
+  "case": "locked-linux-profile",
+  "profile": "linux/amd64",
+  "resources": [
+    "node-runtime",
+    "npm-cli",
+    "go-toolchain",
+    "podman-provider"
+  ],
+  "fixture_contract": "tests/scenarios/clone-to-value.json"
+}
