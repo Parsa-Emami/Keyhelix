@@ -1,0 +1,10 @@
+{
+  "provenance": "Repository-authored synthetic fixture; no customer secrets, credentials or production data.",
+  "license": "Apache-2.0",
+  "case": "unauthorized-reveal-and-invalid-aad",
+  "identity": "bob@keyhelix.local",
+  "step_up_completed": false,
+  "ciphertext_tag_valid": false,
+  "provider_connected": false,
+  "expected_failure": "Access denied: missing step-up reauthentication, revoked identity or corrupted authentication tag fails closed without returning plaintext."
+}

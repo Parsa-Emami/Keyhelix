@@ -1,0 +1,17 @@
+{
+  "provenance": "Repository-authored synthetic expected output derived from the documented reference workflow.",
+  "license": "Apache-2.0",
+  "case": "valid-secret-envelope-workflow",
+  "expected": {
+    "vault_id": "vault-prod",
+    "secret_id": "sec-01",
+    "path": "app/prod/database-url",
+    "version": 1,
+    "written": true,
+    "plaintext_persisted": false,
+    "reveal_requires_step_up": true,
+    "revoked_user_blocked": true,
+    "provider_outage_fails_closed": true,
+    "restart_restore_preserves_state": true
+  }
+}

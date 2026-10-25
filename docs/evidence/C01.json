@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C01",
+  "date": "2026-10-25",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Frozen repository-owned reference workflow and fixture metadata validator; no engine execution certified",
+  "commit_id": "C01",
+  "base_commit": "03ba075b8f957da393b46aca119acb555afdccfa",
+  "git_commit_created": false,
+  "source_identity": "sha256:289ef5441c047aad87411e2eceab8e6ba28243bede79681159109204e29cd19c",
+  "source_identity_method": "SHA-256 over sorted C01-owned source/generated path bytes, NUL separators and each file SHA-256; excludes progress and evidence to avoid recursive self-reference",
+  "environment": {
+    "os": "Linux x86_64 (Ubuntu 24.04 environment)",
+    "node": "v24.19.0",
+    "npm": "11.9.0",
+    "python": "3.12.3",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_available_bytes": 26068246528,
+      "filesystem_available_bytes": 128281104384
+    }
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C01/expected-output.json": "8187dbbd25155230e9b91c10e4a8f337d33e3e0360c56be59f4e3bc6491a1ff0",
+    "tests/fixtures/keyhelix/C01/invalid.json": "f5c4a0be6e4971ace155ce5259af907b7bd6d1da1d34055a6d87aeeec13103f5",
+    "tests/fixtures/keyhelix/C01/positive.json": "6ac0bfbff9c000f7ca77c09e7aa95e8daa9e5b4e7406da518c363d967427596e"
+  },
+  "fixture_provenance_license": "All three fixtures are repository-authored synthetic data; each declares Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "node scripts/verify-reference.mjs",
+      "exit_code": 0,
+      "result": "Reference scenario and fixture metadata are valid; workflow execution is not verified."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "10 Node tests passed."
+    },
+    {
+      "command": "node --test tests/web/reference-contract.test.mjs",
+      "exit_code": 0,
+      "result": "4 tests passed, including missing action/result/invariant/reference, missing provenance/license, escaping path, unsupported version and false engine success claims."
+    },
+    {
+      "command": "npm run typecheck",
+      "exit_code": 0,
+      "result": "TypeScript check completed."
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "result": "Vite production build completed."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "6 engineering CI source regression tests passed."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "Validated 41 JSON files and repository contract invariants."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "PLAN VALIDATION PASSED — 40 intents, coverage and progress checked; no application runtime tests performed."
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "result": "No whitespace errors."
+    }
+  ],
+  "results": {
+    "reference_contract_validator": "passed",
+    "scenario_execution": "not implemented and not tested",
+    "domain_engine": "not implemented",
+    "remote_github_actions": "not run"
+  },
+  "observed_limitations": [
+    "C01 certifies the specification and metadata validator only; it does not prove vault initialization, envelope encryption, OIDC authentication, key rotation, backup or restore behavior.",
+    "No lint script is defined in package.json.",
+    "python3 scripts/verify_ci_source.py was not run because it checks the git tree against committed HEAD and requires a clean committed checkout."
+  ],
+  "rollback_or_recovery_observation": "Documentation and fixture-only change; no application state or user data modified.",
+  "core_ready": false
+}

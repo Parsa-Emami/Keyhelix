@@ -1,25 +1,71 @@
 {
+  "schema_version": 1,
   "project": "KeyHelix",
-  "status": "planned acceptance contract; not executed domain proof",
+  "status": "planned",
   "input": "repository-authored synthetic licensed fixtures",
   "steps": [
-    "Authenticate synthetic owner",
-    "scoped write",
-    "fresh step-up reveal",
-    "revoke other user",
-    "provider outage test",
-    "restore isolated provider from proper recovery material."
+    {
+      "id": "auth-owner",
+      "action": "Authenticate synthetic owner alice@keyhelix.local",
+      "expected_result": "Scoped session established with vault-admin role"
+    },
+    {
+      "id": "scoped-write",
+      "action": "Write secret envelope app/prod/database-url to vault-prod",
+      "expected_result": "Secret version 1 written with fresh DEK and nonce; plaintext not persisted"
+    },
+    {
+      "id": "step-up-reveal",
+      "action": "Perform fresh step-up authentication and reveal secret app/prod/database-url",
+      "expected_result": "Provider authorization confirmed, DEK unwrapped, secret decrypted transiently"
+    },
+    {
+      "id": "revoke-user",
+      "action": "Revoke access grants for user bob@keyhelix.local",
+      "expected_result": "Subsequent access attempts by bob@keyhelix.local rejected immediately"
+    },
+    {
+      "id": "provider-outage",
+      "action": "Simulate key provider outage during reveal attempt",
+      "expected_result": "System fails closed with provider error; zero plaintext returned from cache"
+    },
+    {
+      "id": "restore-isolated",
+      "action": "Restore isolated provider instance from recovery materials",
+      "expected_result": "Recovery validated, vault envelopes readable, revoked grants remain revoked"
+    }
   ],
   "expected_invariants": [
     "Provider owns secret bytes",
     "No plaintext persistence or telemetry",
     "Fresh step-up and provider authorization before reveal"
   ],
-  "negative_uat": [
-    "با هویت کم‌اختیار فقط مسیر مجاز reveal شود؛ bypass و object access نامجاز شکست بخورد",
-    "provider قطع شود؛ reveal خطا دهد و plaintext از cache برنگردد",
-    "backup همراه کلیدهای recovery در محیط جدا restore و revoke آزمون شود"
+  "negative_cases": [
+    {
+      "id": "unauthorized-bypass",
+      "action": "Attempt to reveal secret without valid step-up authentication",
+      "expected_failure": "Access denied: missing step-up reauthentication"
+    },
+    {
+      "id": "provider-disconnected",
+      "action": "Attempt to reveal secret when provider is offline",
+      "expected_failure": "Provider connection unavailable; fail closed"
+    },
+    {
+      "id": "corrupted-auth-tag",
+      "action": "Attempt to decrypt envelope with corrupted authentication tag",
+      "expected_failure": "Ciphertext authentication failure; no partial plaintext returned"
+    }
   ],
+  "fixtures": [
+    "tests/fixtures/keyhelix/C01/positive.json",
+    "tests/fixtures/keyhelix/C01/invalid.json",
+    "tests/fixtures/keyhelix/C01/expected-output.json"
+  ],
+  "execution": {
+    "engine": "not implemented",
+    "passed": false
+  },
   "clean_host_commands": [
     "git clone https://github.com/Parsa-Emami/Keyhelix.git",
     "cd Keyhelix",
