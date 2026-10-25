@@ -13,8 +13,8 @@
     "prepare:web": "node scripts/generate-web-data.mjs",
     "dev": "npm run prepare:web && vite --config apps/web/vite.config.ts",
     "typecheck": "tsc -p tsconfig.json",
-    "build": "npm run prepare:web && npm run typecheck && vite build --config apps/web/vite.config.ts",
-    "start": "node scripts/serve-web.mjs",
+    "build": "npm run prepare:web && npm run typecheck && vite build --config apps/web/vite.config.ts && npm run build:engine",
+    "start": "node scripts/start-local.mjs",
     "test": "node --test tests/web/*.test.mjs",
     "test:browser": "playwright test",
     "package:web": "node scripts/package-web.mjs",
@@ -24,7 +24,8 @@
     "doctor": "node scripts/oss-bootstrap.mjs doctor",
     "plan": "node scripts/roadmap.mjs",
     "release:check": "node scripts/roadmap.mjs release-check",
-    "test:clone": "node scripts/clone-smoke.mjs"
+    "test:clone": "node scripts/clone-smoke.mjs",
+    "build:engine": "node scripts/build-engine.mjs"
   },
   "dependencies": {
     "react": "19.3.1",

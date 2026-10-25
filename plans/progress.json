@@ -24,10 +24,12 @@
     },
     {
       "id": "C03",
-      "status": "in_progress",
-      "evidence": [],
-      "source_identity": null,
-      "notes": "Web foundation implemented in W01-W05. Remaining domain/runtime acceptance and earlier prerequisite evidence still pending."
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C03.json"
+      ],
+      "source_identity": "sha256:35f63e5fd9c6d45cf01020987a53e3b9820ef05a6ad83038744eb6ee34e8b518",
+      "notes": "C03 unified engine setup and supervisor launch verified locally; domain processing remains pending."
     },
     {
       "id": "C04",

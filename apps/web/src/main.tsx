@@ -1,7 +1,7 @@
 import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import project from './generated/project.json';
-import { validateRuntimeConfig } from './lib/runtime-config.mjs';
+import { validateRuntimeConfig, validateHealth } from './lib/runtime-config.mjs';
 import { inspectJson } from './lib/preview.mjs';
 import './styles.css';
 
@@ -15,12 +15,32 @@ function App({ config }: { config: Runtime }) {
   const [stage, setStage] = useState('all');
   const [preview, setPreview] = useState<{ name: string; bytes: number; fields: string[] } | null>(null);
   const [error, setError] = useState('');
+  const [engine, setEngine] = useState('Checking engine runtime…');
   const busy = useRef(false);
   const generation = useRef(0);
   useEffect(() => {
     const onRoute = () => { setPage(route()); document.getElementById('content')?.focus(); };
     addEventListener('hashchange', onRoute);
     return () => removeEventListener('hashchange', onRoute);
+  }, []);
+  useEffect(() => {
+    const controller = new AbortController();
+    async function check() {
+      try {
+        const response = await fetch('/api/engine/health', {
+          cache: 'no-store',
+          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(2000)])
+        });
+        if (!response.ok) throw new Error('Engine unavailable');
+        const health = validateHealth(await response.json());
+        if (!controller.signal.aborted) setEngine(`Engine runtime ${health.version} is running (${health.toolchain}).`);
+      } catch {
+        if (!controller.signal.aborted) setEngine('Engine runtime unavailable.');
+      }
+    }
+    void check();
+    const timer = setInterval(() => { void check(); }, 5000);
+    return () => { controller.abort(); clearInterval(timer); };
   }, []);
   async function importFile(file: File | undefined) {
     if (!file || busy.current) return;
@@ -44,7 +64,7 @@ function App({ config }: { config: Runtime }) {
       <h1>{page === 'workspace' ? project.title : 'A clear path to release.'}</h1>
       <p className="intro">{page === 'workspace' ? project.description : 'Track the product plan separately from the web foundation. Each task includes an acceptance target.'}</p>
       {page === 'workspace' ? <>
-        <section className="notice" aria-label="Availability"><span className="dot"/>The workspace is available. The {project.name} engine is awaiting integration; this release does not produce security results.</section>
+        <section className="notice" aria-label="Availability" aria-live="polite"><span className="dot"/>{engine} Domain processing is unavailable; this release does not produce security results.</section>
         <div className="grid"><section className="panel"><div className="eyebrow">Local file preview</div><h2>Inspect a document</h2><p>Choose a JSON file to inspect its top-level fields. The file stays in memory in this tab and is not uploaded or saved.</p><label className="file-button">Choose JSON file<input aria-label="Choose JSON file" type="file" accept=".json,application/json" onChange={event => { void importFile(event.target.files?.[0]); event.target.value = ''; }}/></label><p className="muted">Maximum {Math.round(config.maxPreviewBytes / 1024)} KiB · JSON structure only</p>
           {error && <p role="alert" className="error">{error}</p>}
           {preview && <div className="preview" role="status"><h3>{preview.name}</h3><p>{preview.bytes} bytes · {preview.fields.length} top-level fields</p><ul>{preview.fields.slice(0, 30).map(field => <li key={field}><code>{field}</code></li>)}</ul><p className="muted">JSON structure checked. Domain validation requires the engine.</p><button onClick={() => { generation.current++; setPreview(null); }}>Clear preview</button></div>}

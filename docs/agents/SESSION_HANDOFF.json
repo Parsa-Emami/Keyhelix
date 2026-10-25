@@ -2,24 +2,29 @@
   "project": "KeyHelix",
   "date": "2026-10-16",
   "base_commit": "a43495a9c2a4f19e101a7ededec54aaf07a7cec4",
-  "scope": "Locked reproducible open-source resources, toolchain integrity and metadata validator (C02)",
+  "scope": "Unified local engine setup, build, supervisor launch and health check integration (C03)",
   "core_tasks_verified": [
     "C01",
-    "C02"
+    "C02",
+    "C03"
   ],
   "commands": [
     "npm run validate:plan",
-    "node scripts/verify-resources.mjs",
+    "go test -v ./cmd/keyhelix",
+    "npm run build",
     "npm test",
+    "npm run test:browser",
+    "npm run test:clone",
+    "node scripts/oss-bootstrap.mjs doctor",
     "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
     "python3 scripts/validate_repo.py",
     "python3 scripts/plan.py validate"
   ],
-  "validation_results": "docs/evidence/C02.json",
-  "final_source_identity": "sha256:c70f313671638287840e036ae08f55192c31565a0035bef8b257e1076b3f92ed",
+  "validation_results": "docs/evidence/C03.json",
+  "final_source_identity": "sha256:35f63e5fd9c6d45cf01020987a53e3b9820ef05a6ad83038744eb6ee34e8b518",
   "protected_paths_changed": [],
   "current_core_ready": false,
-  "next_task": "C03",
+  "next_task": "C04",
   "next_command": "npm run plan -- next",
-  "continuation": "C01 reference specification and C02 reproducible toolchain locks are verified locally. Proceed with C03 to implement unified local engine setup and launch."
+  "continuation": "C01 reference specification, C02 toolchain locks and C03 engine setup and supervisor launch are verified locally. Proceed with C04 to define typed versioned domain inputs and results."
 }

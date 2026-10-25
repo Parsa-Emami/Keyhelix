@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C03",
+  "date": "2026-10-25",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Unified local engine setup, build, supervisor launch and health check integration; no domain secrets or business operations certified",
+  "commit_id": "C03",
+  "base_commit": "b20e34c524949862266355fc97462fc79382d41a",
+  "git_commit_created": false,
+  "source_identity": "sha256:35f63e5fd9c6d45cf01020987a53e3b9820ef05a6ad83038744eb6ee34e8b518",
+  "source_identity_method": "SHA-256 over sorted C03-owned source/generated path bytes, NUL separators and each file SHA-256; excludes progress and evidence to avoid recursive self-reference",
+  "environment": {
+    "os": "Linux x86_64 (Ubuntu 24.04 environment)",
+    "node": "v24.19.0",
+    "npm": "11.9.0",
+    "python": "3.12.3",
+    "go": "go version go1.27.2 linux/amd64",
+    "podman": "podman version 4.9.3",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_available_bytes": 26068246528,
+      "filesystem_available_bytes": 128281104384
+    }
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C03/expected-output.json": "e5d6ab6e751e0c448b6d061607708f4299112efc18fc6c94a2a79abc68127921",
+    "tests/fixtures/keyhelix/C03/invalid.json": "55ebf8f9f06b2e0cb141be3be41daa50cbb331fa4dde53314d9148657c8c2e9c",
+    "tests/fixtures/keyhelix/C03/positive.json": "e536e4097007b33b66f9bb68083311644a9b3eae720858117ea5fd608cf2b365"
+  },
+  "fixture_provenance_license": "All three fixtures are repository-authored synthetic data; each declares Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -v ./cmd/keyhelix",
+      "exit_code": 0,
+      "result": "2 Go unit and lifecycle tests passed."
+    },
+    {
+      "command": "node scripts/build-engine.mjs",
+      "exit_code": 0,
+      "result": "Compiled Go engine binary to dist/engine/keyhelix."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "17 Node tests passed."
+    },
+    {
+      "command": "npm run test:browser",
+      "exit_code": 0,
+      "result": "3 browser integration tests passed in Chromium."
+    },
+    {
+      "command": "npm run test:clone",
+      "exit_code": 0,
+      "result": "Clean git clone -> npm run setup -> web startup smoke test passed."
+    },
+    {
+      "command": "node scripts/oss-bootstrap.mjs doctor",
+      "exit_code": 0,
+      "result": "Validated engine health, toolchain prerequisites, and web assets."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "6 engineering CI source regression tests passed."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "Validated repository JSON files and invariants."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "PLAN VALIDATION PASSED — 40 intents, coverage and progress checked; no application runtime tests performed."
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "result": "No whitespace errors."
+    }
+  ],
+  "results": {
+    "engine_compilation": "passed",
+    "engine_lifecycle": "passed",
+    "supervisor_launch": "passed",
+    "browser_integration": "passed",
+    "domain_engine": "minimal health only; domain routes return 503",
+    "remote_github_actions": "not run"
+  },
+  "observed_limitations": [
+    "C03 verifies the Go engine lifecycle, loopback IPC, supervisor, and health proxy only; it does not implement vault domain entities, envelope encryption, OIDC, or key management.",
+    "Domain endpoints remain unimplemented (503 engine_not_integrated).",
+    "No lint script is defined in package.json."
+  ],
+  "rollback_or_recovery_observation": "Runtime engine supervisor implementation; no persistent state or user database modified.",
+  "core_ready": false
+}

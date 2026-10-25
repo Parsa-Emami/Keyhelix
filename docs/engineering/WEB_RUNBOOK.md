@@ -21,7 +21,7 @@ npm run build
 npm start -- --port 4305
 ```
 
-Built URL: http://127.0.0.1:4305. Browser routing uses hashes and hosting at the origin root. There is no subpath deployment in this release. Change the public nonsecret configuration in `ops/web/runtime-config.json`; `apps/web/public/runtime-config.json` must mirror it for static hosts/development. The Node server validates its config at startup and the browser validates its own project identity. Do not put credentials in either file.
+Built URL: http://127.0.0.1:4305. The unified supervisor (`scripts/start-local.mjs`, invoked by `npm start`) launches both the web shell and the loopback Go engine from a single terminal, exposing engine health at `/api/engine/health`. No secondary terminal is required. Browser routing uses hashes and hosting at the origin root. There is no subpath deployment in this release. Change the public nonsecret configuration in `ops/web/runtime-config.json`; `apps/web/public/runtime-config.json` must mirror it for static hosts/development. The Node server validates its config at startup and the browser validates its own project identity. Do not put credentials in either file.
 
 ## What is runnable
 

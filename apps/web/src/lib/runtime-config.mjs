@@ -9,3 +9,10 @@ export function validateRuntimeConfig(value, expectedProjectId) {
   if (!Number.isSafeInteger(value.maxPreviewBytes) || value.maxPreviewBytes < 1 || value.maxPreviewBytes > 1048576) throw new Error('Preview limit must be 1 to 1048576 bytes.');
   return Object.freeze({ ...value });
 }
+
+export function validateHealth(value) {
+  if (!value || value.status !== 'ok' || value.scope !== 'engine-runtime' || value.coreReady !== false ||
+      !/^\d+\.\d+\.\d+$/.test(value.version) || !/^go\d+\.\d+\.\d+$/.test(value.toolchain) ||
+      Object.keys(value).sort().join(',') !== 'coreReady,scope,status,toolchain,version') throw new Error('Invalid engine health response.');
+  return value;
+}

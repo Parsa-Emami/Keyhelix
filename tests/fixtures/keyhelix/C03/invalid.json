@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C03 runtime fixture; no real secret materials.",
+  "license": "Apache-2.0",
+  "health": {
+    "status": "ok",
+    "scope": "engine-runtime",
+    "version": "0.0.1",
+    "toolchain": "go1.27.2",
+    "coreReady": true
+  }
+}

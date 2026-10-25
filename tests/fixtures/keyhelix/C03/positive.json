@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C03 runtime fixture; no real secret materials.",
+  "license": "Apache-2.0",
+  "health": {
+    "status": "ok",
+    "scope": "engine-runtime",
+    "version": "0.0.1",
+    "toolchain": "go1.27.2",
+    "coreReady": false
+  },
+  "secret_metadata": {
+    "vault_id": "vault-prod",
+    "secret_id": "sec-01",
+    "path": "app/prod/database-url",
+    "version": 1,
+    "envelope": {
+      "algorithm": "AES-256-GCM",
+      "synthetic": true
+    }
+  },
+  "secret_operations": "unavailable in C03"
+}
