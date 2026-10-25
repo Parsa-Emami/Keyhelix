@@ -1,43 +1,242 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "KeyHelix result planning draft",
-  "type": "object",
-  "additionalProperties": false,
-  "properties": {
-    "schema_version": {
-      "const": "0"
+  "$id": "urn:parsa:keyhelix:result:1",
+  "title": "KeyHelix v1 local validation result",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "status",
+        "input_digest",
+        "engine_version",
+        "result",
+        "warnings"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "1"
+        },
+        "status": {
+          "type": "string",
+          "const": "unverified"
+        },
+        "input_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "engine_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result": {
+          "$ref": "#/$defs/valid"
+        },
+        "warnings": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
     },
-    "status": {
-      "enum": [
-        "complete",
-        "partial",
-        "failed",
-        "unverified"
-      ]
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "status",
+        "input_digest",
+        "engine_version",
+        "result",
+        "warnings"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "1"
+        },
+        "status": {
+          "type": "string",
+          "const": "failed"
+        },
+        "input_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "engine_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/failed"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "INVALID_JSON",
+                        "UNSUPPORTED_VERSION",
+                        "INVALID_INPUT"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "warnings": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
     },
-    "input_digest": {
-      "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
-    },
-    "engine_version": {
-      "type": "string"
-    },
-    "result": {
-      "type": "object"
-    },
-    "warnings": {
-      "type": "array",
-      "items": {
-        "type": "string"
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "status",
+        "input_digest",
+        "engine_version",
+        "result",
+        "warnings"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "1"
+        },
+        "status": {
+          "type": "string",
+          "const": "failed"
+        },
+        "input_digest": {
+          "type": "null"
+        },
+        "engine_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/failed"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "INPUT_TOO_LARGE",
+                        "INPUT_READ_FAILED",
+                        "CANCELLED",
+                        "TIMEOUT"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "warnings": {
+          "type": "array",
+          "maxItems": 0
+        }
       }
     }
-  },
-  "required": [
-    "schema_version",
-    "status",
-    "input_digest",
-    "engine_version",
-    "result",
-    "warnings"
-  ]
+  ],
+  "$defs": {
+    "valid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "valid",
+        "vault_id",
+        "secret_id",
+        "version"
+      ],
+      "properties": {
+        "valid": {
+          "type": "boolean",
+          "const": true
+        },
+        "vault_id": {
+          "$ref": "urn:parsa:keyhelix:input:1#/$defs/identifier"
+        },
+        "secret_id": {
+          "$ref": "urn:parsa:keyhelix:input:1#/$defs/identifier"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "failed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "valid",
+        "error"
+      ],
+      "properties": {
+        "valid": {
+          "type": "boolean",
+          "const": false
+        },
+        "error": {
+          "$ref": "#/$defs/error"
+        }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "INVALID_JSON",
+            "UNSUPPORTED_VERSION",
+            "INVALID_INPUT",
+            "INPUT_TOO_LARGE",
+            "INPUT_READ_FAILED",
+            "CANCELLED",
+            "TIMEOUT"
+          ]
+        },
+        "field": {
+          "type": "string",
+          "enum": [
+            "schema_version",
+            "vault_id",
+            "secret_id",
+            "secret_path",
+            "version",
+            "classification",
+            "created_at",
+            "envelope"
+          ]
+        }
+      }
+    }
+  }
 }

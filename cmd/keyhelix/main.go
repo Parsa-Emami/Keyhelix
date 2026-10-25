@@ -15,6 +15,8 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/parsa-emami/keyhelix/internal/contracts"
 )
 
 const version = "0.0.1"
@@ -99,6 +101,7 @@ func serve(ctx context.Context, address string, ready io.Writer) error {
 func main() {
 	address := flag.String("listen", "127.0.0.1:0", "loopback listen address")
 	showVersion := flag.Bool("version", false, "print runtime version and exit")
+	validateSecret := flag.Bool("validate-secret", false, "validate secret metadata from stdin")
 	flag.Parse()
 	if flag.NArg() != 0 {
 		fmt.Fprintln(os.Stderr, "unexpected engine arguments")
@@ -106,6 +109,16 @@ func main() {
 	}
 	if *showVersion {
 		json.NewEncoder(os.Stdout).Encode(health())
+		return
+	}
+	if *validateSecret {
+		ctx, cancel := context.WithTimeout(context.Background(), contracts.ValidationTimeout)
+		defer cancel()
+		result := contracts.Validate(ctx, os.Stdin, version)
+		json.NewEncoder(os.Stdout).Encode(result)
+		if result.Status != "unverified" || !result.Result.Valid {
+			os.Exit(1)
+		}
 		return
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

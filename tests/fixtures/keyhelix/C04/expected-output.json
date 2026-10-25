@@ -1,0 +1,18 @@
+{
+  "schema_version": "1",
+  "provenance": "Repository-authored synthetic expected validation output for C04; establishes structural validation only without ingestion authority.",
+  "license": "Apache-2.0",
+  "output": {
+    "schema_version": "1",
+    "status": "unverified",
+    "input_digest": "8a2ce9d030792085776b4d4239b9988408ced2c5534e13d212775218d8188963",
+    "engine_version": "0.0.1",
+    "result": {
+      "valid": true,
+      "vault_id": "vault-prod",
+      "secret_id": "sec-01",
+      "version": 1
+    },
+    "warnings": []
+  }
+}

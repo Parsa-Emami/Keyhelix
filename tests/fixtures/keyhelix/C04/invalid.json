@@ -1,0 +1,138 @@
+{
+  "schema_version": "1",
+  "provenance": "Repository-authored synthetic negative test cases for KeyHelix v1 secret metadata validation.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "name": "unsupported-schema-version",
+      "input": {
+        "schema_version": "2",
+        "vault_id": "vault-prod",
+        "secret_id": "sec-01",
+        "secret_path": "app/prod/database-url",
+        "version": 1,
+        "classification": "restricted",
+        "created_at": "2026-01-01T00:00:00Z",
+        "envelope": {
+          "algorithm": "AES-256-GCM",
+          "wrapped_dek": "synthetic-wrapped-dek",
+          "nonce": "synthetic-nonce",
+          "tag": "synthetic-tag",
+          "kek_id": "kek-v1-openbao"
+        }
+      },
+      "expected_code": "UNSUPPORTED_VERSION"
+    },
+    {
+      "name": "duplicate-object-keys",
+      "raw": "{\"schema_version\":\"1\",\"schema_version\":\"1\",\"vault_id\":\"vault-prod\",\"secret_id\":\"sec-01\",\"secret_path\":\"app/prod/database-url\",\"version\":1,\"classification\":\"restricted\",\"created_at\":\"2026-01-01T00:00:00Z\",\"envelope\":{\"algorithm\":\"AES-256-GCM\",\"wrapped_dek\":\"dek\",\"nonce\":\"nonce\",\"tag\":\"tag\",\"kek_id\":\"kek\"}}",
+      "expected_code": "INVALID_JSON"
+    },
+    {
+      "name": "unpaired-utf16-surrogate",
+      "raw": "{\"schema_version\":\"1\",\"vault_id\":\"vault-\\ud800-broken\",\"secret_id\":\"sec-01\",\"secret_path\":\"app/prod/database-url\",\"version\":1,\"classification\":\"restricted\",\"created_at\":\"2026-01-01T00:00:00Z\",\"envelope\":{\"algorithm\":\"AES-256-GCM\",\"wrapped_dek\":\"dek\",\"nonce\":\"nonce\",\"tag\":\"tag\",\"kek_id\":\"kek\"}}",
+      "expected_code": "INVALID_JSON"
+    },
+    {
+      "name": "invalid-classification",
+      "input": {
+        "schema_version": "1",
+        "vault_id": "vault-prod",
+        "secret_id": "sec-01",
+        "secret_path": "app/prod/database-url",
+        "version": 1,
+        "classification": "top-secret-invalid",
+        "created_at": "2026-01-01T00:00:00Z",
+        "envelope": {
+          "algorithm": "AES-256-GCM",
+          "wrapped_dek": "synthetic-wrapped-dek",
+          "nonce": "synthetic-nonce",
+          "tag": "synthetic-tag",
+          "kek_id": "kek-v1-openbao"
+        }
+      },
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "name": "invalid-timestamp-format",
+      "input": {
+        "schema_version": "1",
+        "vault_id": "vault-prod",
+        "secret_id": "sec-01",
+        "secret_path": "app/prod/database-url",
+        "version": 1,
+        "classification": "restricted",
+        "created_at": "not-a-timestamp",
+        "envelope": {
+          "algorithm": "AES-256-GCM",
+          "wrapped_dek": "synthetic-wrapped-dek",
+          "nonce": "synthetic-nonce",
+          "tag": "synthetic-tag",
+          "kek_id": "kek-v1-openbao"
+        }
+      },
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "name": "extra-unrecognized-fields",
+      "input": {
+        "schema_version": "1",
+        "vault_id": "vault-prod",
+        "secret_id": "sec-01",
+        "secret_path": "app/prod/database-url",
+        "version": 1,
+        "classification": "restricted",
+        "created_at": "2026-01-01T00:00:00Z",
+        "unexpected_field": "dangerous",
+        "envelope": {
+          "algorithm": "AES-256-GCM",
+          "wrapped_dek": "synthetic-wrapped-dek",
+          "nonce": "synthetic-nonce",
+          "tag": "synthetic-tag",
+          "kek_id": "kek-v1-openbao"
+        }
+      },
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "name": "unsupported-envelope-algorithm",
+      "input": {
+        "schema_version": "1",
+        "vault_id": "vault-prod",
+        "secret_id": "sec-01",
+        "secret_path": "app/prod/database-url",
+        "version": 1,
+        "classification": "restricted",
+        "created_at": "2026-01-01T00:00:00Z",
+        "envelope": {
+          "algorithm": "DES-EDE3-CBC",
+          "wrapped_dek": "synthetic-wrapped-dek",
+          "nonce": "synthetic-nonce",
+          "tag": "synthetic-tag",
+          "kek_id": "kek-v1-openbao"
+        }
+      },
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "name": "zero-version-number",
+      "input": {
+        "schema_version": "1",
+        "vault_id": "vault-prod",
+        "secret_id": "sec-01",
+        "secret_path": "app/prod/database-url",
+        "version": 0,
+        "classification": "restricted",
+        "created_at": "2026-01-01T00:00:00Z",
+        "envelope": {
+          "algorithm": "AES-256-GCM",
+          "wrapped_dek": "synthetic-wrapped-dek",
+          "nonce": "synthetic-nonce",
+          "tag": "synthetic-tag",
+          "kek_id": "kek-v1-openbao"
+        }
+      },
+      "expected_code": "INVALID_INPUT"
+    }
+  ]
+}

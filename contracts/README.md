@@ -1,5 +1,11 @@
-# Contract authority — KeyHelix v0
+# Contract authority — KeyHelix v1
 
-`input.schema.json` and `result.schema.json` capture initial planning boundary only. Nested domain shapes and transport contracts must be tightened at C04 with reviewed fixtures. Their existence is not engine implementation or full OpenAPI validation. `legacy/v7/contracts` are archived designs and are not active compatibility promises. This profile is provider-backed-private; HTTP/async contracts are only generated for an actually enabled transport.
+`input.schema.json` and `result.schema.json` freeze the v1 domain contract for secret metadata inputs and engine validation results.
 
-Replace generic arrays with typed entities/relationships, enumerate exact errors and limits, prohibit additional fields where appropriate and define schema migration fixtures before API/public file format release. Version 0 schemas are explicitly draft and must not be called frozen public v1.
+## Schemas
+- `input.schema.json` (`urn:parsa:keyhelix:input:1`): Strict schema for secret envelope metadata. Enforces exact fields (`schema_version: "1"`, `vault_id`, `secret_id`, `secret_path`, `version`, `classification`, `created_at`, `envelope`), UTF-8 size limit (<=8192 bytes), and prohibits unexpected fields.
+- `result.schema.json` (`urn:parsa:keyhelix:result:1`): Strict schema for deterministic engine validation results, returning `status: "unverified"` on valid inputs, or `status: "failed"` with typed error codes.
+
+## Guarantees & Non-Claims
+- Successful validation verifies syntactic and schema correctness only; it does not grant authorization, persist records, or prove provider key custody.
+- Plaintext secrets never enter metadata contracts.

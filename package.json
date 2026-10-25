@@ -15,7 +15,7 @@
     "typecheck": "tsc -p tsconfig.json",
     "build": "npm run prepare:web && npm run typecheck && vite build --config apps/web/vite.config.ts && npm run build:engine",
     "start": "node scripts/start-local.mjs",
-    "test": "node --test tests/web/*.test.mjs",
+    "test": "node --test tests/web/*.test.mjs tests/contracts/*.test.mjs",
     "test:browser": "playwright test",
     "package:web": "node scripts/package-web.mjs",
     "validate:plan": "node scripts/roadmap.mjs validate",
@@ -25,17 +25,20 @@
     "plan": "node scripts/roadmap.mjs",
     "release:check": "node scripts/roadmap.mjs release-check",
     "test:clone": "node scripts/clone-smoke.mjs",
-    "build:engine": "node scripts/build-engine.mjs"
+    "build:engine": "node scripts/build-engine.mjs",
+    "test:contracts": "node scripts/build-engine.mjs && node --test tests/contracts/*.test.mjs"
   },
   "dependencies": {
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
   "devDependencies": {
-    "vite": "8.3.4",
-    "typescript": "7.0.2",
+    "@playwright/test": "1.64.1",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "@playwright/test": "1.64.1"
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "typescript": "7.0.2",
+    "vite": "8.3.4"
   }
 }

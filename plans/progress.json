@@ -33,10 +33,12 @@
     },
     {
       "id": "C04",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C04.json"
+      ],
+      "source_identity": "sha256:defb590760e49db3c5df7b346da3f83956bfab61a6afc8ebe36ca642f1678321",
+      "notes": "C04 typed domain input and result contracts verified locally; persistence remains pending."
     },
     {
       "id": "C05",
