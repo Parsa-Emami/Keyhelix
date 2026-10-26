@@ -92,5 +92,26 @@
       "exit_code": 0,
       "result": "Validated source integrity and historical records."
     }
-  ]
+  ],
+  "results": {
+    "engine_compilation": "passed",
+    "engine_test_discovery_inventory": "passed",
+    "clean_checkout_end_to_end": "passed",
+    "tampered_blob_byte_fails_closed": "passed",
+    "tampered_manifest_byte_fails_closed": "passed",
+    "untrusted_signer_fails_closed": "passed",
+    "stale_revision_replay_rejected": "passed",
+    "provider_owns_secret_bytes_no_plaintext": "passed",
+    "pinned_runtime_ci_workflow": "passed",
+    "domain_engine": "clean engine verification, contract validation, and local storage integration only; provider adapters remain C07+ work",
+    "provider_authority": "not used; self-hosted OpenBao capability adapter begins in C07",
+    "remote_github_actions": "verified"
+  },
+  "observed_limitations": [
+    "C06 establishes CI collection and clean-checkout test execution; live provider integrations begin with OpenBao in C07.",
+    "Engine binds strictly to loopback interfaces; external network exposure is not supported or certified.",
+    "Storage stores metadata envelopes; plaintext secret decryption and transit encryption remain later tasks."
+  ],
+  "rollback_or_recovery_observation": "All engine and storage CI verification tests execute against temporary sandboxed directories. No persistent incompatible state is created.",
+  "core_ready": false
 }
