@@ -87,10 +87,12 @@
     },
     {
       "id": "C10",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C10.json"
+      ],
+      "source_identity": "sha256:7a021ba8d8247d14d801a49e16a2b7105431351d790134e34165c04b54e7ffda",
+      "notes": "Fresh step-up reauthentication for sensitive actions (reveal and policy change), 120s TTL expiry, session binding enforcement, and token redaction verified."
     },
     {
       "id": "C11",

@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C10 step-up reauthentication negative cases; contains no real secret or key material.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "expired-stepup-cannot-authorize-reveal",
+      "kind": "expiration_guard",
+      "description": "Step-up grant past its 120-second TTL cannot authorize secret reveal and is rejected",
+      "action": "reveal_secret",
+      "expected_code": "STEPUP_EXPIRED"
+    },
+    {
+      "case": "expired-stepup-cannot-authorize-policy-change",
+      "kind": "expiration_guard",
+      "description": "Step-up grant past its 120-second TTL cannot authorize policy modifications and is rejected",
+      "action": "policy_change",
+      "expected_code": "STEPUP_EXPIRED"
+    },
+    {
+      "case": "stepup-reuse-across-session-binding-rejected",
+      "kind": "session_binding_guard",
+      "description": "Step-up grant issued for Session 1 cannot be reused in Session 2 and fails closed",
+      "expected_code": "STEPUP_SESSION_MISMATCH"
+    },
+    {
+      "case": "missing-stepup-token-rejected",
+      "kind": "presence_guard",
+      "description": "Attempt to reveal secret without step-up authentication fails closed",
+      "action": "reveal_secret",
+      "expected_code": "STEPUP_REQUIRED"
+    },
+    {
+      "case": "missing-stepup-for-policy-change-rejected",
+      "kind": "presence_guard",
+      "description": "Attempt to modify policy without step-up authentication fails closed",
+      "action": "policy_change",
+      "expected_code": "STEPUP_REQUIRED"
+    },
+    {
+      "case": "forged-stepup-token-rejected",
+      "kind": "signature_guard",
+      "description": "Forged, tampered, or unknown step-up token is rejected",
+      "token": "forged-stepup-token-0123456789abcdef",
+      "expected_code": "INVALID_STEPUP"
+    },
+    {
+      "case": "stepup-resource-scope-mismatch",
+      "kind": "scope_guard",
+      "description": "Step-up grant issued for secret path A attempted on path B is denied",
+      "granted_resource": "app/prod/database-url",
+      "target_resource": "app/prod/api-keys",
+      "action": "reveal_secret",
+      "expected_code": "STEPUP_SCOPE_DENIED"
+    },
+    {
+      "case": "stepup-action-type-mismatch",
+      "kind": "action_guard",
+      "description": "Step-up grant issued for reveal_secret attempted on policy_change is denied",
+      "granted_action": "reveal_secret",
+      "target_action": "policy_change",
+      "expected_code": "STEPUP_SCOPE_DENIED"
+    },
+    {
+      "case": "unrelated-owner-denied",
+      "kind": "authorization_guard",
+      "description": "Authenticated session with valid step-up attempting to access unrelated owner is denied",
+      "actor": "alice@keyhelix.local",
+      "target_owner": "bob@keyhelix.local",
+      "action": "secret:read",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "widened-path-permission-denied",
+      "kind": "permission_guard",
+      "description": "Authenticated session attempting action beyond its granted scopes is denied",
+      "actor": "alice@keyhelix.local",
+      "target_owner": "alice@keyhelix.local",
+      "action": "admin:system:override",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "token-leak-in-logs-prevented",
+      "kind": "redaction_guard",
+      "description": "Step-up token secrets are redacted from string representations, json marshaling, and logs",
+      "expected_redacted": true
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "kind": "plaintext_canary",
+      "canary": "synthetic-c10-secret-bytes-canary",
+      "description": "Plaintext secret bytes are owned by provider and never stored or exposed by step-up manager",
+      "expected_persisted": false
+    }
+  ]
+}

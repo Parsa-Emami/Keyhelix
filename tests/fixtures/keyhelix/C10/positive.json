@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C10 step-up reauthentication fixture; contains no real secret or key material.",
+  "license": "Apache-2.0",
+  "stepup_policy": {
+    "default_ttl_seconds": 120,
+    "max_age_seconds": 120,
+    "clock_skew_seconds": 10
+  },
+  "identity": {
+    "subject": "usr_alice_01",
+    "email": "alice@keyhelix.local",
+    "vault_role": "vault-admin",
+    "allowed_owners": [
+      "alice@keyhelix.local",
+      "org:platform"
+    ],
+    "allowed_scopes": [
+      "vault:read",
+      "vault:write",
+      "secret:read",
+      "secret:write",
+      "policy:write"
+    ]
+  },
+  "target_reveal": {
+    "vault_id": "vault-prod",
+    "secret_path": "app/prod/database-url",
+    "action": "reveal_secret",
+    "required_scope": "secret:read"
+  },
+  "target_policy": {
+    "vault_id": "vault-prod",
+    "policy_path": "vault/policy/admin",
+    "action": "policy_change",
+    "required_scope": "policy:write"
+  },
+  "plaintext_canary": "synthetic-c10-secret-bytes-canary",
+  "metadata_file": "metadata.json"
+}

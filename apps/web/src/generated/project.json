@@ -129,7 +129,7 @@
       "id": "C10",
       "title": "feat(stepup): require fresh reauthentication for sensitive actions",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Expired step-up cannot authorize reveal or policy changes and cannot be reused across session binding."
       ],

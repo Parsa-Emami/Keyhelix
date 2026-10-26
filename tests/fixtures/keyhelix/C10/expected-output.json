@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C10 expected results for step-up reauthentication; verifies expiration, session binding, action/resource scoping, and token redaction invariants.",
+  "license": "Apache-2.0",
+  "metadata_sha256": "2d2853ebb6730fc2ecbf868ffd46d76563cc016ac926efdc4aa82c4643a9a787",
+  "plaintext_canary": "synthetic-c10-secret-bytes-canary",
+  "stepup_policy": {
+    "default_ttl_seconds": 120,
+    "max_age_seconds": 120,
+    "clock_skew_seconds": 10
+  },
+  "guard_codes": {
+    "stepup_required": "STEPUP_REQUIRED",
+    "stepup_expired": "STEPUP_EXPIRED",
+    "stepup_session_mismatch": "STEPUP_SESSION_MISMATCH",
+    "invalid_stepup": "INVALID_STEPUP",
+    "stepup_scope_denied": "STEPUP_SCOPE_DENIED",
+    "scope_denied": "SCOPE_DENIED"
+  }
+}

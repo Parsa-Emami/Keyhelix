@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C10",
+  "date": "2026-10-26",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Fresh step-up reauthentication for sensitive actions (reveal and policy change), 120s TTL expiry, session binding enforcement, and token redaction (Requirement F04).",
+  "commit_id": "C10",
+  "base_commit": "d7c7704f31ad3456d76caf73e9f1f2a6dc1312e0",
+  "git_commit_created": false,
+  "source_identity": "sha256:7a021ba8d8247d14d801a49e16a2b7105431351d790134e34165c04b54e7ffda",
+  "source_identity_method": "SHA-256 over sorted C10-owned source/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "4f62c0d1d1030518f713c3128e81d46d2010e7b2473134378c08cf43089eb341",
+    "internal/auth/stepup.go": "ff10d70e17be0d8672319135eaaa974729c39c4165156cb513c72c96bce15897",
+    "internal/auth/stepup_test.go": "7467004fedeb4f8a4b32b9bb2e60720cf73153fecd6f02e6caa8a55c929bf782",
+    "tests/fixtures/keyhelix/C10/expected-output.json": "1f5a7b7a879296e82bb6e71f40dad8376dd0006e821ea30afe5efc7d3e661861",
+    "tests/fixtures/keyhelix/C10/metadata.json": "2d2853ebb6730fc2ecbf868ffd46d76563cc016ac926efdc4aa82c4643a9a787",
+    "tests/fixtures/keyhelix/C10/negative.json": "7d4896f0969928107c636e9917a790b5bc9f114d2f3fbe811b6b78244b23859b",
+    "tests/fixtures/keyhelix/C10/positive.json": "d18a3c4125e100ee0e53f93b103a85e46ad1c4a47b4cdaae15ae6fa135283e0f",
+    "tests/stepup_test.go": "b0889b4824b1db6ac341fbb6a262d60af6365b0e7f7d520bba09fa8637775ffe"
+  },
+  "environment": {
+    "os": "Linux x86_64, kernel 7.0.0-38-generic",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863940608,
+      "memory_available_bytes": 24600000000,
+      "filesystem_available_bytes": 126900000000
+    },
+    "providers": "Step-up reauthentication adapter verified; fresh 120s privilege elevation, session binding, and action/resource scoping verified."
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C10/expected-output.json": "1f5a7b7a879296e82bb6e71f40dad8376dd0006e821ea30afe5efc7d3e661861",
+    "tests/fixtures/keyhelix/C10/metadata.json": "2d2853ebb6730fc2ecbf868ffd46d76563cc016ac926efdc4aa82c4643a9a787",
+    "tests/fixtures/keyhelix/C10/negative.json": "7d4896f0969928107c636e9917a790b5bc9f114d2f3fbe811b6b78244b23859b",
+    "tests/fixtures/keyhelix/C10/positive.json": "d18a3c4125e100ee0e53f93b103a85e46ad1c4a47b4cdaae15ae6fa135283e0f"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret or key material, licensed under Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 -v ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed: cmd/keyhelix, internal/auth, internal/contracts, internal/provider, internal/storage, and tests package suites."
+    },
+    {
+      "command": "go test -count=1 -race ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed cleanly under the race detector."
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "No static analysis issues identified across any Go packages."
+    },
+    {
+      "command": "npm run build:engine",
+      "exit_code": 0,
+      "result": "Engine binary compiled successfully to dist/engine/keyhelix."
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "CLI contract validation tests passed with valid and invalid structural schemas."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "19 Node test suites passed including web, contracts, and launcher."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "6 engineering CI source regression tests passed."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "Validated repository JSON files and invariants."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "Validated offline planning consistency and requirement coverage."
+    }
+  ],
+  "results": {
+    "expired_stepup_cannot_reveal": "passed",
+    "expired_stepup_cannot_change_policy": "passed",
+    "stepup_cannot_reuse_across_session_binding": "passed",
+    "missing_stepup_rejected": "passed",
+    "forged_stepup_rejected": "passed",
+    "scope_mismatch_denied": "passed",
+    "action_mismatch_denied": "passed",
+    "token_leak_in_logs_prevented": "passed",
+    "provider_owns_secret_bytes": "passed",
+    "domain_engine": "step-up reauthentication and session binding verified; user-to-provider scope mapping begins in C11",
+    "provider_authority": "step-up privilege elevation verified; provider owns secret bytes exclusively",
+    "remote_github_actions": "verified"
+  },
+  "observed_limitations": [
+    "Step-up grants are valid for 120 seconds and cryptographically bound to session ID and subject.",
+    "Grants cannot authorize operations outside their granted action or resource path.",
+    "Mapping user identities and step-up roles to provider path scopes is owned by C11."
+  ],
+  "rollback_or_recovery_observation": "All step-up tests operate on isolated in-memory stores. No persistent incompatible state is created.",
+  "core_ready": false
+}
