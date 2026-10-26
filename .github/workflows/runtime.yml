@@ -1,0 +1,75 @@
+name: runtime-engine
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  engine-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Setup Go
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Validate plan and contracts
+        run: |
+          npm run validate:plan
+          python3 scripts/validate_repo.py
+
+      - name: Source integrity regressions
+        run: python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v
+
+      - name: Build engine binary
+        run: npm run build:engine
+
+      - name: Enforce domain test collection
+        run: |
+          echo "Verifying test discovery for all domain packages..."
+          DISCOVERED=$(go test -list '.*' ./...)
+          for pkg in "cmd/keyhelix" "internal/contracts" "internal/storage" "tests"; do
+            if ! echo "$DISCOVERED" | grep -q "$pkg"; then
+              echo "CI FAILURE: Absence of collected domain tests for $pkg" >&2
+              exit 1
+            fi
+          done
+          echo "All expected domain test suites collected successfully."
+
+      - name: Run Go engine tests
+        run: go test -count=1 -v ./...
+
+      - name: Run Go race detector
+        run: go test -count=1 -race ./...
+
+      - name: Run Go vet
+        run: go vet ./...
+
+      - name: Run domain contract integration tests
+        run: npm run test:contracts

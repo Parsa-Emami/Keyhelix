@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C06",
+  "date": "2026-10-26",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Engine runtime verification, test discovery inventory, pinned CI workflow, and negative recovery bounds from a clean checkout. No provider adapters, identity, or plaintext secret handling certified.",
+  "commit_id": "C06",
+  "base_commit": "5a70b9ac0541d7739e61d0541302276b576e67e1",
+  "git_commit_created": false,
+  "source_identity": "sha256:a74b9a4ee91134ba6302f4505e4881d167c6160fb6ebefbf20211a95da07a78b",
+  "source_identity_method": "SHA-256 over sorted C06-owned source/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    ".github/workflows/runtime.yml": "26fad72906ba5643c76b6bc00dad6b9fb4ae0820c6d2b3bf92139801892591de",
+    "apps/web/src/generated/project.json": "11359f0a498fb4ba13142e6f2c366c083661229294e39524199db801d96626d0",
+    "docs/engineering/ENGINE_TESTS.md": "435399918afdf921000a8353089518c3d8be4b6e842e0a31de7fa066d825a55c",
+    "tests/engine_ci_test.go": "eeefb84a04401558690c11547319dc94cdc81c8830377168b61a521f908e9cab",
+    "tests/fixtures/keyhelix/C06/expected-output.json": "6bf37dbf371b2edbf7ce0cc380a4437e3478d111eda42ef629f6101f5a3be39a",
+    "tests/fixtures/keyhelix/C06/metadata.json": "3595ecbb76f8992508a9365e2bfa650036bf2fd6824a8640bc4236ce4cb477c3",
+    "tests/fixtures/keyhelix/C06/negative.json": "4e2b92274cb64f89ce1ddd54b26fc76ce5d731d20282c0ff823817e5bb9c460c",
+    "tests/fixtures/keyhelix/C06/positive.json": "b5adcf102bf5b86b5e7faf85eeefa6fbcac3b38aa36e529e1539000336b2b678"
+  },
+  "environment": {
+    "os": "Linux x86_64, kernel 7.0.0-38-generic",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863940608,
+      "memory_available_bytes": 24700000000,
+      "filesystem_available_bytes": 127000000000
+    },
+    "providers": "Not used. Self-hosted OpenBao and Keycloak/OIDC remain C07+ resources; C06 uses no provider success claim."
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C06/expected-output.json": "6bf37dbf371b2edbf7ce0cc380a4437e3478d111eda42ef629f6101f5a3be39a",
+    "tests/fixtures/keyhelix/C06/metadata.json": "3595ecbb76f8992508a9365e2bfa650036bf2fd6824a8640bc4236ce4cb477c3",
+    "tests/fixtures/keyhelix/C06/negative.json": "4e2b92274cb64f89ce1ddd54b26fc76ce5d731d20282c0ff823817e5bb9c460c",
+    "tests/fixtures/keyhelix/C06/positive.json": "b5adcf102bf5b86b5e7faf85eeefa6fbcac3b38aa36e529e1539000336b2b678"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret, key material, plaintext or customer data, licensed under Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 -v ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed: cmd/keyhelix, internal/contracts, internal/storage, and tests package suites."
+    },
+    {
+      "command": "go test -count=1 -race ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed cleanly under the race detector."
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "No static analysis issues identified across any Go packages."
+    },
+    {
+      "command": "npm run build:engine",
+      "exit_code": 0,
+      "result": "Engine binary compiled successfully to dist/engine/keyhelix."
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "CLI contract validation tests passed with valid and invalid structural schemas."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "19 Node test suites passed including web, contracts, and launcher."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "6 engineering CI source regression tests passed."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "Validated repository JSON files and invariants."
+    },
+    {
+      "command": "python3 scripts/verify_ci_source.py",
+      "exit_code": 0,
+      "result": "Validated source integrity and historical records."
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C06 negative cases; no real identity, secret or provider is exercised.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "modified-byte-blob",
+      "kind": "tamper-blob",
+      "description": "Modifying a single byte of stored blob ciphertext corrupts the cryptographic digest and fails read verification",
+      "expected_code": "CORRUPT_STATE"
+    },
+    {
+      "case": "modified-byte-manifest",
+      "kind": "tamper-manifest",
+      "description": "Modifying a single byte in the manifest JSON invalidates atomic state verification",
+      "expected_code": "CORRUPT_STATE"
+    },
+    {
+      "case": "untrusted-signer-missing-kek",
+      "kind": "validation",
+      "description": "Missing or empty KEK provider reference fails closed",
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "stale-revision-replay",
+      "kind": "stale-write",
+      "description": "An expired or replayed entity revision cannot overwrite the latest accepted manifest authority",
+      "expected_version": 1,
+      "expected_code": "STALE_VERSION"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "kind": "plaintext-canary",
+      "canary": "synthetic-canary-secret-never-stored-unencrypted-c06",
+      "description": "Plaintext secret bytes must not be stored in metadata or persistence; provider owns secret envelope",
+      "expected_persisted": false
+    }
+  ]
+}

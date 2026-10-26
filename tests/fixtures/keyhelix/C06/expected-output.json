@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C06 expected results; proves clean engine verification, contracts and storage mechanics without secret authority.",
+  "license": "Apache-2.0",
+  "metadata_sha256": "3595ecbb76f8992508a9365e2bfa650036bf2fd6824a8640bc4236ce4cb477c3",
+  "plaintext_canary": "synthetic-canary-secret-never-stored-unencrypted-c06",
+  "health": {
+    "status": "ok",
+    "scope": "engine-runtime",
+    "version": "0.0.1",
+    "coreReady": false
+  },
+  "first_write": {
+    "operation_id": "op-c06-0001",
+    "entity_version": 1,
+    "manifest_version": 1,
+    "duplicate": false
+  },
+  "second_write": {
+    "operation_id": "op-c06-0002",
+    "entity_version": 2,
+    "manifest_version": 2,
+    "duplicate": false
+  },
+  "stale_replay": {
+    "expected_code": "STALE_VERSION"
+  },
+  "tampered_blob": {
+    "expected_code": "CORRUPT_STATE"
+  },
+  "tampered_manifest": {
+    "expected_code": "CORRUPT_STATE"
+  }
+}
