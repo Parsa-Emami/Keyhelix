@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C09 short-lived session fixture; contains no real secret or key material.",
+  "license": "Apache-2.0",
+  "session": {
+    "ttl_minutes": 15,
+    "cookie_name": "keyhelix_session",
+    "cookie_path": "/",
+    "http_only": true,
+    "secure": true,
+    "same_site": "Strict"
+  },
+  "identity": {
+    "subject": "usr_alice_01",
+    "email": "alice@keyhelix.local",
+    "vault_role": "vault-admin",
+    "allowed_owners": [
+      "alice@keyhelix.local",
+      "org:platform"
+    ],
+    "allowed_scopes": [
+      "vault:read",
+      "vault:write",
+      "secret:read",
+      "secret:write"
+    ]
+  },
+  "departing_user": {
+    "subject": "usr_bob_02",
+    "email": "bob@keyhelix.local",
+    "vault_role": "vault-reader",
+    "allowed_owners": [
+      "bob@keyhelix.local"
+    ],
+    "allowed_scopes": [
+      "secret:read"
+    ]
+  },
+  "target_secret": {
+    "vault_id": "vault-prod",
+    "secret_path": "app/prod/database-url",
+    "required_scope": "secret:read"
+  },
+  "plaintext_canary": "synthetic-c09-secret-bytes-canary",
+  "metadata_file": "metadata.json"
+}

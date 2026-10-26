@@ -117,7 +117,7 @@
       "id": "C09",
       "title": "feat(sessions): bind and revoke short lived sessions",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Revoked session cannot reveal; session cookies are secure and tokens are never logged."
       ],

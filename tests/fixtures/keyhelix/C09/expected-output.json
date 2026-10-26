@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C09 expected results for short-lived session binding and revocation; verifies revocation, expiration, secure cookies, and token redaction invariants.",
+  "license": "Apache-2.0",
+  "metadata_sha256": "2370bc20b84b30edd6943ea178b413c5dbd4caa02467c5186720ea0ec17a25a3",
+  "plaintext_canary": "synthetic-c09-secret-bytes-canary",
+  "session_policy": {
+    "default_ttl_minutes": 15,
+    "cookie_name": "keyhelix_session",
+    "cookie_secure": true,
+    "cookie_http_only": true,
+    "cookie_same_site": "Strict"
+  },
+  "guard_codes": {
+    "session_revoked": "SESSION_REVOKED",
+    "session_expired": "SESSION_EXPIRED",
+    "session_not_found": "SESSION_NOT_FOUND",
+    "invalid_session": "INVALID_SESSION",
+    "scope_denied": "SCOPE_DENIED",
+    "cookie_insecure": "COOKIE_INSECURE",
+    "token_logged": "TOKEN_LOG_REJECTED"
+  }
+}

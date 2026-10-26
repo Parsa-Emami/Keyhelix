@@ -1,0 +1,16 @@
+{
+  "schema_version": "1",
+  "vault_id": "vault-prod",
+  "secret_id": "sec-c09-01",
+  "secret_path": "app/prod/database-url",
+  "version": 1,
+  "classification": "restricted",
+  "created_at": "2026-01-01T00:00:00Z",
+  "envelope": {
+    "algorithm": "AES-256-GCM",
+    "wrapped_dek": "synthetic-c09-wrapped-dek",
+    "nonce": "synthetic-c09-nonce",
+    "tag": "synthetic-c09-tag",
+    "kek_id": "kek-v1-openbao"
+  }
+}

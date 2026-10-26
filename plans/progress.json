@@ -78,10 +78,12 @@
     },
     {
       "id": "C09",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C09.json"
+      ],
+      "source_identity": "sha256:f128f3db8f4824879a1bdf6223bbdff5d280e06dd84fe4089fa29eeead826e52",
+      "notes": "Short-lived bound sessions, immediate revocation preventing reveal, secure cookies (HttpOnly, Secure, SameSite=Strict), and token log redaction verified."
     },
     {
       "id": "C10",

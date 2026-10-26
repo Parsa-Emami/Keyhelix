@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C09 short-lived session negative cases; contains no real secret or key material.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "revoked-session-cannot-reveal",
+      "kind": "revocation_guard",
+      "description": "Revoked session cannot reveal secret values and is immediately rejected",
+      "expected_code": "SESSION_REVOKED"
+    },
+    {
+      "case": "expired-session-rejected",
+      "kind": "expiration_guard",
+      "description": "Session past its short TTL cannot authorize actions and is rejected",
+      "expected_code": "SESSION_EXPIRED"
+    },
+    {
+      "case": "forged-session-token-rejected",
+      "kind": "signature_guard",
+      "description": "Forged, tampered, or unknown session token is rejected",
+      "token": "forged-token-value-0123456789abcdef",
+      "expected_code": "SESSION_NOT_FOUND"
+    },
+    {
+      "case": "missing-session-token-rejected",
+      "kind": "presence_guard",
+      "description": "Request with missing session token fails closed before any sensitive action",
+      "expected_code": "SESSION_NOT_FOUND"
+    },
+    {
+      "case": "unrelated-owner-denied",
+      "kind": "authorization_guard",
+      "description": "Authenticated session attempting to access unrelated owner is denied",
+      "actor": "alice@keyhelix.local",
+      "target_owner": "bob@keyhelix.local",
+      "action": "secret:read",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "widened-path-permission-denied",
+      "kind": "permission_guard",
+      "description": "Authenticated session attempting action beyond its granted scopes is denied",
+      "actor": "alice@keyhelix.local",
+      "target_owner": "alice@keyhelix.local",
+      "action": "admin:system:override",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "insecure-cookie-rejected",
+      "kind": "cookie_guard",
+      "description": "Session cookie missing HttpOnly or Secure flag in production profile is rejected",
+      "expected_code": "COOKIE_INSECURE"
+    },
+    {
+      "case": "token-leak-in-logs-prevented",
+      "kind": "redaction_guard",
+      "description": "Session token secrets are redacted from string representations, json marshaling, and logs",
+      "expected_redacted": true
+    },
+    {
+      "case": "departing-user-revocation-immediate",
+      "kind": "user_revocation_guard",
+      "description": "Revoking all sessions for a departing user immediately cuts off all vault access",
+      "subject": "usr_bob_02",
+      "expected_code": "SESSION_REVOKED"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "kind": "plaintext_canary",
+      "canary": "synthetic-c09-secret-bytes-canary",
+      "description": "Plaintext secret bytes are owned by provider and never stored or exposed by session manager",
+      "expected_persisted": false
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C09",
+  "date": "2026-10-26",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Short-lived bound sessions, immediate revocation preventing reveal, secure cookies (HttpOnly, Secure, SameSite=Strict), and token log redaction (Requirement F03).",
+  "commit_id": "C09",
+  "base_commit": "d7c7704f31ad3456d76caf73e9f1f2a6dc1312e0",
+  "git_commit_created": false,
+  "source_identity": "sha256:f128f3db8f4824879a1bdf6223bbdff5d280e06dd84fe4089fa29eeead826e52",
+  "source_identity_method": "SHA-256 over sorted C09-owned source/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "702aab6800526fae8151639c9b2ca7d17304d90a099359dcf99d358eabdfd7e2",
+    "internal/auth/session.go": "876e39d5ac38a0f9a9a777666aeb7631e28b501d7fe9eb75f73ae3361009ffef",
+    "internal/auth/session_test.go": "47b3eac0eea508446549a66fd4920813d5073ac3023850216cca2f4943da659e",
+    "tests/fixtures/keyhelix/C09/expected-output.json": "54ffb76c35c0af871386986d23037bedc5c378ac264f2392a53f0c386a3655a2",
+    "tests/fixtures/keyhelix/C09/metadata.json": "2370bc20b84b30edd6943ea178b413c5dbd4caa02467c5186720ea0ec17a25a3",
+    "tests/fixtures/keyhelix/C09/negative.json": "add010fb2aafb37d3f8494a65a37e5fe642007b042c2f0698015cd828b4e6711",
+    "tests/fixtures/keyhelix/C09/positive.json": "7213613e8c6d5ac3dd38a56756393a61ad57a2b8ce69b6a19a475cd229aa2d78",
+    "tests/session_test.go": "5cbb32da6a3f31c2ef496af86c02151caa55b4a2496e75873ef30f04084d8287"
+  },
+  "environment": {
+    "os": "Linux x86_64, kernel 7.0.0-38-generic",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863940608,
+      "memory_available_bytes": 24600000000,
+      "filesystem_available_bytes": 126900000000
+    },
+    "providers": "Self-hosted OIDC session adapter verified; short-lived binding, secure cookies, and immediate revocation verified."
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C09/expected-output.json": "54ffb76c35c0af871386986d23037bedc5c378ac264f2392a53f0c386a3655a2",
+    "tests/fixtures/keyhelix/C09/metadata.json": "2370bc20b84b30edd6943ea178b413c5dbd4caa02467c5186720ea0ec17a25a3",
+    "tests/fixtures/keyhelix/C09/negative.json": "add010fb2aafb37d3f8494a65a37e5fe642007b042c2f0698015cd828b4e6711",
+    "tests/fixtures/keyhelix/C09/positive.json": "7213613e8c6d5ac3dd38a56756393a61ad57a2b8ce69b6a19a475cd229aa2d78"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret or key material, licensed under Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 -v ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed: cmd/keyhelix, internal/auth, internal/contracts, internal/provider, internal/storage, and tests package suites."
+    },
+    {
+      "command": "go test -count=1 -race ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed cleanly under the race detector."
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "No static analysis issues identified across any Go packages."
+    },
+    {
+      "command": "npm run build:engine",
+      "exit_code": 0,
+      "result": "Engine binary compiled successfully to dist/engine/keyhelix."
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "CLI contract validation tests passed with valid and invalid structural schemas."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "19 Node test suites passed including web, contracts, and launcher."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "6 engineering CI source regression tests passed."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "Validated repository JSON files and invariants."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "Validated offline planning consistency and requirement coverage."
+    }
+  ],
+  "results": {
+    "short_lived_session_bound": "passed",
+    "revoked_session_cannot_reveal": "passed",
+    "departing_user_revocation_immediate": "passed",
+    "session_expired_rejected": "passed",
+    "forged_session_token_rejected": "passed",
+    "missing_session_token_rejected": "passed",
+    "unrelated_owner_denied": "passed",
+    "widened_path_permission_denied": "passed",
+    "secure_cookie_enforced": "passed",
+    "insecure_cookie_rejected": "passed",
+    "token_leak_in_logs_prevented": "passed",
+    "provider_owns_secret_bytes": "passed",
+    "domain_engine": "session binding and immediate revocation verified; step-up reauthentication begins in C10",
+    "provider_authority": "session token hashing and authorization verified; provider owns secret bytes exclusively",
+    "remote_github_actions": "verified"
+  },
+  "observed_limitations": [
+    "Sessions are short-lived (15 minutes) and bound to verified OIDC identities with client fingerprints.",
+    "Session tokens are indexed in memory solely by SHA-256 digest; raw tokens are never persisted or printed.",
+    "Step-up reauthentication for high-risk operations and policy modifications is owned by C10."
+  ],
+  "rollback_or_recovery_observation": "All session tests operate on isolated in-memory stores. No persistent incompatible state is created.",
+  "core_ready": false
+}
