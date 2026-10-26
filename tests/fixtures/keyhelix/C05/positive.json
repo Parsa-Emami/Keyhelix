@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C05 storage fixture; contains no real secret, key material or plaintext.",
+  "license": "Apache-2.0",
+  "owner": "alice@keyhelix.local",
+  "scope": "vault-prod",
+  "name": "app/prod/database-url",
+  "operation_id": "op-c05-0001",
+  "expected_version": 0,
+  "metadata_file": "metadata.json",
+  "second_operation_id": "op-c05-0002"
+}

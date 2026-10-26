@@ -42,10 +42,12 @@
     },
     {
       "id": "C05",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C05.json"
+      ],
+      "source_identity": "sha256:0e1f867669a119193d0dcf16d7d49693f6d52c0669792e2ac467b5811bc1815c",
+      "notes": "Bounded local metadata port and recovery proof verified; identity, provider permission and plaintext enforcement remain C08-C15 work."
     },
     {
       "id": "C06",

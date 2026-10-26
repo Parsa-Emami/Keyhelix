@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C05 recovery and failure cases; injected device errors only, no real full volume or provider outage.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "name": "orphan-staging",
+      "setup": "orphan_staging",
+      "expected": {
+        "open_ok": true,
+        "removed_staging": 1
+      }
+    },
+    {
+      "name": "orphan-blob",
+      "setup": "orphan_blob",
+      "expected": {
+        "open_ok": true,
+        "removed_orphan_blobs": 1
+      }
+    },
+    {
+      "name": "missing-blob",
+      "setup": "missing_blob",
+      "expected": {
+        "open_ok": false,
+        "expected_code": "CORRUPT_STATE"
+      }
+    },
+    {
+      "name": "corrupt-blob",
+      "setup": "corrupt_blob",
+      "expected": {
+        "open_ok": false,
+        "expected_code": "CORRUPT_STATE"
+      }
+    },
+    {
+      "name": "corrupt-newest-manifest",
+      "setup": "corrupt_manifest",
+      "expected": {
+        "open_ok": false,
+        "expected_code": "CORRUPT_STATE"
+      }
+    }
+  ],
+  "fault_cases": [
+    {
+      "stage": "metadata_write",
+      "expected_code": "DISK_FULL"
+    },
+    {
+      "stage": "metadata_sync",
+      "expected_code": "DISK_FULL"
+    },
+    {
+      "stage": "metadata_rename",
+      "expected_code": "DISK_FULL"
+    },
+    {
+      "stage": "metadata_dir_sync",
+      "expected_code": "DISK_FULL"
+    },
+    {
+      "stage": "manifest_write",
+      "expected_code": "DISK_FULL"
+    },
+    {
+      "stage": "manifest_sync",
+      "expected_code": "DISK_FULL"
+    },
+    {
+      "stage": "manifest_rename",
+      "expected_code": "DISK_FULL"
+    },
+    {
+      "stage": "manifest_dir_sync",
+      "expected_code": "DISK_FULL"
+    }
+  ]
+}

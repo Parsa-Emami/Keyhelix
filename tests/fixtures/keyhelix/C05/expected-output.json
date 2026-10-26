@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C05 expected results; proves storage mechanics only and grants no secret or provider authority.",
+  "license": "Apache-2.0",
+  "metadata_sha256": "80f3b4ef08fab240f3ae7dcd01416107ecc38444606289ac2458fdbd81aea2e9",
+  "plaintext_canary": "synthetic-plaintext-canary-c05-never-persisted",
+  "first_write": {
+    "operation_id": "op-c05-0001",
+    "entity_version": 1,
+    "manifest_version": 1,
+    "duplicate": false
+  },
+  "second_write": {
+    "operation_id": "op-c05-0002",
+    "entity_version": 2,
+    "manifest_version": 2,
+    "duplicate": false
+  },
+  "replay": {
+    "operation_id": "op-c05-0001",
+    "entity_version": 1,
+    "manifest_version": 1,
+    "duplicate": true
+  },
+  "orphan_recovery": {
+    "manifest_version": 2,
+    "records": 1,
+    "removed_staging": 1,
+    "removed_orphan_blobs": 1
+  }
+}

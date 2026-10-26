@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C05 negative cases; no real identity, secret or provider is exercised.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "wrong-owner",
+      "kind": "read",
+      "owner": "bob@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app/prod/database-url",
+      "expected_code": "NOT_FOUND"
+    },
+    {
+      "case": "wrong-scope",
+      "kind": "read",
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-dev",
+      "name": "app/prod/database-url",
+      "expected_code": "NOT_FOUND"
+    },
+    {
+      "case": "missing-name",
+      "kind": "read",
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app/prod/missing-secret",
+      "expected_code": "NOT_FOUND"
+    },
+    {
+      "case": "parent-segment",
+      "kind": "write",
+      "operation_id": "op-c05-bad-01",
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app/../prod/database-url",
+      "expected_version": 0,
+      "metadata": "synthetic-valid-metadata",
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "absolute-name",
+      "kind": "write",
+      "operation_id": "op-c05-bad-02",
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "/etc/passwd",
+      "expected_version": 0,
+      "metadata": "synthetic-valid-metadata",
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "double-slash",
+      "kind": "write",
+      "operation_id": "op-c05-bad-03",
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app//prod/database-url",
+      "expected_version": 0,
+      "metadata": "synthetic-valid-metadata",
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "backslash-name",
+      "kind": "write",
+      "operation_id": "op-c05-bad-04",
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app\\prod\\database-url",
+      "expected_version": 0,
+      "metadata": "synthetic-valid-metadata",
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "invalid-owner",
+      "kind": "write",
+      "operation_id": "op-c05-bad-05",
+      "owner": "alice/../bob",
+      "scope": "vault-prod",
+      "name": "app/prod/database-url",
+      "expected_version": 0,
+      "metadata": "synthetic-valid-metadata",
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "invalid-scope",
+      "kind": "write",
+      "operation_id": "op-c05-bad-06",
+      "owner": "alice@keyhelix.local",
+      "scope": "vault/prod",
+      "name": "app/prod/database-url",
+      "expected_version": 0,
+      "metadata": "synthetic-valid-metadata",
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "invalid-operation-id",
+      "kind": "write",
+      "operation_id": "short",
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app/prod/database-url",
+      "expected_version": 0,
+      "metadata": "synthetic-valid-metadata",
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "empty-metadata",
+      "kind": "write",
+      "operation_id": "op-c05-bad-07",
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app/prod/database-url",
+      "expected_version": 0,
+      "metadata": "",
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "oversized-metadata",
+      "kind": "write",
+      "operation_id": "op-c05-bad-08",
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app/prod/database-url",
+      "expected_version": 0,
+      "metadata_repeat": 65537,
+      "expected_code": "QUOTA_EXCEEDED"
+    },
+    {
+      "case": "stale-version",
+      "kind": "write",
+      "operation_id": "op-c05-bad-09",
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app/prod/database-url",
+      "expected_version": 9,
+      "metadata": "synthetic-valid-metadata",
+      "expected_code": "STALE_VERSION"
+    },
+    {
+      "case": "duplicate-create",
+      "kind": "write",
+      "operation_id": "op-c05-bad-10",
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app/prod/database-url",
+      "expected_version": 0,
+      "metadata": "synthetic-valid-metadata",
+      "expected_code": "ALREADY_EXISTS"
+    },
+    {
+      "case": "replay-conflict",
+      "kind": "replay-conflict",
+      "operation_id": "op-c05-0001",
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app/prod/database-url",
+      "expected_version": 0,
+      "metadata": "different-synthetic-metadata",
+      "expected_code": "OPERATION_CONFLICT"
+    }
+  ]
+}

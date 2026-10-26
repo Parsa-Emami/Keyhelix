@@ -1,31 +1,48 @@
 {
   "project": "KeyHelix",
-  "date": "2026-10-16",
-  "base_commit": "a43495a9c2a4f19e101a7ededec54aaf07a7cec4",
-  "scope": "Typed versioned secret-metadata domain contracts, Go validator implementation and CLI validation (C04)",
+  "date": "2026-10-26",
+  "base_commit": "f29197fb5f757f7a3a24cb0d71c07fbca1f226db",
+  "scope": "Bounded local metadata storage port, atomic versioned manifests, stable operation IDs and interrupted/disk-full/replay recovery (C05)",
   "core_tasks_verified": [
     "C01",
     "C02",
     "C03",
-    "C04"
+    "C04",
+    "C05"
+  ],
+  "git_commit_created": false,
+  "changed_paths": [
+    "internal/storage/adapter.go",
+    "internal/storage/adapter_test.go",
+    "tests/storage_test.go",
+    "tests/fixtures/keyhelix/C05/positive.json",
+    "tests/fixtures/keyhelix/C05/negative.json",
+    "tests/fixtures/keyhelix/C05/recovery.json",
+    "tests/fixtures/keyhelix/C05/expected-output.json",
+    "tests/fixtures/keyhelix/C05/metadata.json",
+    "docs/architecture/STORAGE_PROOF.md",
+    "docs/evidence/C05.json",
+    "plans/progress.json",
+    "apps/web/src/generated/project.json"
   ],
   "commands": [
-    "npm run validate:plan",
-    "go test -v ./...",
-    "npm run build",
+    "go test -count=1 -v ./...",
+    "go test -count=1 -race ./...",
+    "go vet ./...",
     "npm run test:contracts",
     "npm test",
-    "npm run test:browser",
-    "npm run test:clone",
+    "npm run build",
     "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
     "python3 scripts/validate_repo.py",
-    "python3 scripts/plan.py validate"
+    "python3 scripts/plan.py validate",
+    "npm run validate:plan",
+    "git diff --check"
   ],
-  "validation_results": "docs/evidence/C04.json",
-  "final_source_identity": "sha256:defb590760e49db3c5df7b346da3f83956bfab61a6afc8ebe36ca642f1678321",
+  "validation_results": "docs/evidence/C05.json",
+  "final_source_identity": "sha256:0e1f867669a119193d0dcf16d7d49693f6d52c0669792e2ac467b5811bc1815c",
   "protected_paths_changed": [],
   "current_core_ready": false,
-  "next_task": "C05",
+  "next_task": "C06",
   "next_command": "npm run plan -- next",
-  "continuation": "C01-C04 are verified locally. Proceed with C05 to prove recoverable local authoritative writes."
+  "continuation": "C01-C05 are verified locally and no Git commit was created for C05. Proceed with C06: build and test the actual engine from a clean checkout, add the pinned runtime CI job and collect the engine/storage tests. Identity, provider permission and plaintext enforcement remain later commits."
 }

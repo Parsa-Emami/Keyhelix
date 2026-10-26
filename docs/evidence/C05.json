@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C05",
+  "date": "2026-10-26",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Bounded local authoritative metadata storage: single writer, staged/hash-checked blobs, atomic versioned manifests, durable operation IDs, interrupted/disk-full/replay recovery. No identity, provider permission, plaintext secret handling or HTTP/UI authority certified.",
+  "commit_id": "C05",
+  "base_commit": "f29197fb5f757f7a3a24cb0d71c07fbca1f226db",
+  "git_commit_created": false,
+  "source_identity": "sha256:0e1f867669a119193d0dcf16d7d49693f6d52c0669792e2ac467b5811bc1815c",
+  "source_identity_method": "SHA-256 over sorted C05-owned source/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "3ee72f7dce6a3d6df84918c7a47904c323605022fdac3b73c1b278daa13cb357",
+    "docs/architecture/STORAGE_PROOF.md": "c11d5cc0fa4ceaee04f5e612c422929a8c10c66b91e35837f45559ed28d091f8",
+    "internal/storage/adapter.go": "4711b55a48fb9c4e8b48d3178405efe5453906f2d352040eec8a90a1afefae69",
+    "internal/storage/adapter_test.go": "828ba07796e05c10b8d6293605b9c6da35db0b955e77862d8e37fb52c46826f7",
+    "tests/fixtures/keyhelix/C05/expected-output.json": "1a3e70de300e653809afc23080248697cc0ed6b812b086b15542b70c34262b98",
+    "tests/fixtures/keyhelix/C05/metadata.json": "80f3b4ef08fab240f3ae7dcd01416107ecc38444606289ac2458fdbd81aea2e9",
+    "tests/fixtures/keyhelix/C05/negative.json": "0d3dd50d527e2bd108290ef77606e3cc3714d94b7f0766987b164fb453440b62",
+    "tests/fixtures/keyhelix/C05/positive.json": "3cb2f63562fb41902d2881efb8f63b2b805d2f5b8010fa35ffa5e0c21afc5206",
+    "tests/fixtures/keyhelix/C05/recovery.json": "d14086fa6bbc5645296550448e158b2e2980c2e5e12f67385b527abfd97e0be8",
+    "tests/storage_test.go": "1ec6572fecc0fa9dc88c9fca8dc2d4e41ac269dc55dc9e7e7f545db11c15702e"
+  },
+  "environment": {
+    "os": "Linux x86_64, kernel 7.0.0-38-generic",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863940608,
+      "memory_available_bytes": 24829214720,
+      "filesystem_available_bytes": 127370862592
+    },
+    "providers": "Not used. Self-hosted OpenBao and Keycloak/OIDC remain C07+ resources; C05 uses no provider success claim."
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C05/expected-output.json": "1a3e70de300e653809afc23080248697cc0ed6b812b086b15542b70c34262b98",
+    "tests/fixtures/keyhelix/C05/metadata.json": "80f3b4ef08fab240f3ae7dcd01416107ecc38444606289ac2458fdbd81aea2e9",
+    "tests/fixtures/keyhelix/C05/negative.json": "0d3dd50d527e2bd108290ef77606e3cc3714d94b7f0766987b164fb453440b62",
+    "tests/fixtures/keyhelix/C05/positive.json": "3cb2f63562fb41902d2881efb8f63b2b805d2f5b8010fa35ffa5e0c21afc5206",
+    "tests/fixtures/keyhelix/C05/recovery.json": "d14086fa6bbc5645296550448e158b2e2980c2e5e12f67385b527abfd97e0be8"
+  },
+  "fixture_provenance_license": "All five fixture files are repository-authored synthetic data with no real secret, key material, plaintext or customer data. The positive, negative, recovery and expected-output fixtures declare Apache-2.0; metadata.json is the synthetic C04-shaped payload referenced by the licensed positive fixture.",
+  "commands": [
+    {
+      "command": "go test -count=1 -v ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed: cmd/keyhelix, internal/contracts, internal/storage fault tests, and tests/storage_test.go acceptance tests."
+    },
+    {
+      "command": "go test -count=1 -race ./...",
+      "exit_code": 0,
+      "result": "All packages passed under the race detector, including concurrent storage writes."
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "No vet findings."
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "Engine built; both C04 contract tests passed."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "19 Node web/contract tests passed."
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "result": "Web data regeneration, TypeScript typecheck, Vite production build and Go engine build completed; generated C05 status is verified."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "VALIDATION PASSED; 149 JSON files and repository contract invariants checked."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "6 engineering CI source regression tests passed."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "PLAN VALIDATION PASSED — 40 intents, coverage and progress checked; no application runtime tests performed."
+    },
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "result": "No whitespace errors."
+    }
+  ],
+  "results": {
+    "positive_fixture_write_read_restart": "passed",
+    "stable_operation_replay_and_conflict": "passed",
+    "owner_scope_non_disclosure_and_path_rejection": "passed",
+    "single_writer_lock_and_release": "passed",
+    "orphan_staging_and_blob_reconciliation": "passed",
+    "missing_corrupt_blob_and_manifest_fail_closed": "passed",
+    "injected_disk_full_all_stages": "passed; ENOSPC injected at the device boundary for metadata write/sync/rename/dir-sync and manifest write/sync/rename/dir-sync",
+    "ambiguous_manifest_publication_replay": "passed",
+    "failed_write_orphan_cleanup": "passed",
+    "bounded_records_operations_and_manifest_history": "passed",
+    "concurrent_write_serialization_under_race": "passed",
+    "read_time_hash_verification": "passed",
+    "plaintext_canary_absence": "passed",
+    "domain_engine": "local metadata port only; engine HTTP/UI integration not implemented",
+    "provider_authority": "not used; provider-owned secret bytes remain C07+ work",
+    "remote_github_actions": "not run"
+  },
+  "observed_limitations": [
+    "Disk-full behavior is proven with injected ENOSPC at each durable stage, not by filling a real volume; C28 must measure the supported host.",
+    "OIDC identity, expired/replayed identity, session/step-up, forged headers and provider scope widening are not implemented or certified here; C08-C11 own them.",
+    "The port stores bounded metadata documents only. Plaintext secret redaction across logs, databases, traces and browser storage remains C13-C15.",
+    "No engine HTTP route or browser UI consumes the port yet; C12-C15 wiring and C29 readiness remain pending.",
+    "Cross-owner/scope reads return NOT_FOUND rather than a distinct SCOPE_DENIED code to avoid leaking name existence; the lookup key still includes owner and scope.",
+    "Manual deletion of the highest manifest file is not detectable by version discovery alone and would select the next manifest; interrupted commits cannot produce that state because rename is atomic. Operators must retain every accepted manifest and its blobs.",
+    "The exclusive lock uses Unix advisory flock and the supported profile is Linux x86_64; other host profiles are not certified.",
+    "The 256-entry operation window can evict very old replay entries; an update then fails the optimistic version check instead of silently duplicating.",
+    "test:browser and test:clone were not run because C05 changes no web/UI surface; npm run build compiled the engine.",
+    "verify_ci_source.py was not run because the working tree is intentionally uncommitted and that check requires a committed clean checkout.",
+    "No Git commit was created for this evidence; a future clean-checkout CI run is C06 work."
+  ],
+  "rollback_or_recovery_observation": "All acceptance tests use isolated temporary directories. The store retains the highest valid versioned manifest and hash-checked blobs; an older manifest must never be restored over newer accepted state. Repair is forward via a new manifest version.",
+  "core_ready": false
+}
