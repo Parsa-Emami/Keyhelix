@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C08 expected results for OIDC identity provider integration; verifies issuer, audience, nonce, PKCE, state, and scope invariants.",
+  "license": "Apache-2.0",
+  "metadata_sha256": "f00045e93f5f2d6aa94dc776974bb3351fdf895c406488b14c601ac6af6e3280",
+  "plaintext_canary": "synthetic-c08-secret-bytes-canary",
+  "auth_flow": {
+    "status": "authenticated",
+    "pkce_method": "S256",
+    "token_type": "Bearer"
+  },
+  "guard_codes": {
+    "invalid_issuer": "INVALID_ISSUER",
+    "invalid_audience": "INVALID_AUDIENCE",
+    "expired_token": "EXPIRED_TOKEN",
+    "nonce_mismatch": "NONCE_MISMATCH",
+    "state_mismatch": "STATE_MISMATCH",
+    "invalid_pkce": "INVALID_PKCE",
+    "scope_denied": "SCOPE_DENIED",
+    "invalid_token": "INVALID_TOKEN",
+    "idp_unavailable": "IDP_UNAVAILABLE"
+  }
+}

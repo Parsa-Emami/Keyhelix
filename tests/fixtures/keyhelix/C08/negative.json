@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C08 OIDC identity provider negative cases; contains no real secret or key material.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "issuer-mismatch-rejected",
+      "kind": "issuer_guard",
+      "description": "ID token issued by an untrusted or mismatched issuer is rejected",
+      "token_issuer": "https://attacker.evil.com",
+      "expected_code": "INVALID_ISSUER"
+    },
+    {
+      "case": "audience-mismatch-rejected",
+      "kind": "audience_guard",
+      "description": "ID token targeted for a different audience or client ID is rejected",
+      "token_audience": "foreign-client-app",
+      "expected_code": "INVALID_AUDIENCE"
+    },
+    {
+      "case": "expired-identity-token-rejected",
+      "kind": "expiration_guard",
+      "description": "Expired ID token fails before any sensitive action is authorized",
+      "expired": true,
+      "expected_code": "EXPIRED_TOKEN"
+    },
+    {
+      "case": "replayed-nonce-rejected",
+      "kind": "replay_guard",
+      "description": "Replayed or mismatched nonce in ID token is rejected",
+      "nonce": "stale-or-replayed-nonce-1234",
+      "expected_code": "NONCE_MISMATCH"
+    },
+    {
+      "case": "tampered-state-callback-rejected",
+      "kind": "csrf_guard",
+      "description": "Callback with mismatched or missing state parameter fails before token exchange",
+      "callback_state": "tampered-state-value",
+      "expected_code": "STATE_MISMATCH"
+    },
+    {
+      "case": "pkce-verifier-mismatch-rejected",
+      "kind": "pkce_guard",
+      "description": "Code exchange with invalid PKCE code_verifier is rejected",
+      "code_verifier": "invalid-verifier-value",
+      "expected_code": "INVALID_PKCE"
+    },
+    {
+      "case": "unrelated-owner-scope-denied",
+      "kind": "authorization_guard",
+      "description": "Authenticated identity attempting to access unrelated owner or object scope is denied",
+      "actor": "alice@keyhelix.local",
+      "target_owner": "bob@keyhelix.local",
+      "action": "vault:read",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "forged-authorization-header-rejected",
+      "kind": "signature_guard",
+      "description": "Forged authorization header or tampered JWT payload is rejected",
+      "header": "Bearer eyJhbGciOiJub25lIn0.eyJzdWIiOiJhZG1pbiJ9.",
+      "expected_code": "INVALID_TOKEN"
+    },
+    {
+      "case": "widened-path-permission-denied",
+      "kind": "permission_guard",
+      "description": "Authenticated user attempting to access administrative or unauthorized path is denied",
+      "actor": "alice@keyhelix.local",
+      "target_owner": "alice@keyhelix.local",
+      "action": "admin:system:override",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "identity-provider-unavailable-fails-closed",
+      "kind": "outage_guard",
+      "description": "When identity provider is offline or returns server error, system fails closed",
+      "provider_offline": true,
+      "expected_code": "IDP_UNAVAILABLE"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "kind": "plaintext-canary",
+      "canary": "synthetic-c08-secret-bytes-canary",
+      "description": "Plaintext secret bytes are owned by provider and never stored or exposed by identity provider",
+      "expected_persisted": false
+    }
+  ]
+}

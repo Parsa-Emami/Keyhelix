@@ -69,10 +69,12 @@
     },
     {
       "id": "C08",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C08.json"
+      ],
+      "source_identity": "sha256:18c951238cf2585f8ddeef8d79c68a5f47fc4df5de465cf375f4140e35cbb160",
+      "notes": "OIDC identity provider integration, claim/nonce/PKCE validation, and scoped owner authorization verified; session establishment begins in C09."
     },
     {
       "id": "C09",

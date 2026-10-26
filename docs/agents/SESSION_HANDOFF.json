@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-26",
-  "base_commit": "22942ec8eeabc11437a461a0ecbcd13a9cebbf0d",
-  "scope": "OpenBao capability adapter, dev-mode refusal in production, and scoped workload identity enforcement (C07)",
+  "base_commit": "d7c7704f31ad3456d76caf73e9f1f2a6dc1312e0",
+  "scope": "OIDC identity provider integration, claim/nonce/PKCE validation, and scoped owner authorization (C08)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -10,19 +10,19 @@
     "C04",
     "C05",
     "C06",
-    "C07"
+    "C07",
+    "C08"
   ],
   "git_commit_created": false,
   "changed_paths": [
-    "internal/provider/openbao.go",
-    "internal/provider/openbao_test.go",
-    "tests/provider_contract_test.go",
-    "tests/fixtures/keyhelix/C07/positive.json",
-    "tests/fixtures/keyhelix/C07/metadata.json",
-    "tests/fixtures/keyhelix/C07/negative.json",
-    "tests/fixtures/keyhelix/C07/expected-output.json",
-    "tests/web/oss-tooling.test.mjs",
-    "docs/evidence/C07.json",
+    "internal/auth/oidc.go",
+    "internal/auth/oidc_test.go",
+    "tests/oidc_test.go",
+    "tests/fixtures/keyhelix/C08/positive.json",
+    "tests/fixtures/keyhelix/C08/metadata.json",
+    "tests/fixtures/keyhelix/C08/negative.json",
+    "tests/fixtures/keyhelix/C08/expected-output.json",
+    "docs/evidence/C08.json",
     "plans/progress.json",
     "apps/web/src/generated/project.json"
   ],
@@ -39,11 +39,11 @@
     "npm run validate:plan",
     "git diff --check"
   ],
-  "validation_results": "docs/evidence/C07.json",
-  "final_source_identity": "sha256:31bcd68733761307afeb2bb3bbd9a33863ace463289d3a14da6af8db8c5455b3",
+  "validation_results": "docs/evidence/C08.json",
+  "final_source_identity": "sha256:18c951238cf2585f8ddeef8d79c68a5f47fc4df5de465cf375f4140e35cbb160",
   "protected_paths_changed": [],
   "current_core_ready": false,
-  "next_task": "C08",
+  "next_task": "C09",
   "next_command": "npm run plan -- next",
-  "continuation": "C01-C07 are verified locally. Proceed with C08: feat(auth): integrate existing oidc identity provider and validate issuer, audience, nonce, PKCE and callback state."
+  "continuation": "C01-C08 are verified locally. Proceed with C09: feat(auth): establish authenticated user session context and token storage."
 }

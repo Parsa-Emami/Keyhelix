@@ -105,7 +105,7 @@
       "id": "C08",
       "title": "feat(auth): integrate existing oidc identity provider",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Issuer, audience, nonce, PKCE and callback state are validated."
       ],

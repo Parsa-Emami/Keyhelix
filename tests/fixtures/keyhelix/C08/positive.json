@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C08 OIDC identity provider fixture; contains no real secret or key material.",
+  "license": "Apache-2.0",
+  "provider": {
+    "issuer": "https://auth.keyhelix.local",
+    "client_id": "keyhelix-engine",
+    "redirect_uri": "http://localhost:8080/callback",
+    "scopes": [
+      "openid",
+      "profile",
+      "email"
+    ]
+  },
+  "identity": {
+    "subject": "usr_alice_01",
+    "email": "alice@keyhelix.local",
+    "vault_role": "vault-admin",
+    "allowed_owners": [
+      "alice@keyhelix.local",
+      "org:platform"
+    ],
+    "allowed_scopes": [
+      "vault:read",
+      "vault:write",
+      "secret:read",
+      "secret:write"
+    ]
+  },
+  "pkce": {
+    "code_challenge_method": "S256"
+  },
+  "plaintext_canary": "synthetic-c08-secret-bytes-canary",
+  "metadata_file": "metadata.json"
+}

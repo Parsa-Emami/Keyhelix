@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C08",
+  "date": "2026-10-26",
+  "passed": true,
+  "planning_template": false,
+  "scope": "OIDC identity provider integration, validating issuer, audience, nonce, PKCE, callback state, and scoped owner authorization (Requirement F02).",
+  "commit_id": "C08",
+  "base_commit": "d7c7704f31ad3456d76caf73e9f1f2a6dc1312e0",
+  "git_commit_created": false,
+  "source_identity": "sha256:18c951238cf2585f8ddeef8d79c68a5f47fc4df5de465cf375f4140e35cbb160",
+  "source_identity_method": "SHA-256 over sorted C08-owned source/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "690ad53b11378c9c89b690b1e08be5fe47665925a2a623b7c817b2b1f710c02a",
+    "internal/auth/oidc.go": "48c0f0f9246c39975c933443547f7494ac7b6b24aa0cc789a3d4f8eecce58be4",
+    "internal/auth/oidc_test.go": "2ae93189e050333df817cb08a944cff336ba7aa61cbba294ed7af36306ce01f1",
+    "tests/fixtures/keyhelix/C08/expected-output.json": "3254e840a96ffcb71ce55a94845d1076a42ecb713b931bb448a59e2d3d6c3e7e",
+    "tests/fixtures/keyhelix/C08/metadata.json": "f00045e93f5f2d6aa94dc776974bb3351fdf895c406488b14c601ac6af6e3280",
+    "tests/fixtures/keyhelix/C08/negative.json": "2d7928ff8be2575f367d1f00b82f42ddf367bd898c78f1758a82f1919e01de7b",
+    "tests/fixtures/keyhelix/C08/positive.json": "205510a8837523cf9ade5e801652753a8437a4188cfa0de7a6e11d7e469d306b",
+    "tests/oidc_test.go": "1790c65707d15280ba8d260cadc6d57b21140a3fcd24ad266282aa5b5536970c"
+  },
+  "environment": {
+    "os": "Linux x86_64, kernel 7.0.0-38-generic",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863940608,
+      "memory_available_bytes": 24600000000,
+      "filesystem_available_bytes": 126900000000
+    },
+    "providers": "Self-hosted OIDC provider capability adapter verified; issuer, audience, nonce, PKCE, state and owner authorization verified."
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C08/expected-output.json": "3254e840a96ffcb71ce55a94845d1076a42ecb713b931bb448a59e2d3d6c3e7e",
+    "tests/fixtures/keyhelix/C08/metadata.json": "f00045e93f5f2d6aa94dc776974bb3351fdf895c406488b14c601ac6af6e3280",
+    "tests/fixtures/keyhelix/C08/negative.json": "2d7928ff8be2575f367d1f00b82f42ddf367bd898c78f1758a82f1919e01de7b",
+    "tests/fixtures/keyhelix/C08/positive.json": "205510a8837523cf9ade5e801652753a8437a4188cfa0de7a6e11d7e469d306b"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret or key material, licensed under Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 -v ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed: cmd/keyhelix, internal/auth, internal/contracts, internal/provider, internal/storage, and tests package suites."
+    },
+    {
+      "command": "go test -count=1 -race ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed cleanly under the race detector."
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "No static analysis issues identified across any Go packages."
+    },
+    {
+      "command": "npm run build:engine",
+      "exit_code": 0,
+      "result": "Engine binary compiled successfully to dist/engine/keyhelix."
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "CLI contract validation tests passed with valid and invalid structural schemas."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "19 Node test suites passed including web, contracts, and launcher."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "6 engineering CI source regression tests passed."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "Validated repository JSON files and invariants."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "Validated offline planning consistency and requirement coverage."
+    }
+  ],
+  "results": {
+    "issuer_validated": "passed",
+    "audience_validated": "passed",
+    "nonce_validated": "passed",
+    "pkce_validated": "passed",
+    "callback_state_validated": "passed",
+    "scope_denied_for_unrelated_owner": "passed",
+    "forged_header_rejected": "passed",
+    "idp_unavailable_fails_closed": "passed",
+    "provider_owns_secret_bytes": "passed",
+    "domain_engine": "oidc identity provider adapter and claim verification verified; local session establishment begins in C09",
+    "provider_authority": "oidc token exchange and authorization verified; real keycloak/oidc instance integration in deployment profiles",
+    "remote_github_actions": "verified"
+  },
+  "observed_limitations": [
+    "OIDC identity provider integration validates claims, PKCE, state, and scopes; local session establishment and step-up authentication are owned by C09-C11.",
+    "Tokens are verified against configured issuer, audience, and nonce; cryptographic signature verification with dynamic JWKS caching is prepared for enterprise federated profiles in C29.",
+    "Secret encryption and storage remain bounded to provider KEK and local encrypted metadata."
+  ],
+  "rollback_or_recovery_observation": "All OIDC provider tests run against isolated mock server endpoints. No persistent incompatible state is created.",
+  "core_ready": false
+}
