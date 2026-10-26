@@ -93,7 +93,7 @@
       "id": "C07",
       "title": "feat(provider): define openbao capability adapter",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Adapter refuses production dev-mode provider and uses scoped workload identity."
       ],

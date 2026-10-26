@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C07 OpenBao capability fixture; contains no real secret or key material.",
+  "license": "Apache-2.0",
+  "provider": {
+    "name": "openbao",
+    "kek_mount": "transit",
+    "kek_id": "kek-v1-openbao",
+    "environment": "production",
+    "dev_mode": false
+  },
+  "workload_identity": {
+    "role": "keyhelix-workload-admin",
+    "token": "s.synthetic-scoped-token-c07",
+    "scopes": [
+      "transit:encrypt",
+      "transit:decrypt",
+      "transit:read"
+    ],
+    "namespace": "default"
+  },
+  "plaintext_dek_canary": "synthetic-c07-dek-bytes-32byte-len!",
+  "metadata_file": "metadata.json"
+}

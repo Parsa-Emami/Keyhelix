@@ -60,10 +60,12 @@
     },
     {
       "id": "C07",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C07.json"
+      ],
+      "source_identity": "sha256:31bcd68733761307afeb2bb3bbd9a33863ace463289d3a14da6af8db8c5455b3",
+      "notes": "OpenBao capability adapter, dev-mode refusal in production, and scoped workload identity verified; OIDC authenticated session context begins in C08."
     },
     {
       "id": "C08",

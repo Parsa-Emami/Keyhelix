@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C07 OpenBao negative cases; contains no real secret or key material.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "dev-mode-in-production-refused",
+      "kind": "dev_mode_guard",
+      "description": "Provider running in dev mode must be refused under production environment",
+      "environment": "production",
+      "server_dev_mode": true,
+      "expected_code": "DEV_MODE_REFUSED"
+    },
+    {
+      "case": "unscoped-root-token-refused",
+      "kind": "identity_guard",
+      "description": "Attempting to use root token or unscoped token is rejected",
+      "token": "root",
+      "scopes": [],
+      "expected_code": "UNSCOPED_IDENTITY"
+    },
+    {
+      "case": "missing-identity-scopes-refused",
+      "kind": "identity_guard",
+      "description": "Workload identity missing transit encryption scopes is rejected",
+      "token": "s.synthetic-unprivileged-token",
+      "scopes": ["audit:read"],
+      "expected_code": "UNSCOPED_IDENTITY"
+    },
+    {
+      "case": "provider-unavailable-fails-closed",
+      "kind": "outage",
+      "description": "Offline or unreachable OpenBao server must fail closed with explicit error",
+      "expected_code": "PROVIDER_UNAVAILABLE"
+    },
+    {
+      "case": "provider-sealed-fails-closed",
+      "kind": "sealed",
+      "description": "Sealed OpenBao instance must fail closed until unsealed",
+      "expected_code": "PROVIDER_SEALED"
+    },
+    {
+      "case": "malformed-provider-response",
+      "kind": "transport",
+      "description": "Corrupted or non-JSON response from provider must fail closed",
+      "expected_code": "MALFORMED_RESPONSE"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "kind": "plaintext-canary",
+      "canary": "synthetic-c07-dek-bytes-32byte-len!",
+      "description": "Plaintext DEK bytes are owned by provider and never stored locally",
+      "expected_persisted": false
+    }
+  ]
+}

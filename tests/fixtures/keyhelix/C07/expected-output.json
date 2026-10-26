@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C07 expected results for OpenBao capability adapter; establishes provider invariants without real secret authority.",
+  "license": "Apache-2.0",
+  "metadata_sha256": "cb7f898d7468548b5a37357c754b5c20150eccdcade33d89c880ac5700c4e294",
+  "plaintext_canary": "synthetic-c07-dek-bytes-32byte-len!",
+  "provider": {
+    "status": "ok",
+    "sealed": false,
+    "initialized": true,
+    "dev_mode": false
+  },
+  "wrapped_dek_prefix": "bao:v1:",
+  "dev_mode_refusal": {
+    "expected_code": "DEV_MODE_REFUSED"
+  },
+  "unscoped_identity": {
+    "expected_code": "UNSCOPED_IDENTITY"
+  },
+  "provider_outage": {
+    "expected_code": "PROVIDER_UNAVAILABLE"
+  },
+  "provider_sealed": {
+    "expected_code": "PROVIDER_SEALED"
+  },
+  "malformed_response": {
+    "expected_code": "MALFORMED_RESPONSE"
+  }
+}

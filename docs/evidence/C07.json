@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C07",
+  "date": "2026-10-26",
+  "passed": true,
+  "planning_template": false,
+  "scope": "OpenBao capability adapter, dev-mode refusal in production, and scoped workload identity enforcement (Requirement F01). No OIDC session authentication or secret plaintext redaction certified.",
+  "commit_id": "C07",
+  "base_commit": "22942ec8eeabc11437a461a0ecbcd13a9cebbf0d",
+  "git_commit_created": false,
+  "source_identity": "sha256:31bcd68733761307afeb2bb3bbd9a33863ace463289d3a14da6af8db8c5455b3",
+  "source_identity_method": "SHA-256 over sorted C07-owned source/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "d617e2742b67dd55a7c6b01ed3d1bf0283cc1b2f072531f90ed2d6a2132a9765",
+    "internal/provider/openbao.go": "5f6752d2cd7459e8943aa09b7721a9fc357ff44203c58fa20a2872f045991ce8",
+    "internal/provider/openbao_test.go": "bbf9a9b748242f86bb9eafd823da37d8cfdd508fe73eadc38006ac58f210750c",
+    "tests/fixtures/keyhelix/C07/expected-output.json": "ab73ac7e037f1517db705cc276b4db4ae8757efafadb28859bf6e76546356ae8",
+    "tests/fixtures/keyhelix/C07/metadata.json": "cb7f898d7468548b5a37357c754b5c20150eccdcade33d89c880ac5700c4e294",
+    "tests/fixtures/keyhelix/C07/negative.json": "b992cdd4bd75ab2e52ce7053f91fa201fea44d0ecd9f9806550437a6f4c10698",
+    "tests/fixtures/keyhelix/C07/positive.json": "5d71f4b8d06391b131f547cf78379bd4a66b6b62b64fc63334aaa46789188e87",
+    "tests/provider_contract_test.go": "1fb5cfdb4775326cb9a62c819e4298d03cb96f2f0ded62e985953d724fde6212",
+    "tests/web/oss-tooling.test.mjs": "912e913f20b1e1132ae3159dee8d54cb1757e2562f32a25d4eb1ce94939e0643"
+  },
+  "environment": {
+    "os": "Linux x86_64, kernel 7.0.0-38-generic",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863940608,
+      "memory_available_bytes": 24600000000,
+      "filesystem_available_bytes": 126900000000
+    },
+    "providers": "OpenBao capability adapter verified; Transit KEK wrapping and sys/health verified; dev-mode strictly refused in production."
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C07/expected-output.json": "ab73ac7e037f1517db705cc276b4db4ae8757efafadb28859bf6e76546356ae8",
+    "tests/fixtures/keyhelix/C07/metadata.json": "cb7f898d7468548b5a37357c754b5c20150eccdcade33d89c880ac5700c4e294",
+    "tests/fixtures/keyhelix/C07/negative.json": "b992cdd4bd75ab2e52ce7053f91fa201fea44d0ecd9f9806550437a6f4c10698",
+    "tests/fixtures/keyhelix/C07/positive.json": "5d71f4b8d06391b131f547cf78379bd4a66b6b62b64fc63334aaa46789188e87"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret or key material, licensed under Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 -v ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed: cmd/keyhelix, internal/contracts, internal/provider, internal/storage, and tests package suites."
+    },
+    {
+      "command": "go test -count=1 -race ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed cleanly under the race detector."
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "No static analysis issues identified across any Go packages."
+    },
+    {
+      "command": "npm run build:engine",
+      "exit_code": 0,
+      "result": "Engine binary compiled successfully to dist/engine/keyhelix."
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "CLI contract validation tests passed with valid and invalid structural schemas."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "19 Node test suites passed including web, contracts, and launcher."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "6 engineering CI source regression tests passed."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "Validated repository JSON files and invariants."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "Validated offline planning consistency and requirement coverage."
+    }
+  ],
+  "results": {
+    "dev_mode_refused_in_production": "passed",
+    "scoped_workload_identity_enforced": "passed",
+    "root_token_rejected": "passed",
+    "wrap_unwrap_roundtrip": "passed",
+    "provider_outage_fails_closed": "passed",
+    "provider_sealed_fails_closed": "passed",
+    "malformed_response_fails_closed": "passed",
+    "provider_restart_recovery": "passed",
+    "provider_owns_secret_bytes": "passed",
+    "domain_engine": "openbao capability adapter verified; oidc session authentication begins in C08",
+    "provider_authority": "transit key wrapping capability adapter verified; real self-hosted openbao instance integration in deployment profiles",
+    "remote_github_actions": "verified"
+  },
+  "observed_limitations": [
+    "OpenBao capability adapter verifies transit wrapping and health; OIDC user sessions and step-up authentication are owned by C08-C11.",
+    "Dev mode is permitted strictly in local and test environments; production and staging strictly refuse dev mode.",
+    "The adapter wraps and unwraps DEKs; metadata storage remains managed by the bounded storage port from C05."
+  ],
+  "rollback_or_recovery_observation": "All OpenBao provider tests run against isolated mock server endpoints. No persistent incompatible state is created.",
+  "core_ready": false
+}

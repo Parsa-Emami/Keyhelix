@@ -1,26 +1,28 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-26",
-  "base_commit": "5a70b9ac0541d7739e61d0541302276b576e67e1",
-  "scope": "Engine runtime CI verification, test discovery inventory, pinned runtime workflow, and negative recovery bounds from a clean checkout (C06)",
+  "base_commit": "22942ec8eeabc11437a461a0ecbcd13a9cebbf0d",
+  "scope": "OpenBao capability adapter, dev-mode refusal in production, and scoped workload identity enforcement (C07)",
   "core_tasks_verified": [
     "C01",
     "C02",
     "C03",
     "C04",
     "C05",
-    "C06"
+    "C06",
+    "C07"
   ],
   "git_commit_created": false,
   "changed_paths": [
-    ".github/workflows/runtime.yml",
-    "docs/engineering/ENGINE_TESTS.md",
-    "tests/engine_ci_test.go",
-    "tests/fixtures/keyhelix/C06/positive.json",
-    "tests/fixtures/keyhelix/C06/metadata.json",
-    "tests/fixtures/keyhelix/C06/negative.json",
-    "tests/fixtures/keyhelix/C06/expected-output.json",
-    "docs/evidence/C06.json",
+    "internal/provider/openbao.go",
+    "internal/provider/openbao_test.go",
+    "tests/provider_contract_test.go",
+    "tests/fixtures/keyhelix/C07/positive.json",
+    "tests/fixtures/keyhelix/C07/metadata.json",
+    "tests/fixtures/keyhelix/C07/negative.json",
+    "tests/fixtures/keyhelix/C07/expected-output.json",
+    "tests/web/oss-tooling.test.mjs",
+    "docs/evidence/C07.json",
     "plans/progress.json",
     "apps/web/src/generated/project.json"
   ],
@@ -33,15 +35,15 @@
     "npm test",
     "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
     "python3 scripts/validate_repo.py",
-    "python3 scripts/verify_ci_source.py",
+    "python3 scripts/plan.py validate",
     "npm run validate:plan",
     "git diff --check"
   ],
-  "validation_results": "docs/evidence/C06.json",
-  "final_source_identity": "sha256:a74b9a4ee91134ba6302f4505e4881d167c6160fb6ebefbf20211a95da07a78b",
+  "validation_results": "docs/evidence/C07.json",
+  "final_source_identity": "sha256:31bcd68733761307afeb2bb3bbd9a33863ace463289d3a14da6af8db8c5455b3",
   "protected_paths_changed": [],
   "current_core_ready": false,
-  "next_task": "C07",
+  "next_task": "C08",
   "next_command": "npm run plan -- next",
-  "continuation": "C01-C06 are verified locally and no Git commit was created for C06. Proceed with C07: define OpenBao capability adapter, refuse production dev-mode provider and implement scoped workload identity."
+  "continuation": "C01-C07 are verified locally. Proceed with C08: feat(auth): integrate existing oidc identity provider and validate issuer, audience, nonce, PKCE and callback state."
 }
