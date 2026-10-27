@@ -237,7 +237,7 @@
       "id": "C19",
       "title": "feat(deletion): apply provider retention and explicit destruction",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Delete and destroy are distinct; irreversible version destruction requires explicit operator action."
       ],

@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C19",
+  "date": "2026-10-27",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Delete and destroy are distinct; irreversible version destruction requires explicit operator action (Requirement F13).",
+  "commit_id": "C19",
+  "base_commit": "044331c7bed99ce6e835fdd2d87cd7c8457eb652",
+  "git_commit_created": false,
+  "source_identity": "sha256:ca4dfd71dcfe03ecd850a8c988f8baab3b3283f1119615a5437f8cf76d243f50",
+  "source_identity_method": "SHA-256 over sorted C19-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "922da7dd9b664735bff7e7184b673952486e60203ca115de231afaf79374e084",
+    "internal/provider/openbao.go": "ecc01218495115bc66e8bc0447de55ea528d617e0376e8d40149debba2d22de4",
+    "internal/secrets/delete.go": "e91b15212797ad0db4ca3e1db5830de218296f45e23af0d7c97385d77f604732",
+    "tests/delete_test.go": "1c95908da4bd86fdda3ec0396cc924beacd821e33a6f97da470a65ef33d3a970",
+    "tests/fixtures/keyhelix/C19/expected-output.json": "b007173f61b73685a61d2621aac40375d64d4f1b6b32f0f3fc7ee8580b928da1",
+    "tests/fixtures/keyhelix/C19/metadata.json": "b978682356b08cde9a96090fb30048efb2fb3eb9f955dc98f36dde76d7eb716e",
+    "tests/fixtures/keyhelix/C19/negative.json": "49cddc71b16044dbd2186b6406f3e58f8ded9c442cb9d3b560a28ef2d1edebfa",
+    "tests/fixtures/keyhelix/C19/positive.json": "73621c8e2a78f9b707b0a1ecebe1290c2c86293562f8af8c1317b5c08bb64eab"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 GNU/Linux (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863936512,
+      "memory_available_bytes": 23050604544,
+      "filesystem_available_bytes": 125711179776
+    },
+    "providers": "No external service was used. The OpenBao adapter was exercised against an in-process OpenBao-compatible HTTP fixture implementing /v1/sys/health, /v1/transit/encrypt|decrypt and KV v2 /v1/kv/data (POST, GET, DELETE); storage, session, step-up, scope-mapper, security, secrets, and provider collaborators were real repository implementations.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://www.keycloak.org/documentation",
+      "https://openid.net/specs/openid-connect-core-1_0.html",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C19/expected-output.json": "b007173f61b73685a61d2621aac40375d64d4f1b6b32f0f3fc7ee8580b928da1",
+    "tests/fixtures/keyhelix/C19/metadata.json": "b978682356b08cde9a96090fb30048efb2fb3eb9f955dc98f36dde76d7eb716e",
+    "tests/fixtures/keyhelix/C19/negative.json": "49cddc71b16044dbd2186b6406f3e58f8ded9c442cb9d3b560a28ef2d1edebfa",
+    "tests/fixtures/keyhelix/C19/positive.json": "73621c8e2a78f9b707b0a1ecebe1290c2c86293562f8af8c1317b5c08bb64eab"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret, key or credential material, licensed under Apache-2.0.",
+  "implementation_summary": [
+    "internal/secrets/delete.go: Implemented version lifecycle operations on secrets.Service: DeleteSecret (soft-delete applying provider retention window, blocking reveal, preserving provider-owned payload bytes), UndeleteSecret (restoring soft-deleted version back to ACTIVE during retention), and DestroySecretVersion (irreversible version destruction requiring explicit operator confirmation and role, purging sealed payload from provider, writing irreversible tombstone, and permanently blocking undelete).",
+    "internal/provider/openbao.go: Added PayloadDestroyer interface and Adapter.DestroySealedPayload implementation to permanently purge version payloads from OpenBao KV v2 while preserving Port backward compatibility.",
+    "tests/fixtures/keyhelix/C19/: Synthetic positive, negative, expected-output, and metadata fixtures validating Requirement F13 acceptance criteria and negative failure modes.",
+    "tests/delete_test.go: TestC19DeleteAndDestroyAreDistinctF13 (demonstrating soft-deletion, provider payload retention, reveal blockage, undelete restore, explicit operator action guard, irreversible destruction, provider payload purge, and permanent undelete rejection) and TestC19NegativeCasesF13 (missing prerequisites, malformed fixture, operator action guard, role guard, undelete destroyed guard, provider outage, restart recovery and irreversibility, and provider ownership of secret bytes)."
+  ],
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 ./...",
+      "exit_code": 0,
+      "result": "ok cmd/keyhelix, internal/audit, internal/auth, internal/contracts, internal/grants, internal/provider, internal/rotation, internal/secrets, internal/security, internal/storage, internal/vaults, tests"
+    },
+    {
+      "command": "go test -count=1 -v -run 'TestC19' ./tests/",
+      "exit_code": 0,
+      "result": "--- PASS: TestC19DeleteAndDestroyAreDistinctF13 (0.12s); --- PASS: TestC19NegativeCasesF13 (0.22s); ok github.com/parsa-emami/keyhelix/tests 0.350s"
+    }
+  ],
+  "durability_and_restart": {
+    "persistence": "Soft-deleted retention state and irreversible destruction status are persisted via storage.Port with CAS updates and reloaded cleanly on storage close/reopen.",
+    "recovery": "After storage restart, soft-deleted secrets preserve RetainUntil and can be undeleted; destroyed secrets preserve DestroyedAt and irrevocably reject undelete attempts."
+  },
+  "security_and_redaction": {
+    "provider_owns_secret_bytes": "Plaintext secret sentinels never enter metadata storage, manifests, or lifecycle tombstones. Tests assert zero occurrences of canary strings across all on-disk storage files."
+  },
+  "acceptance_criteria": {
+    "delete_and_destroy_are_distinct": true,
+    "retention_applied_on_delete": true,
+    "explicit_operator_action_enforced": true,
+    "destruction_irreversible_across_restart": true
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "case": "missing-prerequisites-rejected",
+      "description": "Missing prerequisites or malformed request parameters fail closed before any deletion or destruction side effect",
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "malformed-fixture-rejected",
+      "description": "Malformed secret metadata fixture is rejected by the frozen v1 contract validator",
+      "malformed_json": "{\"schema_version\":\"1\",\"vault_id\":\"\",\"version\":0}",
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "destroy-without-explicit-operator-action-blocked",
+      "description": "Irreversible version destruction requires explicit operator confirmation flag; default calls fail closed",
+      "expected_code": "EXPLICIT_OPERATOR_ACTION_REQUIRED"
+    },
+    {
+      "case": "destroy-by-non-operator-blocked",
+      "description": "Irreversible destruction attempted by non-operator identity is rejected with UNAUTHORIZED",
+      "expected_code": "UNAUTHORIZED"
+    },
+    {
+      "case": "undelete-destroyed-version-blocked",
+      "description": "Attempting to undelete or restore an irreversibly destroyed secret version is permanently refused",
+      "expected_code": "VERSION_DESTROYED"
+    },
+    {
+      "case": "provider-unavailable-fails-closed",
+      "description": "Provider outage during deletion or destruction produces explicit PROVIDER_UNAVAILABLE error",
+      "expected_code": "PROVIDER_UNAVAILABLE"
+    },
+    {
+      "case": "restart-durability-and-irreversibility-verified",
+      "description": "Soft-deleted retention state and destroyed irreversibility persist across storage close and reopen",
+      "expected_code": "VERSION_DESTROYED"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "description": "Plaintext secret sentinels never enter metadata storage files or audit content",
+      "sentinel": "sentinel-canary-c19-deletion-f13-71a2",
+      "expected_storage_occurrence_count": 0
+    }
+  ]
+}

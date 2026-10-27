@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-27",
-  "base_commit": "84b3f582f3c0ce2f4ad7172ec1ebfa3748259d59",
-  "scope": "Partial rotation resumes without deleting valid prior secret version (C18 / F12)",
+  "base_commit": "044331c7bed99ce6e835fdd2d87cd7c8457eb652",
+  "scope": "Delete and destroy are distinct; irreversible version destruction requires explicit operator action (C19 / F13)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -21,42 +21,40 @@
     "C15",
     "C16",
     "C17",
-    "C18"
+    "C18",
+    "C19"
   ],
   "git_commit_created": false,
   "changed_paths": [
     "apps/web/src/generated/project.json",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C18.json",
-    "internal/rotation/service.go",
-    "internal/rotation/service_test.go",
+    "docs/evidence/C19.json",
+    "internal/provider/openbao.go",
+    "internal/secrets/delete.go",
     "plans/progress.json",
-    "tests/fixtures/keyhelix/C18/expected-output.json",
-    "tests/fixtures/keyhelix/C18/metadata.json",
-    "tests/fixtures/keyhelix/C18/negative.json",
-    "tests/fixtures/keyhelix/C18/positive.json",
-    "tests/rotation_test.go"
+    "tests/delete_test.go",
+    "tests/fixtures/keyhelix/C19/expected-output.json",
+    "tests/fixtures/keyhelix/C19/metadata.json",
+    "tests/fixtures/keyhelix/C19/negative.json",
+    "tests/fixtures/keyhelix/C19/positive.json"
   ],
   "ci_defect_fixes": [],
   "commands": [
     "npm run validate:plan",
     "go test -count=1 ./...",
-    "go test -count=1 -v -run 'TestC18' ./tests/",
+    "go test -count=1 -v -run 'TestC19' ./tests/",
     "go test -count=1 -race ./...",
     "go vet ./...",
     "npm run build:engine",
     "npm run test:contracts",
     "npm test",
-    "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
-    "python3 scripts/validate_repo.py",
-    "python3 scripts/plan.py validate",
     "npm run prepare:web"
   ],
-  "validation_results": "docs/evidence/C18.json",
-  "final_source_identity": "sha256:6dc4d89ec519845f22d30838d0c8db7ad43d0d5fbaaf47509c0009e98ecca2d2",
+  "validation_results": "docs/evidence/C19.json",
+  "final_source_identity": "sha256:ca4dfd71dcfe03ecd850a8c988f8baab3b3283f1119615a5437f8cf76d243f50",
   "protected_paths_changed": [],
   "current_core_ready": false,
-  "next_task": "C19",
+  "next_task": "C20",
   "next_command": "npm run plan -- next",
-  "continuation": "C01-C18 are verified locally. Proceed with C19: feat(deletion): apply provider retention and explicit destruction. The worktree is not committed; the owner must commit the listed paths before CI can test them."
+  "continuation": "C01-C19 are verified locally. Proceed with C20: feat(list): stream metadata projections without plaintexts. The worktree is not committed; the owner must commit the listed paths before CI can test them."
 }

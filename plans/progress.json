@@ -168,10 +168,12 @@
     },
     {
       "id": "C19",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C19.json"
+      ],
+      "source_identity": "sha256:ca4dfd71dcfe03ecd850a8c988f8baab3b3283f1119615a5437f8cf76d243f50",
+      "notes": "Provider retention and explicit destruction verified locally; delete and destroy are distinct, irreversible version destruction requires explicit operator action."
     },
     {
       "id": "C20",

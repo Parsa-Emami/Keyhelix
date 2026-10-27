@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C19 provider retention and explicit destruction fixture; contains no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "vault": {
+    "vault_id": "vault-prod",
+    "kek_id": "kek-v1-openbao",
+    "mount": "transit",
+    "role": "vault-admin"
+  },
+  "operator_identity": {
+    "subject": "usr_c19_operator",
+    "email": "operator@keyhelix.local",
+    "vault_role": "vault-admin",
+    "allowed_owners": [
+      "operator@keyhelix.local",
+      "org:platform"
+    ],
+    "allowed_scopes": [
+      "secret:read",
+      "secret:write",
+      "secret:delete",
+      "secret:destroy",
+      "production/services/*"
+    ]
+  },
+  "user_identity": {
+    "subject": "usr_c19_developer",
+    "email": "developer@keyhelix.local",
+    "vault_role": "developer",
+    "allowed_owners": [
+      "developer@keyhelix.local",
+      "org:platform"
+    ],
+    "allowed_scopes": [
+      "secret:read",
+      "secret:write",
+      "secret:delete",
+      "production/services/*"
+    ]
+  },
+  "secret": {
+    "secret_path": "production/services/payment/webhook-signing-key",
+    "classification": "restricted",
+    "sentinel": "sentinel-canary-c19-deletion-f13-71a2"
+  },
+  "retention_policy": {
+    "retention_duration_seconds": 2592000
+  },
+  "metadata_file": "metadata.json"
+}

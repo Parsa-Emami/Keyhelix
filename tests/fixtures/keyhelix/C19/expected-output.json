@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "requirement": "F13",
+  "acceptance": "Delete and destroy are distinct; irreversible version destruction requires explicit operator action.",
+  "status": "passed",
+  "metadata_sha256": "b978682356b08cde9a96090fb30048efb2fb3eb9f955dc98f36dde76d7eb716e",
+  "delete_and_destroy_are_distinct": true,
+  "retention_applied_on_delete": true,
+  "explicit_operator_action_enforced": true,
+  "destruction_irreversible_across_restart": true,
+  "guard_codes": {
+    "invalid_input": "INVALID_INPUT",
+    "unauthorized": "UNAUTHORIZED",
+    "explicit_operator_action_required": "EXPLICIT_OPERATOR_ACTION_REQUIRED",
+    "version_destroyed": "VERSION_DESTROYED",
+    "provider_unavailable": "PROVIDER_UNAVAILABLE"
+  },
+  "provider_owns_secret_bytes": true
+}

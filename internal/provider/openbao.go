@@ -118,6 +118,12 @@ type WrapResult struct {
 	KEKVersion int    `json:"kek_version"`
 }
 
+// PayloadDestroyer defines the optional provider capability for permanent
+// destruction of provider-owned sealed bytes (Requirement F13).
+type PayloadDestroyer interface {
+	DestroySealedPayload(ctx context.Context, ref SealedRef) error
+}
+
 // Port defines the capabilities provided by an OpenBao provider adapter.
 type Port interface {
 	WrapDEK(ctx context.Context, kekID string, plaintextDEK []byte) (*WrapResult, error)
@@ -590,6 +596,45 @@ func (a *Adapter) ReadSealedPayload(ctx context.Context, ref SealedRef) ([]byte,
 		return nil, &Error{Code: CodeMalformedResponse, Message: "sealed payload length is outside the bounded range"}
 	}
 	return decoded, nil
+}
+
+// DestroySealedPayload permanently purges provider-owned sealed bytes for one
+// secret version (Requirement F13). This operation is irreversible and requires
+// operator-level KV scope ("kv:destroy", "kv:write" or "*").
+func (a *Adapter) DestroySealedPayload(ctx context.Context, ref SealedRef) error {
+	if err := validateSealedRef(ref); err != nil {
+		return err
+	}
+	if !a.identity.HasScope("kv:destroy") && !a.identity.HasScope("kv:write") && !a.identity.HasScope("*") {
+		return &Error{
+			Code:    CodeUnscopedIdentity,
+			Message: "workload identity lacks scope for provider-owned payload destruction",
+		}
+	}
+
+	endpoint := a.kvEndpoint(ref)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, endpoint.String(), nil)
+	if err != nil {
+		return &Error{Code: CodeInvalidInput, Message: "failed to create payload destroy request", Err: err}
+	}
+	a.authorize(req)
+
+	resp, err := a.client.Do(req)
+	if err != nil {
+		return &Error{Code: CodeProviderUnavailable, Message: "openbao payload store unreachable", Err: err}
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusForbidden || resp.StatusCode == http.StatusUnauthorized {
+		return &Error{Code: CodeUnauthorized, Message: "openbao refused token authorization for payload destruction"}
+	}
+	if resp.StatusCode == http.StatusServiceUnavailable {
+		return &Error{Code: CodeProviderSealed, Message: "openbao provider is sealed"}
+	}
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusNotFound {
+		return &Error{Code: CodeProviderUnavailable, Message: fmt.Sprintf("openbao returned unexpected status %d for payload destruction", resp.StatusCode)}
+	}
+	return nil
 }
 
 func (a *Adapter) authorize(req *http.Request) {
