@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "case": "plaintext-fetch-attempt-blocked",
+      "description": "UI never fetches plaintext payloads or invokes reveal endpoints when rendering secret lists",
+      "expected_code": "FORBIDDEN_PLAINTEXT_FETCH"
+    },
+    {
+      "case": "expired-session-blocks-listing",
+      "description": "Expired identity token fails closed before metadata query execution",
+      "expected_code": "UNAUTHORIZED"
+    },
+    {
+      "case": "unauthorized-scope-filters-secret-names",
+      "description": "Paths outside caller scope are strictly omitted from metadata listing, preventing existence leaks",
+      "expected_code": "SCOPE_FILTERED"
+    },
+    {
+      "case": "provider-offline-state-rendered",
+      "description": "Provider outage during metadata listing displays an explicit failure state without returning stale/mock secrets",
+      "expected_code": "PROVIDER_UNAVAILABLE"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "description": "Plaintext secret bytes are owned by provider and never enter console metadata state or DOM attributes",
+      "sentinel": "sentinel-canary-c20-plaintext-leak-83a1",
+      "expected_storage_occurrence_count": 0
+    }
+  ]
+}

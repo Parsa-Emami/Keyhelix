@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C20",
+  "date": "2026-10-27",
+  "passed": true,
+  "planning_template": false,
+  "scope": "UI never fetches plaintext merely to render a secret list (Requirement F14).",
+  "commit_id": "C20",
+  "base_commit": "b164e7d174e929f95701ce587428f731c6a7ffec",
+  "git_commit_created": false,
+  "source_identity": "sha256:ce15d650b0697b98fb08c3696a33099a5f32d29dbbaadd6f66f59595df7e0ab6",
+  "source_identity_method": "SHA-256 over sorted C20-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "d0c08374300a0e92633f9aa5ec99c8341a86877f3ba2f72b4ad885bd28ed07b6",
+    "apps/web/src/main.tsx": "d1970b3df5ef1c0762f50bffd01e42935e861bf9952a49393d8fb5cfaea0fa9e",
+    "apps/web/src/pages/Vaults.tsx": "5ffce5ee8f1274871f9eeba4dfdd1e6d79c56b0a17b1365ac7b722959a5d59d1",
+    "apps/web/tests/vaults.spec.ts": "541a820ec052dd95a02a4a2d05ca7dfcf876b6cc2b71fdea75bd72fb9ac07595",
+    "playwright.config.ts": "a7e0fdbbcec11818de4d4580ae191f14164405d7d8a1b3342ac7f26855c9334e",
+    "tests/fixtures/keyhelix/C20/expected-output.json": "12dbbf98dc4ef97c6fd08057c301656a17df27e2369383f929121f34ae8394ae",
+    "tests/fixtures/keyhelix/C20/metadata.json": "f808c8c7b5c0ce6f807e374a2ef0521deb9eeea7c0455b7b5a9033c95cb59157",
+    "tests/fixtures/keyhelix/C20/negative.json": "a3c00e3e0e8d5d4052c4e76559affca4c58c1f75ed35a69a77df6106456ecf00",
+    "tests/fixtures/keyhelix/C20/positive.json": "d5a07eaf460f560b4fb23e78a63b2486ff731d6e3e732da302bd62645056f445"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 GNU/Linux (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863936512,
+      "memory_available_bytes": 22941544448,
+      "filesystem_available_bytes": 125672288256
+    },
+    "providers": "No external service was used. The web console was exercised in a headless browser via Playwright testing against local HTTP endpoints; metadata streaming was verified with synthetic fixtures.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://www.keycloak.org/documentation",
+      "https://openid.net/specs/openid-connect-core-1_0.html",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C20/expected-output.json": "12dbbf98dc4ef97c6fd08057c301656a17df27e2369383f929121f34ae8394ae",
+    "tests/fixtures/keyhelix/C20/metadata.json": "f808c8c7b5c0ce6f807e374a2ef0521deb9eeea7c0455b7b5a9033c95cb59157",
+    "tests/fixtures/keyhelix/C20/negative.json": "a3c00e3e0e8d5d4052c4e76559affca4c58c1f75ed35a69a77df6106456ecf00",
+    "tests/fixtures/keyhelix/C20/positive.json": "d5a07eaf460f560b4fb23e78a63b2486ff731d6e3e732da302bd62645056f445"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret, key or credential material, licensed under Apache-2.0.",
+  "implementation_summary": [
+    "apps/web/src/pages/Vaults.tsx: Authorized metadata console component rendering secret summaries (path, version, classification, status, digest, timestamp) without requesting or persisting plaintext values.",
+    "apps/web/src/main.tsx: Integrated #vaults route in navigation bar and page routing with skip-link and focus support.",
+    "playwright.config.ts: Configured testMatch to execute test suites in both tests/browser and apps/web/tests.",
+    "apps/web/tests/vaults.spec.ts: Playwright test suite proving requirement F14: spying on all network requests to verify no reveal/plaintext endpoints are invoked during list rendering, asserting absence of canary plaintext in DOM, verifying search and status filtering, checking 360px viewport responsiveness, and verifying graceful 503/403 failure states.",
+    "tests/fixtures/keyhelix/C20/: Synthetic positive, negative, expected-output, and metadata fixtures validating requirement F14 acceptance."
+  ],
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "npm run test:browser",
+      "exit_code": 0,
+      "result": "7 passed (1.6s) across workspace.spec.ts and vaults.spec.ts."
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "result": "prepare:web, tsc, vite build, and build:engine succeeded."
+    },
+    {
+      "command": "go test -count=1 ./...",
+      "exit_code": 0,
+      "result": "ok cmd/keyhelix, internal/audit, internal/auth, internal/contracts, internal/grants, internal/provider, internal/rotation, internal/secrets, internal/security, internal/storage, internal/vaults, tests"
+    }
+  ],
+  "security_and_redaction": {
+    "provider_owns_secret_bytes": "The UI console fetches only metadata summaries; plaintext secrets are never retrieved for list rendering. Network requests during listing contain zero reveal/plaintext endpoints and DOM contains zero canary sentinels."
+  },
+  "acceptance_criteria": {
+    "ui_never_fetches_plaintext_for_list": true,
+    "metadata_streaming_authenticated": true,
+    "zero_plaintext_persistence": true
+  }
+}

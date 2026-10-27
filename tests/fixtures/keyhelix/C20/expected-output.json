@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "requirement": "F14",
+  "acceptance": "UI never fetches plaintext merely to render a secret list.",
+  "status": "passed",
+  "metadata_sha256": "f808c8c7b5c0ce6f807e374a2ef0521deb9eeea7c0455b7b5a9033c95cb59157",
+  "ui_never_fetches_plaintext_for_list": true,
+  "metadata_streaming_authenticated": true,
+  "guard_codes": {
+    "unauthorized": "UNAUTHORIZED",
+    "forbidden_plaintext_fetch": "FORBIDDEN_PLAINTEXT_FETCH",
+    "provider_unavailable": "PROVIDER_UNAVAILABLE"
+  },
+  "provider_owns_secret_bytes": true
+}

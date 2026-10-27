@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-27",
-  "base_commit": "044331c7bed99ce6e835fdd2d87cd7c8457eb652",
-  "scope": "Delete and destroy are distinct; irreversible version destruction requires explicit operator action (C19 / F13)",
+  "base_commit": "b164e7d174e929f95701ce587428f731c6a7ffec",
+  "scope": "UI never fetches plaintext merely to render a secret list (C20 / F14)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -22,39 +22,37 @@
     "C16",
     "C17",
     "C18",
-    "C19"
+    "C19",
+    "C20"
   ],
   "git_commit_created": false,
   "changed_paths": [
     "apps/web/src/generated/project.json",
+    "apps/web/src/main.tsx",
+    "apps/web/src/pages/Vaults.tsx",
+    "apps/web/tests/vaults.spec.ts",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C19.json",
-    "internal/provider/openbao.go",
-    "internal/secrets/delete.go",
+    "docs/evidence/C20.json",
     "plans/progress.json",
-    "tests/delete_test.go",
-    "tests/fixtures/keyhelix/C19/expected-output.json",
-    "tests/fixtures/keyhelix/C19/metadata.json",
-    "tests/fixtures/keyhelix/C19/negative.json",
-    "tests/fixtures/keyhelix/C19/positive.json"
+    "playwright.config.ts",
+    "tests/fixtures/keyhelix/C20/expected-output.json",
+    "tests/fixtures/keyhelix/C20/metadata.json",
+    "tests/fixtures/keyhelix/C20/negative.json",
+    "tests/fixtures/keyhelix/C20/positive.json"
   ],
   "ci_defect_fixes": [],
   "commands": [
     "npm run validate:plan",
-    "go test -count=1 ./...",
-    "go test -count=1 -v -run 'TestC19' ./tests/",
-    "go test -count=1 -race ./...",
-    "go vet ./...",
-    "npm run build:engine",
-    "npm run test:contracts",
-    "npm test",
-    "npm run prepare:web"
+    "npm run test:browser",
+    "npm run build",
+    "npm run check",
+    "go test -count=1 ./..."
   ],
-  "validation_results": "docs/evidence/C19.json",
-  "final_source_identity": "sha256:ca4dfd71dcfe03ecd850a8c988f8baab3b3283f1119615a5437f8cf76d243f50",
+  "validation_results": "docs/evidence/C20.json",
+  "final_source_identity": "sha256:ce15d650b0697b98fb08c3696a33099a5f32d29dbbaadd6f66f59595df7e0ab6",
   "protected_paths_changed": [],
   "current_core_ready": false,
-  "next_task": "C20",
+  "next_task": "C21",
   "next_command": "npm run plan -- next",
-  "continuation": "C01-C19 are verified locally. Proceed with C20: feat(list): stream metadata projections without plaintexts. The worktree is not committed; the owner must commit the listed paths before CI can test them."
+  "continuation": "C01-C20 are verified locally. Proceed with C21: feat(ui): implement transient reveal interaction. The worktree is not committed; the owner must commit the listed paths before CI can test them."
 }

@@ -249,7 +249,7 @@
       "id": "C20",
       "title": "feat(ui): render authorized metadata console",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "UI never fetches plaintext merely to render a secret list."
       ],

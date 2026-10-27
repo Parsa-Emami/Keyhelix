@@ -177,10 +177,12 @@
     },
     {
       "id": "C20",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C20.json"
+      ],
+      "source_identity": "sha256:ce15d650b0697b98fb08c3696a33099a5f32d29dbbaadd6f66f59595df7e0ab6",
+      "notes": "Authorized metadata console rendered; UI never fetches plaintext merely to render a secret list (Requirement F14)."
     },
     {
       "id": "C21",

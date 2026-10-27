@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C20 authorized metadata console fixture; contains no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "vault": {
+    "vault_id": "vault-prod",
+    "name": "Production Vault",
+    "mount": "transit",
+    "role": "vault-admin"
+  },
+  "operator_identity": {
+    "subject": "usr_c20_auditor",
+    "email": "auditor@keyhelix.local",
+    "vault_role": "auditor",
+    "allowed_owners": [
+      "auditor@keyhelix.local",
+      "org:platform"
+    ],
+    "allowed_scopes": [
+      "secret:read-metadata",
+      "production/services/*"
+    ]
+  },
+  "canary_sentinels_prohibited": [
+    "sentinel-canary-c20-plaintext-leak-83a1",
+    "SUPER_SECRET_PAYLOAD_NEVER_FETCH_IN_LIST"
+  ],
+  "expected_secret_count": 3,
+  "metadata_file": "metadata.json"
+}
