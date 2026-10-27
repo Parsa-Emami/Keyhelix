@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C14 expected results for bounded authorized reveal; verifies no-store response, mandatory fresh step-up and secret-free errors, traces and audit content.",
+  "license": "Apache-2.0",
+  "requirement": "F08",
+  "acceptance": "No-store response and mandatory fresh step-up; no secret in errors, traces or audit content.",
+  "status": "passed",
+  "metadata_sha256": "bee751557ea93a4f06d84818b985b5f7b1246469924fcbddd1794b90b0f34dc1",
+  "plaintext_canary": "synthetic-c14-reveal-plaintext-canary-93f1",
+  "response": {
+    "schema_version": "1",
+    "no_store": true,
+    "headers": {
+      "Cache-Control": "no-store",
+      "Pragma": "no-cache",
+      "Expires": "0",
+      "X-Content-Type-Options": "nosniff"
+    },
+    "plaintext_serialization": "[REDACTED]",
+    "audit_content_excludes_plaintext": true
+  },
+  "guard_codes": {
+    "invalid_token": "INVALID_TOKEN",
+    "expired_token": "EXPIRED_TOKEN",
+    "nonce_mismatch": "NONCE_MISMATCH",
+    "scope_denied": "SCOPE_DENIED",
+    "stepup_required": "STEPUP_REQUIRED",
+    "stepup_expired": "STEPUP_EXPIRED",
+    "stepup_session_mismatch": "STEPUP_SESSION_MISMATCH",
+    "stepup_scope_denied": "STEPUP_SCOPE_DENIED",
+    "session_revoked": "SESSION_REVOKED",
+    "path_traversal": "PATH_TRAVERSAL",
+    "idp_unavailable": "IDP_UNAVAILABLE",
+    "provider_unavailable": "PROVIDER_UNAVAILABLE",
+    "provider_sealed": "PROVIDER_SEALED",
+    "unscoped_identity": "UNSCOPED_IDENTITY",
+    "payload_not_found": "PAYLOAD_NOT_FOUND",
+    "ciphertext_tampered": "CIPHERTEXT_TAMPERED",
+    "reveal_integrity_failure": "REVEAL_INTEGRITY_FAILURE",
+    "already_exists": "ALREADY_EXISTS",
+    "stale_version": "STALE_VERSION",
+    "provider_conflict": "PROVIDER_CONFLICT"
+  },
+  "provider_call_budget_before_authorization": 0,
+  "storage_plaintext_leak_count": 0
+}

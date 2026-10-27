@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C14 reveal negative cases; contains no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "missing-identity-rejected",
+      "kind": "identity_guard",
+      "description": "Missing identity fails before any provider or payload side effect",
+      "expected_code": "INVALID_TOKEN"
+    },
+    {
+      "case": "expired-identity-rejected",
+      "kind": "expiration_guard",
+      "description": "Expired identity fails before any provider or payload side effect",
+      "expected_code": "EXPIRED_TOKEN"
+    },
+    {
+      "case": "replayed-identity-rejected",
+      "kind": "replay_guard",
+      "description": "Replayed or mismatched identity nonce is rejected by the identity provider before reveal",
+      "expected_code": "NONCE_MISMATCH"
+    },
+    {
+      "case": "unrelated-owner-denied",
+      "kind": "authorization_guard",
+      "description": "Identity revealing an unrelated owner's secret is denied with the uniform denial message",
+      "target_owner": "bob@keyhelix.local",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "foreign-vault-scope-denied",
+      "kind": "scope_guard",
+      "description": "Identity cannot reveal through a vault that is not bound to it",
+      "target_vault": "vault-foreign",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "missing-stepup-rejected",
+      "kind": "stepup_guard",
+      "description": "Reveal without a fresh step-up grant fails closed before sensitive side effects",
+      "expected_code": "STEPUP_REQUIRED"
+    },
+    {
+      "case": "expired-stepup-rejected",
+      "kind": "stepup_guard",
+      "description": "Expired step-up grant cannot authorize reveal",
+      "expected_code": "STEPUP_EXPIRED"
+    },
+    {
+      "case": "cross-session-stepup-replay-rejected",
+      "kind": "stepup_binding_guard",
+      "description": "Step-up grant issued for another session cannot be replayed for reveal",
+      "expected_code": "STEPUP_SESSION_MISMATCH"
+    },
+    {
+      "case": "stepup-scope-mismatch-denied",
+      "kind": "stepup_scope_guard",
+      "description": "Step-up grant issued for another resource cannot authorize reveal of this secret",
+      "other_resource": "app/prod/other-secret",
+      "expected_code": "STEPUP_SCOPE_DENIED"
+    },
+    {
+      "case": "revoked-session-cannot-reveal",
+      "kind": "revocation_guard",
+      "description": "Revoked session cannot reveal even with a previously issued step-up grant",
+      "expected_code": "SESSION_REVOKED"
+    },
+    {
+      "case": "forged-header-cannot-authorize-reveal",
+      "kind": "header_guard",
+      "description": "Forged proxy or override headers cannot widen reveal authorization",
+      "headers": {
+        "X-Original-URL": "/v1/vaults/admin/all",
+        "X-Vault-Path": "admin/*",
+        "X-Provider-Scope": "transit:admin"
+      },
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "traversal-cannot-widen-reveal",
+      "kind": "path_manipulation_guard",
+      "description": "Directory traversal in the reveal path fails closed before sensitive side effects",
+      "raw_path": "app/prod/../../../finance/payroll-key",
+      "expected_code": "PATH_TRAVERSAL"
+    },
+    {
+      "case": "prefix-collision-cannot-widen-reveal",
+      "kind": "boundary_guard",
+      "description": "Prefix matching without a segment boundary cannot widen the authorized subtree",
+      "raw_path": "app/prod-secret/database-url",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "identity-provider-unavailable-fails-closed",
+      "kind": "outage_guard",
+      "description": "When the identity provider is offline, reveal authorization fails closed",
+      "provider_offline": true,
+      "expected_code": "IDP_UNAVAILABLE"
+    },
+    {
+      "case": "provider-offline-reveal-fails-closed",
+      "kind": "provider_outage_guard",
+      "description": "When the key provider is unreachable, reveal fails closed and returns no cached plaintext",
+      "provider_state": "unavailable",
+      "expected_code": "PROVIDER_UNAVAILABLE"
+    },
+    {
+      "case": "provider-sealed-reveal-fails-closed",
+      "kind": "provider_state_guard",
+      "description": "A sealed provider cannot serve reveal",
+      "provider_state": "sealed",
+      "expected_code": "PROVIDER_SEALED"
+    },
+    {
+      "case": "workload-without-decrypt-scope-denied",
+      "kind": "provider_scope_guard",
+      "description": "A workload identity without transit:decrypt cannot unwrap the data key",
+      "workload_scopes": [
+        "transit:encrypt",
+        "kv:read",
+        "kv:write"
+      ],
+      "expected_code": "UNSCOPED_IDENTITY"
+    },
+    {
+      "case": "workload-without-payload-read-scope-denied",
+      "kind": "provider_scope_guard",
+      "description": "A workload identity without kv:read cannot read provider-owned sealed bytes",
+      "workload_scopes": [
+        "transit:encrypt",
+        "transit:decrypt",
+        "kv:write"
+      ],
+      "expected_code": "UNSCOPED_IDENTITY"
+    },
+    {
+      "case": "tampered-ciphertext-denied",
+      "kind": "integrity_guard",
+      "description": "A tampered provider-owned payload fails authentication and returns no partial plaintext",
+      "expected_code": "CIPHERTEXT_TAMPERED"
+    },
+    {
+      "case": "missing-provider-payload-fails-closed",
+      "kind": "integrity_guard",
+      "description": "When the provider owns no payload for the committed version, reveal fails closed",
+      "expected_code": "PAYLOAD_NOT_FOUND"
+    },
+    {
+      "case": "foreign-kek-envelope-denied",
+      "kind": "provider_scope_guard",
+      "description": "Metadata whose KEK is not bound to the authorized vault cannot be revealed",
+      "foreign_kek_id": "kek-foreign-vault",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "stale-write-rejected-before-provider-call",
+      "kind": "write_cas_guard",
+      "description": "A stale expected version fails before the provider stores another payload",
+      "expected_code": "STALE_VERSION"
+    },
+    {
+      "case": "orphaned-provider-payload-conflict-fails-closed",
+      "kind": "write_conflict_guard",
+      "description": "A provider that already owns a payload for the target version cannot be overwritten and no metadata version is published",
+      "expected_code": "PROVIDER_CONFLICT"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "kind": "plaintext_canary",
+      "canary": "synthetic-c14-reveal-plaintext-canary-93f1",
+      "description": "Plaintext secret bytes never enter metadata storage, the response serialization, errors, traces or audit content",
+      "expected_storage_occurrence_count": 0
+    }
+  ]
+}

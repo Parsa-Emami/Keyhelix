@@ -88,6 +88,17 @@
       "result": "VALIDATION PASSED (188 JSON files checked)"
     }
   ],
+  "results": {
+    "cas_prevents_lost_update": "passed",
+    "duplicate_create_rejected": "passed",
+    "stale_version_rejected": "passed",
+    "provider_unavailable_fails_closed": "passed",
+    "unauthorized_scope_write_fails_closed": "passed",
+    "bytes_never_enter_metadata_storage": "passed",
+    "restart_preserves_version_and_rejects_stale_replay": "passed",
+    "provider_owns_secret_bytes": "passed"
+  },
+  "results_source": "Structured summary of the outcomes already recorded in this C13 evidence record (commands and verification_details). No result was re-run or re-measured while adding this field; it exists so scripts/plan.py can consume the record.",
   "verification_details": {
     "cas_protection": "Demonstrated that concurrent writers attempting the same ExpectedVersion results in exactly one winner and one STALE_VERSION rejection.",
     "plaintext_isolation": "Exhaustive scans of Store.Read and every raw on-disk file in the storage directory confirmed 0 occurrences of plaintext canary secret bytes.",

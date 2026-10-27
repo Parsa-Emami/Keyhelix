@@ -22,7 +22,9 @@ storage/logs/*.log
 *.key
 *.p12
 *.pfx
+# Ignore secret material directories, but keep the tracked engine source package.
 secrets/
+!internal/secrets/
 
 # Supplied planning and web foundation rules
 node_modules/

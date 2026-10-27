@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -23,6 +24,7 @@ type c13MockKeyProvider struct {
 	fail        bool
 	wrapCount   int64
 	unwrapCount int64
+	sealed      map[string][]byte
 }
 
 func (m *c13MockKeyProvider) WrapDEK(ctx context.Context, kekID string, plaintextDEK []byte) (*provider.WrapResult, error) {
@@ -46,6 +48,31 @@ func (m *c13MockKeyProvider) UnwrapDEK(ctx context.Context, kekID string, cipher
 	}
 	atomic.AddInt64(&m.unwrapCount, 1)
 	return make([]byte, 32), nil
+}
+
+func (m *c13MockKeyProvider) PutSealedPayload(ctx context.Context, ref provider.SealedRef, sealed []byte) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if m.fail {
+		return &provider.Error{Code: provider.CodeProviderUnavailable, Message: "key provider unavailable"}
+	}
+	if m.sealed == nil {
+		m.sealed = make(map[string][]byte)
+	}
+	m.sealed[ref.VaultID+"/"+ref.Path+"/v"+strconv.FormatInt(ref.Version, 10)] = append([]byte(nil), sealed...)
+	return nil
+}
+
+func (m *c13MockKeyProvider) ReadSealedPayload(ctx context.Context, ref provider.SealedRef) ([]byte, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if m.fail {
+		return nil, &provider.Error{Code: provider.CodeProviderUnavailable, Message: "key provider unavailable"}
+	}
+	if sealed, ok := m.sealed[ref.VaultID+"/"+ref.Path+"/v"+strconv.FormatInt(ref.Version, 10)]; ok {
+		return append([]byte(nil), sealed...), nil
+	}
+	return nil, &provider.Error{Code: provider.CodePayloadNotFound, Message: "key provider owns no payload"}
 }
 
 func (m *c13MockKeyProvider) Health(ctx context.Context) (*provider.Health, error) {

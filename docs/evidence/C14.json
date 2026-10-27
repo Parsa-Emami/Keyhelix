@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C14",
+  "date": "2026-10-27",
+  "passed": true,
+  "planning_template": false,
+  "scope": "No-store response and mandatory fresh step-up; no secret in errors, traces or audit content (Requirement F08).",
+  "commit_id": "C14",
+  "base_commit": "d44c39ce08e1c7d7a9227e307cabb4e00d41fba3",
+  "git_commit_created": false,
+  "source_identity": "sha256:4075c568811d1094fa05645d758b5d80436b5bbb12d9bdf8aa0ce10743d5c064",
+  "source_identity_method": "SHA-256 over sorted C14-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "07fdec00331e8c503e163d35fd8675b655ef62fa2f59beddb5e37a99953f254a",
+    "internal/provider/openbao.go": "31a9ff24b6c760361882d442b0eaa04bcd46b61ae0c215fdd25856fe338e493b",
+    "internal/secrets/reveal.go": "af50f4022a3587c490ff845e3c17d2ae025b1c5576e7a9173c1bf34d85b9cbbc",
+    "internal/secrets/write.go": "acb6b7916e5ba23f52eaf445c3facaa2bf2a4f64b8887c398e2c4edcb049a740",
+    "internal/secrets/write_test.go": "b7976a70af9bc60610a23ea21dab2c0186f6aae31d66b0dd613cb1210f873319",
+    "tests/fixtures/keyhelix/C14/expected-output.json": "f9b1a9cdaa83d56fe5b32e76db803b92cbd255ff6d72e8f4c12b864ab8666c6b",
+    "tests/fixtures/keyhelix/C14/metadata.json": "bee751557ea93a4f06d84818b985b5f7b1246469924fcbddd1794b90b0f34dc1",
+    "tests/fixtures/keyhelix/C14/negative.json": "13f235f22f341240aceb8ba99eff8dcc864a4e5eca9bd8b09e0bb4283fa04fd2",
+    "tests/fixtures/keyhelix/C14/positive.json": "137fd9c82f5738bb6b6ee301d6ebf17e4fd83ed82a871bbad13cbe10330d5607",
+    "tests/reveal_test.go": "45bb41eda52d3455fb31691ddc62e96990604283b4fab63c31515c6f3340f9cb",
+    "tests/version_test.go": "9aea7a89abe54a47eb051aec4186ac033ccaeff62a5f6ad46face366d87b169e"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 GNU/Linux (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863936512,
+      "memory_available_bytes": 23881408512,
+      "filesystem_available_bytes": 126222049280
+    },
+    "providers": "No external service was used. The OpenBao adapter was exercised against an in-process OpenBao-compatible HTTP fixture implementing /v1/sys/health, /v1/transit/encrypt|decrypt and KV v2 /v1/kv/data (create-only cas=0 writes, 400 check-and-set conflicts, 403 scoped denial, 503 sealed); storage, session, step-up and scope-mapper collaborators were the real repository implementations.",
+    "upstream_reference": [
+      "https://openbao.org/docs/secrets/kv/kv-v2/",
+      "https://openbao.org/api-docs/secret/kv/kv-v2/"
+    ]
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C14/expected-output.json": "f9b1a9cdaa83d56fe5b32e76db803b92cbd255ff6d72e8f4c12b864ab8666c6b",
+    "tests/fixtures/keyhelix/C14/metadata.json": "bee751557ea93a4f06d84818b985b5f7b1246469924fcbddd1794b90b0f34dc1",
+    "tests/fixtures/keyhelix/C14/negative.json": "13f235f22f341240aceb8ba99eff8dcc864a4e5eca9bd8b09e0bb4283fa04fd2",
+    "tests/fixtures/keyhelix/C14/positive.json": "137fd9c82f5738bb6b6ee301d6ebf17e4fd83ed82a871bbad13cbe10330d5607"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret, key or credential material, licensed under Apache-2.0.",
+  "implementation_summary": [
+    "internal/provider/openbao.go: Port gained PutSealedPayload/ReadSealedPayload over an OpenBao KV v2 payload mount (default kv, configurable via Config.PayloadMount) with version-scoped paths, create-only cas=0 writes and 400 check-and-set conflicts mapped to PROVIDER_CONFLICT; new typed codes PROVIDER_CONFLICT and PAYLOAD_NOT_FOUND; workload identity must hold kv:write for payload writes and kv:read for payload reads.",
+    "internal/secrets/write.go: the sealed payload (ciphertext and tag) is written to the provider before any metadata version is published, preceded by a provider-independent CAS pre-check, so a stale, duplicate or conflicted write cannot reach the provider payload store and no metadata version can exist without provider-owned bytes.",
+    "internal/secrets/reveal.go: RevealSecret authorizes session, fresh step-up, owner, path, vault and mapped provider scope before any provider side effect; reads committed metadata; refuses a mismatched vault/path/KEK with the uniform denial message; unwraps the DEK through the provider; reads the version-scoped sealed payload; authenticates the trailing envelope tag and decrypts AES-256-GCM with the canonical path as AAD; returns a no-store response and redacts every formatting/serialization path.",
+    "tests/reveal_test.go: 1 acceptance test plus 23 fixture-driven negative cases over the real storage/provider/auth boundaries.",
+    "tests/fixtures/keyhelix/C14/: positive, negative, expected-output and metadata fixtures."
+  ],
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 ./...",
+      "exit_code": 0,
+      "result": "ok cmd/keyhelix, internal/auth, internal/contracts, internal/provider, internal/secrets, internal/storage, internal/vaults, tests"
+    },
+    {
+      "command": "go test -count=1 -v -run 'TestC14' ./tests/",
+      "exit_code": 0,
+      "result": "--- PASS: TestC14BoundedAuthorizedRevealF08 (0.08s); --- PASS: TestC14RevealNegativeCasesF08 (0.76s) including all 23 subtests (missing/expired/replayed identity, unrelated owner, foreign vault, missing/expired/cross-session/scope-mismatched step-up, revoked session, forged header, traversal, prefix collision, IDP outage, provider outage/sealed, workload without transit:decrypt, workload without kv:read, tampered ciphertext, tampered tag, missing provider payload, foreign KEK envelope, stale write, orphan conflict); ok github.com/parsa-emami/keyhelix/tests 0.838s"
+    },
+    {
+      "command": "go test -count=1 -race ./...",
+      "exit_code": 0,
+      "result": "ok cmd/keyhelix, internal/auth, internal/contracts, internal/provider, internal/secrets, internal/storage, internal/vaults, tests under the race detector"
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "clean - zero diagnostics (an earlier WriteTo naming clash with io.WriterTo was fixed by renaming the method to StreamTo)"
+    },
+    {
+      "command": "npm run build:engine",
+      "exit_code": 0,
+      "result": "Engine binary compiled successfully to dist/engine/keyhelix."
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "tests 2, pass 2, fail 0, duration_ms 170.95"
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "tests 19, pass 19, fail 0, duration_ms 188.47"
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "Ran 6 tests in 0.353s, OK"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "VALIDATION PASSED (193 JSON files checked and repository contract invariants)"
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "PLAN VALIDATION PASSED - 40 intents, coverage and progress checked; no application runtime tests performed. This job failed on the previous tree with 'C13: incomplete evidence' and now passes after the recorded C13 results field was completed."
+    },
+    {
+      "command": "npm run prepare:web",
+      "exit_code": 0,
+      "result": "Regenerated apps/web/src/generated/project.json from the verified progress state."
+    },
+    {
+      "command": "git ls-files -co --exclude-standard -z | tar --null -T - -cf - | tar -x -C dist/ci-tree-check && (cd dist/ci-tree-check && go vet ./... && go test -count=1 ./... )",
+      "exit_code": 0,
+      "result": "Clean-tree simulation (tracked plus non-ignored files only, i.e. what CI checks out) compiles and passes all eight Go packages including internal/secrets and tests. Before the .gitignore fix the same tree failed with 'no required module provides package github.com/parsa-emami/keyhelix/internal/secrets'."
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "result": "no whitespace or conflict-marker problems"
+    }
+  ],
+  "results": {
+    "no_store_response": "passed",
+    "mandatory_fresh_step_up": "passed",
+    "secret_free_errors": "passed",
+    "secret_free_traces": "passed",
+    "secret_free_audit_content": "passed",
+    "provider_owns_secret_bytes": "passed",
+    "authorization_before_sensitive_side_effects": "passed",
+    "missing_expired_replayed_identity_fail_closed": "passed",
+    "unrelated_owner_and_object_scope_fail_closed": "passed",
+    "forged_header_cannot_authorize": "passed",
+    "widened_path_or_provider_permission_cannot_authorize": "passed",
+    "unavailable_identity_provider_fails_closed": "passed",
+    "tampered_ciphertext_and_tag_fail_closed": "passed",
+    "restart_preserves_revealable_version": "passed",
+    "domain_engine": "bounded authorized reveal implemented and verified on the real local storage/provider/auth boundaries"
+  },
+  "verification_details": {
+    "no_store": "RevealResponse.NoStoreHeaders sets Cache-Control: no-store, Pragma: no-cache, Expires: 0 and X-Content-Type-Options: nosniff; the acceptance test writes the response through httptest.ResponseRecorder and asserts every header plus a single streaming body write, and WriteResponse destroys the transient buffer.",
+    "step_up_ordering": "auth.AuthorizeProviderAction validates the fresh step-up grant, session binding, owner, canonical path, vault binding, forged headers and mapped provider scope before reveal reads metadata or calls the provider; tests assert the provider decrypt/read call budget stays 0 for every guard case.",
+    "redaction": "RevealedPlaintext redacts String, GoString, Format (all verbs including %x and %q) and MarshalJSON; RevealResponse String, GoString and MarshalJSON are redacted and AuditContent carries only action, actor, vault, path, version, classification and outcome. Tests assert the canary never appears in the formatted response, the serialized response, the audit projection or any failure message, and that Destroy zeroes the buffer.",
+    "provider_ownership": "The sealed bytes (ciphertext and tag) live only in the provider KV v2 path <vault>/<secret path>/v<version>; exhaustive scans assert the canary never appears in committed metadata, in the provider-owned sealed bytes or in any file under the storage directory, and that the provider payload is written before the metadata version is published.",
+    "write_conflict_semantics": "The payload write is create-only (cas=0). A CAS pre-check rejects stale and duplicate writes before the provider is called, and a provider conflict re-reads the authoritative record: an advanced record is reported as STALE_VERSION (concurrency loser), otherwise the conflict is surfaced as PROVIDER_CONFLICT with no metadata version published.",
+    "restart_recovery": "The acceptance test closes and reopens the authoritative store and reveals the committed version through the provider again, returning the rotated plaintext."
+  },
+  "ci_defect_fixes": [
+    {
+      "path": "docs/evidence/C13.json",
+      "sha256": "24f97bc55812ff7ff284211562b590530995a7185a466480f1e08dcbaffb3cd4",
+      "defect": "python3 scripts/plan.py validate (plan-consistency workflow) failed with 'C13: incomplete evidence' because the record had no results field.",
+      "fix": "Added a structured results summary of the outcomes already recorded in that same C13 record plus a results_source note. No command result, hash, identity or measured value was changed."
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "f1728c8c26efe3d43c9619d2979b0b18ac0097cf54e8626527eaa36237840a6f",
+      "defect": "The 'secrets/' ignore pattern also ignored internal/secrets/, so the engine secrets package was absent from Git. On a clean checkout go test ./... could not compile tests/version_test.go ('no required module provides package github.com/parsa-emami/keyhelix/internal/secrets'), which would fail the runtime-engine workflow and hide any C13/C14 source from the tested commit.",
+      "fix": "Kept the intent of ignoring secret material directories and added the negation '!internal/secrets/' so the tracked engine source package is visible to Git. The stderr tree was re-checked with a clean-tree simulation (tracked plus non-ignored files only) which now compiles and passes."
+    }
+  ],
+  "observed_limitations": [
+    "The bounded reveal response is a domain/transport contract consumed through RevealResponse; no public or private engine HTTP endpoint is exposed by this task (W06/W07 own the engine API and UI wiring), so the accepted output is not yet reachable from the browser.",
+    "A crash between the provider payload write and the metadata publication leaves a provider-owned payload version with no metadata reference. Reveal can never reach it (it is metadata-driven) and the next attempt is refused with PROVIDER_CONFLICT instead of overwriting bytes; reconciliation is deferred to the recovery task C24 and documented here rather than faked.",
+    "The version-scoped provider path is read as its latest KV version, which is always the payload matched to the committed metadata envelope because a conflicting or stale write cannot overwrite it.",
+    "Payload and reveal sizes are bounded at 1 MiB (secrets.MaxSecretBytes, provider.MaxSealedPayloadBytes); larger inputs fail closed with a typed error.",
+    "The working tree is not committed. CI jobs that inspect a checkout (source integrity, runtime-engine) require the owner's approval to commit the listed paths, including the newly visible internal/secrets package."
+  ],
+  "rollback_or_recovery_observation": "Reverting the isolated source change restores the previous behavior; no incompatible data was accepted. If a partial write ever leaves an unreferenced provider payload version, the public state remains the last committed metadata version and forward repair (provider reconciliation) is required before another write of that version can succeed; no older accepted state is overwritten by a backup.",
+  "core_ready": false
+}

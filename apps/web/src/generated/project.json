@@ -177,7 +177,7 @@
       "id": "C14",
       "title": "feat(reveal): stream bounded authorized secret responses",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "No-store response and mandatory fresh step-up; no secret in errors, traces or audit content."
       ],

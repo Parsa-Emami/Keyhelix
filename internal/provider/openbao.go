@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -27,7 +28,25 @@ const (
 	CodeMalformedResponse   ErrorCode = "MALFORMED_RESPONSE"
 	CodeUnauthorized        ErrorCode = "UNAUTHORIZED"
 	CodeInvalidInput        ErrorCode = "INVALID_INPUT"
+	CodePayloadConflict     ErrorCode = "PROVIDER_CONFLICT"
+	CodePayloadNotFound     ErrorCode = "PAYLOAD_NOT_FOUND"
 )
+
+// MaxSealedPayloadBytes bounds one provider-owned sealed payload.
+const MaxSealedPayloadBytes = 1 << 20
+
+// checkAndSetError is the OpenBao/Vault wire message for a failed KV v2
+// check-and-set write. It is the only provider-conflict signal we accept.
+const checkAndSetError = "check-and-set parameter did not match the current version"
+
+// IsErrorCode reports whether err is or wraps an Error with the given code.
+func IsErrorCode(err error, code ErrorCode) bool {
+	var providerErr *Error
+	if errors.As(err, &providerErr) {
+		return providerErr.Code == code
+	}
+	return false
+}
 
 // Error represents a typed failure from the key provider capability adapter.
 type Error struct {
@@ -69,10 +88,19 @@ func (w WorkloadIdentity) HasScope(required string) bool {
 type Config struct {
 	Address      string        `json:"address"`
 	KEKMount     string        `json:"kek_mount"`
-	Environment  string        `json:"environment"` // "production", "staging", "local", "test"
+	PayloadMount string        `json:"payload_mount"` // KV v2 mount that owns sealed secret bytes
+	Environment  string        `json:"environment"`   // "production", "staging", "local", "test"
 	AllowDevMode bool          `json:"allow_dev_mode"`
 	HTTPClient   *http.Client  `json:"-"`
 	Timeout      time.Duration `json:"timeout"`
+}
+
+// SealedRef addresses one provider-owned sealed payload version. The provider
+// owns these encrypted bytes; metadata storage never accepts them.
+type SealedRef struct {
+	VaultID string `json:"vault_id"`
+	Path    string `json:"path"`
+	Version int64  `json:"version"`
 }
 
 // Health represents OpenBao server health status.
@@ -94,6 +122,8 @@ type WrapResult struct {
 type Port interface {
 	WrapDEK(ctx context.Context, kekID string, plaintextDEK []byte) (*WrapResult, error)
 	UnwrapDEK(ctx context.Context, kekID string, ciphertext string) ([]byte, error)
+	PutSealedPayload(ctx context.Context, ref SealedRef, sealed []byte) error
+	ReadSealedPayload(ctx context.Context, ref SealedRef) ([]byte, error)
 	Health(ctx context.Context) (*Health, error)
 	WorkloadIdentity() WorkloadIdentity
 }
@@ -161,6 +191,12 @@ func NewOpenBaoAdapter(ctx context.Context, cfg Config, identity WorkloadIdentit
 		kekMount = "transit"
 	}
 	cfg.KEKMount = kekMount
+
+	payloadMount := strings.Trim(cfg.PayloadMount, "/")
+	if payloadMount == "" {
+		payloadMount = "kv"
+	}
+	cfg.PayloadMount = payloadMount
 
 	timeout := cfg.Timeout
 	if timeout <= 0 {
@@ -422,4 +458,181 @@ func (a *Adapter) UnwrapDEK(ctx context.Context, kekID string, ciphertext string
 	}
 
 	return decoded, nil
+}
+
+// PutSealedPayload stores provider-owned sealed bytes for one secret version in
+// the version-scoped KV v2 path <payload mount>/data/<vault>/<path>/v<version>.
+// The write is create-only (cas=0) so a retry cannot replace bytes that an
+// already published envelope references; the provider owns these bytes and
+// metadata storage never accepts them.
+func (a *Adapter) PutSealedPayload(ctx context.Context, ref SealedRef, sealed []byte) error {
+	if err := validateSealedRef(ref); err != nil {
+		return err
+	}
+	if len(sealed) == 0 {
+		return &Error{Code: CodeInvalidInput, Message: "sealed payload must not be empty"}
+	}
+	if len(sealed) > MaxSealedPayloadBytes {
+		return &Error{Code: CodeInvalidInput, Message: "sealed payload exceeds the bounded maximum"}
+	}
+	if !a.identity.HasScope("kv:write") {
+		return &Error{
+			Code:    CodeUnscopedIdentity,
+			Message: "workload identity lacks 'kv:write' scope for provider-owned payload storage",
+		}
+	}
+
+	payload, err := json.Marshal(map[string]any{
+		"data":    map[string]string{"sealed": base64.StdEncoding.EncodeToString(sealed)},
+		"options": map[string]int{"cas": 0},
+	})
+	if err != nil {
+		return &Error{Code: CodeInvalidInput, Message: "failed to marshal payload write", Err: err}
+	}
+
+	endpoint := a.kvEndpoint(ref)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint.String(), bytes.NewReader(payload))
+	if err != nil {
+		return &Error{Code: CodeInvalidInput, Message: "failed to create payload write request", Err: err}
+	}
+	a.authorize(req)
+
+	resp, err := a.client.Do(req)
+	if err != nil {
+		return &Error{Code: CodeProviderUnavailable, Message: "openbao payload store unreachable", Err: err}
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusForbidden || resp.StatusCode == http.StatusUnauthorized {
+		return &Error{Code: CodeUnauthorized, Message: "openbao refused token authorization for payload write"}
+	}
+	if resp.StatusCode == http.StatusServiceUnavailable {
+		return &Error{Code: CodeProviderSealed, Message: "openbao provider is sealed"}
+	}
+	if resp.StatusCode == http.StatusNotFound {
+		return &Error{Code: CodeInvalidConfig, Message: "openbao payload mount is not available"}
+	}
+	if resp.StatusCode == http.StatusBadRequest {
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 64*1024))
+		if strings.Contains(string(body), checkAndSetError) {
+			return &Error{Code: CodePayloadConflict, Message: "provider already owns a payload for this secret version"}
+		}
+		return &Error{Code: CodeMalformedResponse, Message: "openbao rejected the payload write"}
+	}
+	if resp.StatusCode != http.StatusOK {
+		return &Error{Code: CodeProviderUnavailable, Message: fmt.Sprintf("openbao returned unexpected status %d for payload write", resp.StatusCode)}
+	}
+	if _, err := io.Copy(io.Discard, io.LimitReader(resp.Body, 64*1024)); err != nil {
+		return &Error{Code: CodeMalformedResponse, Message: "failed to read payload write response", Err: err}
+	}
+	return nil
+}
+
+// ReadSealedPayload returns the provider-owned sealed bytes for the addressed
+// secret version. Only the latest payload of that version path is ever returned.
+func (a *Adapter) ReadSealedPayload(ctx context.Context, ref SealedRef) ([]byte, error) {
+	if err := validateSealedRef(ref); err != nil {
+		return nil, err
+	}
+	if !a.identity.HasScope("kv:read") {
+		return nil, &Error{
+			Code:    CodeUnscopedIdentity,
+			Message: "workload identity lacks 'kv:read' scope for provider-owned payload access",
+		}
+	}
+
+	endpoint := a.kvEndpoint(ref)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint.String(), nil)
+	if err != nil {
+		return nil, &Error{Code: CodeInvalidInput, Message: "failed to create payload read request", Err: err}
+	}
+	a.authorize(req)
+
+	resp, err := a.client.Do(req)
+	if err != nil {
+		return nil, &Error{Code: CodeProviderUnavailable, Message: "openbao payload store unreachable", Err: err}
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusForbidden || resp.StatusCode == http.StatusUnauthorized {
+		return nil, &Error{Code: CodeUnauthorized, Message: "openbao refused token authorization for payload read"}
+	}
+	if resp.StatusCode == http.StatusServiceUnavailable {
+		return nil, &Error{Code: CodeProviderSealed, Message: "openbao provider is sealed"}
+	}
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, &Error{Code: CodePayloadNotFound, Message: "provider owns no payload for this secret version"}
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, &Error{Code: CodeProviderUnavailable, Message: fmt.Sprintf("openbao returned unexpected status %d for payload read", resp.StatusCode)}
+	}
+
+	var parsed struct {
+		Data struct {
+			Data     map[string]string `json:"data"`
+			Metadata struct {
+				Version int64 `json:"version"`
+			} `json:"metadata"`
+		} `json:"data"`
+	}
+	if err := json.NewDecoder(io.LimitReader(resp.Body, 64*1024)).Decode(&parsed); err != nil {
+		return nil, &Error{Code: CodeMalformedResponse, Message: "failed to decode payload response", Err: err}
+	}
+	if parsed.Data.Metadata.Version < 1 || parsed.Data.Data["sealed"] == "" {
+		return nil, &Error{Code: CodeMalformedResponse, Message: "missing sealed payload in provider response"}
+	}
+
+	decoded, err := base64.StdEncoding.DecodeString(parsed.Data.Data["sealed"])
+	if err != nil {
+		return nil, &Error{Code: CodeMalformedResponse, Message: "invalid base64 sealed payload in response", Err: err}
+	}
+	if len(decoded) == 0 || len(decoded) > MaxSealedPayloadBytes {
+		return nil, &Error{Code: CodeMalformedResponse, Message: "sealed payload length is outside the bounded range"}
+	}
+	return decoded, nil
+}
+
+func (a *Adapter) authorize(req *http.Request) {
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Vault-Token", a.identity.Token)
+	if a.identity.Namespace != "" {
+		req.Header.Set("X-Vault-Namespace", a.identity.Namespace)
+	}
+}
+
+// kvEndpoint builds the KV v2 data endpoint for one version-scoped payload path.
+func (a *Adapter) kvEndpoint(ref SealedRef) *url.URL {
+	path := fmt.Sprintf("/v1/%s/data/%s/%s/v%d", a.config.PayloadMount, ref.VaultID, ref.Path, ref.Version)
+	return a.baseURL.ResolveReference(&url.URL{Path: path})
+}
+
+// validateSealedRef bounds the provider path so a caller cannot address bytes
+// outside the vault-scoped payload tree.
+func validateSealedRef(ref SealedRef) error {
+	if ref.Version < 1 {
+		return &Error{Code: CodeInvalidInput, Message: "sealed payload version must be positive"}
+	}
+	for _, field := range []struct{ name, value string }{
+		{"vault_id", ref.VaultID},
+		{"path", ref.Path},
+	} {
+		trimmed := strings.TrimSpace(field.value)
+		if trimmed == "" {
+			return &Error{Code: CodeInvalidInput, Message: field.name + " is required for sealed payload access"}
+		}
+		if strings.Contains(trimmed, "\\") {
+			return &Error{Code: CodeInvalidInput, Message: field.name + " contains a forbidden separator"}
+		}
+		for _, segment := range strings.Split(trimmed, "/") {
+			if segment == "" || segment == "." || segment == ".." {
+				return &Error{Code: CodeInvalidInput, Message: field.name + " must be a bounded provider path"}
+			}
+		}
+		for _, r := range trimmed {
+			if r < 32 || r == 127 || r == '?' || r == '#' {
+				return &Error{Code: CodeInvalidInput, Message: field.name + " contains forbidden characters"}
+			}
+		}
+	}
+	return nil
 }

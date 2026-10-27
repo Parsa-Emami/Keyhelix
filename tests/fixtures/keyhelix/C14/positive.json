@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C14 reveal fixture; contains no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "vault": {
+    "vault_id": "vault-prod",
+    "kek_id": "kek-v1-openbao",
+    "mount": "transit",
+    "role": "vault-admin"
+  },
+  "identity": {
+    "subject": "usr_alice_01",
+    "email": "alice@keyhelix.local",
+    "vault_role": "vault-admin",
+    "allowed_owners": [
+      "alice@keyhelix.local",
+      "org:platform"
+    ],
+    "allowed_scopes": [
+      "secret:read",
+      "app/prod/*"
+    ]
+  },
+  "secret_path": "app/prod/database-url",
+  "classification": "restricted",
+  "plaintext_canary": "synthetic-c14-reveal-plaintext-canary-93f1",
+  "rotated_plaintext_canary": "synthetic-c14-rotated-plaintext-canary-77c2",
+  "expected_no_store_headers": {
+    "Cache-Control": "no-store",
+    "Pragma": "no-cache",
+    "Expires": "0",
+    "X-Content-Type-Options": "nosniff"
+  },
+  "expected_provider_calls": {
+    "transit_decrypt": 1,
+    "payload_read": 1
+  },
+  "metadata_file": "metadata.json"
+}

@@ -123,10 +123,12 @@
     },
     {
       "id": "C14",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C14.json"
+      ],
+      "source_identity": "sha256:4075c568811d1094fa05645d758b5d80436b5bbb12d9bdf8aa0ce10743d5c064",
+      "notes": "Bounded authorized reveal with provider-owned sealed payload (OpenBao KV v2), mandatory fresh step-up, no-store response and secret-free errors, traces and audit content verified locally."
     },
     {
       "id": "C15",
