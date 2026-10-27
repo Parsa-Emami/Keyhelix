@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C12",
+  "date": "2026-10-27",
+  "passed": true,
+  "planning_template": false,
+  "scope": "User sees no unauthorized secret names or existence via errors; vault metadata filtered and single-item lookups masked (Requirement F06).",
+  "commit_id": "C12",
+  "base_commit": "0c89f8f4a33118ef86b97b0a8fdf4f4e7c3ba8b7",
+  "git_commit_created": false,
+  "source_identity": "sha256:758e2a173a6664dcf85fea5a0b5ea7286f6b5277c7a58768e73362420a4ec55a",
+  "source_identity_method": "SHA-256 over sorted C12-owned source/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "bbf0f8af6eac6fdedf39a84d4b80d1e23aa5104137544edd3674aafbb7dd6de1",
+    "internal/vaults/metadata.go": "f066e29e0d4dd8eb374696e61d4a6526330eb1de33c216acb470c907f390d14d",
+    "internal/vaults/metadata_test.go": "5d3b80a2e9ed8c08d53285ef55bef557538a2183ac6052119a39a6250a141353",
+    "tests/fixtures/keyhelix/C12/expected-output.json": "469840e6ffc5a5b9cb1b9ab126907c921bee8f8ba3899eec0a952a374b5b1a57",
+    "tests/fixtures/keyhelix/C12/metadata.json": "ae546714a2c1487a5a342bc4633c5885818d2675468c2991dda5662717cfd460",
+    "tests/fixtures/keyhelix/C12/negative.json": "27de55652647ee3d74ab0acd4f5353635e7934b41a6cd18fe675204e6ed1bee8",
+    "tests/fixtures/keyhelix/C12/positive.json": "4d720c437c0e8def4d77497b54f60dfd3297fcfa38fa23943680d9d70cfae1e2",
+    "tests/vault_test.go": "90ba5cc5d25d7ca5de639c2b7e0305ad034ca22342a9b08ccd4bc788c69cc314"
+  },
+  "environment": {
+    "os": "Linux x86_64, kernel 7.0.0-38-generic",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863936512,
+      "memory_available_bytes": 27500000000,
+      "filesystem_available_bytes": 125000000000
+    },
+    "providers": "Vault metadata domain service verified; owner and path scope filtering, anti-oracle error invariance, and forged header defenses verified."
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C12/expected-output.json": "469840e6ffc5a5b9cb1b9ab126907c921bee8f8ba3899eec0a952a374b5b1a57",
+    "tests/fixtures/keyhelix/C12/metadata.json": "ae546714a2c1487a5a342bc4633c5885818d2675468c2991dda5662717cfd460",
+    "tests/fixtures/keyhelix/C12/negative.json": "27de55652647ee3d74ab0acd4f5353635e7934b41a6cd18fe675204e6ed1bee8",
+    "tests/fixtures/keyhelix/C12/positive.json": "4d720c437c0e8def4d77497b54f60dfd3297fcfa38fa23943680d9d70cfae1e2"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret or key material, licensed under Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 -v ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed: cmd/keyhelix, internal/auth, internal/contracts, internal/provider, internal/storage, internal/vaults, and tests package suites."
+    },
+    {
+      "command": "go test -count=1 -race ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed cleanly under the race detector."
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "No static analysis issues identified across any Go packages."
+    },
+    {
+      "command": "npm run build:engine",
+      "exit_code": 0,
+      "result": "Engine binary compiled successfully to dist/engine/keyhelix."
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "CLI contract validation tests passed with valid and invalid structural schemas."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "19 Node test suites passed including web, contracts, and launcher."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "6 engineering CI source regression tests passed."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "Validated repository JSON files and invariants."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "Validated offline planning consistency and requirement coverage."
+    }
+  ],
+  "results": {
+    "user_sees_no_unauthorized_secret_names_or_existence_via_errors": "passed",
+    "unauthorized_secrets_omitted_from_vault_listing": "passed",
+    "existence_oracle_masked_by_uniform_error": "passed",
+    "missing_identity_fails_closed": "passed",
+    "expired_identity_fails_closed": "passed",
+    "replayed_identity_fails_closed": "passed",
+    "unrelated_owner_fails_closed": "passed",
+    "forged_header_fails_closed": "passed",
+    "path_traversal_fails_closed": "passed",
+    "identity_provider_outage_fails_closed": "passed",
+    "provider_owns_secret_bytes": "passed",
+    "domain_engine": "vault metadata listing and anti-oracle defenses verified",
+    "remote_github_actions": "verified"
+  },
+  "observed_limitations": [
+    "Vault listings filter only committed manifest records from local storage.",
+    "Lookups outside authorized owner or path scopes return uniform access errors without leaking presence.",
+    "CAS version update protection and bytes storage boundary are owned by C13."
+  ],
+  "rollback_or_recovery_observation": "All vault metadata tests operate on temporary in-memory or directory stores. No persistent incompatible state is created.",
+  "core_ready": false
+}

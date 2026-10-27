@@ -105,10 +105,12 @@
     },
     {
       "id": "C12",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C12.json"
+      ],
+      "source_identity": "sha256:758e2a173a6664dcf85fea5a0b5ea7286f6b5277c7a58768e73362420a4ec55a",
+      "notes": "User sees no unauthorized secret names or existence via errors; vault metadata filtered and single-item lookups masked."
     },
     {
       "id": "C13",

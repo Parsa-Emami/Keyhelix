@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-27",
-  "base_commit": "0cb2ab431d2ee264910428d0142036b8a689abf0",
-  "scope": "Server-side path manipulation cannot widen effective provider permissions; user identity to provider scope mapping, canonical path normalization, segment-boundary matching, and forged header defenses verified (C11)",
+  "base_commit": "0c89f8f4a33118ef86b97b0a8fdf4f4e7c3ba8b7",
+  "scope": "User sees no unauthorized secret names or existence via errors; vault metadata filtered and single-item lookups masked (C12)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -14,18 +14,19 @@
     "C08",
     "C09",
     "C10",
-    "C11"
+    "C11",
+    "C12"
   ],
   "git_commit_created": false,
   "changed_paths": [
-    "internal/auth/scope.go",
-    "internal/auth/scope_test.go",
-    "tests/scope_test.go",
-    "tests/fixtures/keyhelix/C11/positive.json",
-    "tests/fixtures/keyhelix/C11/metadata.json",
-    "tests/fixtures/keyhelix/C11/negative.json",
-    "tests/fixtures/keyhelix/C11/expected-output.json",
-    "docs/evidence/C11.json",
+    "internal/vaults/metadata.go",
+    "internal/vaults/metadata_test.go",
+    "tests/vault_test.go",
+    "tests/fixtures/keyhelix/C12/positive.json",
+    "tests/fixtures/keyhelix/C12/metadata.json",
+    "tests/fixtures/keyhelix/C12/negative.json",
+    "tests/fixtures/keyhelix/C12/expected-output.json",
+    "docs/evidence/C12.json",
     "plans/progress.json",
     "apps/web/src/generated/project.json"
   ],
@@ -42,11 +43,11 @@
     "npm run validate:plan",
     "git diff --check"
   ],
-  "validation_results": "docs/evidence/C11.json",
-  "final_source_identity": "sha256:c3c07a2cd84e6f355279f6abd21d221c684fe9fd8c9b5495b0c50418eccb5e56",
+  "validation_results": "docs/evidence/C12.json",
+  "final_source_identity": "sha256:758e2a173a6664dcf85fea5a0b5ea7286f6b5277c7a58768e73362420a4ec55a",
   "protected_paths_changed": [],
   "current_core_ready": false,
-  "next_task": "C12",
+  "next_task": "C13",
   "next_command": "npm run plan -- next",
-  "continuation": "C01-C11 are verified locally. Proceed with C12: feat(vaults): list only authorized vault metadata."
+  "continuation": "C01-C12 are verified locally. Proceed with C13: feat(secrets): write provider owned versioned secrets."
 }

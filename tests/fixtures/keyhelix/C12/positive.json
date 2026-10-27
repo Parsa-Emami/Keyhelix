@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C12 vault metadata listing fixture; contains no real secret or key material.",
+  "license": "Apache-2.0",
+  "identity": {
+    "subject": "usr_alice_01",
+    "email": "alice@keyhelix.local",
+    "vault_role": "vault-admin",
+    "allowed_owners": [
+      "alice@keyhelix.local",
+      "org:platform"
+    ],
+    "allowed_scopes": [
+      "vault:read",
+      "secret:read",
+      "app/prod/*"
+    ]
+  },
+  "vault_id": "vault-prod",
+  "seeded_secrets": [
+    {
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app/prod/database-url",
+      "classification": "restricted",
+      "authorized_for_alice": true
+    },
+    {
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app/prod/api-keys",
+      "classification": "restricted",
+      "authorized_for_alice": true
+    },
+    {
+      "owner": "alice@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "app/dev/db-credentials",
+      "classification": "internal",
+      "authorized_for_alice": false
+    },
+    {
+      "owner": "bob@keyhelix.local",
+      "scope": "vault-prod",
+      "name": "finance/payroll-key",
+      "classification": "restricted",
+      "authorized_for_alice": false
+    }
+  ],
+  "expected_visible_secrets": [
+    "app/prod/database-url",
+    "app/prod/api-keys"
+  ],
+  "expected_hidden_secrets": [
+    "app/dev/db-credentials",
+    "finance/payroll-key"
+  ],
+  "plaintext_canary": "synthetic-c12-secret-bytes-canary",
+  "metadata_file": "metadata.json"
+}

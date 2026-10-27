@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C12 expected results for vault metadata listing; verifies anti-oracle non-existence masking, owner/path scope filtering, and forged header defenses.",
+  "license": "Apache-2.0",
+  "metadata_sha256": "ae546714a2c1487a5a342bc4633c5885818d2675468c2991dda5662717cfd460",
+  "plaintext_canary": "synthetic-c12-secret-bytes-canary",
+  "guard_codes": {
+    "invalid_token": "INVALID_TOKEN",
+    "expired_token": "EXPIRED_TOKEN",
+    "nonce_mismatch": "NONCE_MISMATCH",
+    "scope_denied": "SCOPE_DENIED",
+    "path_traversal": "PATH_TRAVERSAL",
+    "invalid_path": "INVALID_PATH",
+    "idp_unavailable": "IDP_UNAVAILABLE",
+    "not_found": "NOT_FOUND"
+  }
+}

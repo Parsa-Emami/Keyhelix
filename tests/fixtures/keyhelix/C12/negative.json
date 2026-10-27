@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C12 vault metadata negative cases; contains no real secret or key material.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "missing-identity-rejected",
+      "kind": "identity_guard",
+      "description": "Missing identity fails before listing vault metadata",
+      "expected_code": "INVALID_TOKEN"
+    },
+    {
+      "case": "expired-identity-rejected",
+      "kind": "expiration_guard",
+      "description": "Expired identity fails before listing vault metadata",
+      "expected_code": "EXPIRED_TOKEN"
+    },
+    {
+      "case": "replayed-identity-rejected",
+      "kind": "replay_guard",
+      "description": "Replayed or mismatched nonce in identity is rejected",
+      "expected_code": "NONCE_MISMATCH"
+    },
+    {
+      "case": "unrelated-owner-denied",
+      "kind": "authorization_guard",
+      "description": "Identity attempting to list metadata for an unrelated owner is denied without leaking names",
+      "target_owner": "bob@keyhelix.local",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "unauthorized-path-probing-no-leak",
+      "kind": "anti_oracle_guard",
+      "description": "Querying unauthorized existing secret returns identical error to non-existent secret, preventing existence leakage",
+      "target_secret": "finance/payroll-key",
+      "nonexistent_secret": "app/prod/does-not-exist",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "forged-header-cannot-widen-listing",
+      "kind": "header_guard",
+      "description": "Forged proxy or override headers cannot expose hidden secret names",
+      "headers": {
+        "X-Original-URL": "/v1/vaults/admin/all",
+        "X-Vault-Path": "admin/*",
+        "X-Provider-Scope": "*"
+      },
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "widened-path-permission-denied",
+      "kind": "path_manipulation_guard",
+      "description": "Path traversal attempts in secret metadata lookup fail closed",
+      "target_secret": "app/prod/../../finance/payroll-key",
+      "expected_code": "PATH_TRAVERSAL"
+    },
+    {
+      "case": "identity-provider-unavailable-fails-closed",
+      "kind": "outage_guard",
+      "description": "When identity provider is offline, listing vault metadata fails closed",
+      "provider_offline": true,
+      "expected_code": "IDP_UNAVAILABLE"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "kind": "plaintext_canary",
+      "canary": "synthetic-c12-secret-bytes-canary",
+      "description": "Plaintext secret bytes are owned by provider and never stored or exposed in vault metadata listings",
+      "expected_persisted": false
+    }
+  ]
+}

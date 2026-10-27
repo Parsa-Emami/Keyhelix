@@ -153,7 +153,7 @@
       "id": "C12",
       "title": "feat(vaults): list only authorized vault metadata",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "User sees no unauthorized secret names or existence via errors."
       ],
