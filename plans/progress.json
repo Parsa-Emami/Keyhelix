@@ -96,10 +96,12 @@
     },
     {
       "id": "C11",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C11.json"
+      ],
+      "source_identity": "sha256:c3c07a2cd84e6f355279f6abd21d221c684fe9fd8c9b5495b0c50418eccb5e56",
+      "notes": "Server-side path manipulation cannot widen effective provider permissions; segment-boundary matching, canonical path normalization, and forged header defenses verified."
     },
     {
       "id": "C12",

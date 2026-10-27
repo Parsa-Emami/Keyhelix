@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C11 expected results for identity-to-provider scope mapping; verifies path manipulation defense, segment matching, forged header protection, and provider scope bounds.",
+  "license": "Apache-2.0",
+  "metadata_sha256": "a597e32404e22d38702a4070227e948e3032c6452b7cca3979a2f6add55c03ef",
+  "plaintext_canary": "synthetic-c11-secret-bytes-canary",
+  "guard_codes": {
+    "invalid_token": "INVALID_TOKEN",
+    "expired_token": "EXPIRED_TOKEN",
+    "nonce_mismatch": "NONCE_MISMATCH",
+    "scope_denied": "SCOPE_DENIED",
+    "path_traversal": "PATH_TRAVERSAL",
+    "invalid_path": "INVALID_PATH",
+    "idp_unavailable": "IDP_UNAVAILABLE",
+    "stepup_required": "STEPUP_REQUIRED"
+  }
+}

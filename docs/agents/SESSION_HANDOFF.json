@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
-  "date": "2026-10-26",
-  "base_commit": "d7c7704f31ad3456d76caf73e9f1f2a6dc1312e0",
-  "scope": "Fresh step-up reauthentication for sensitive actions (reveal and policy change), 120s TTL expiry, session binding enforcement, and token redaction (C10)",
+  "date": "2026-10-27",
+  "base_commit": "0cb2ab431d2ee264910428d0142036b8a689abf0",
+  "scope": "Server-side path manipulation cannot widen effective provider permissions; user identity to provider scope mapping, canonical path normalization, segment-boundary matching, and forged header defenses verified (C11)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -13,18 +13,19 @@
     "C07",
     "C08",
     "C09",
-    "C10"
+    "C10",
+    "C11"
   ],
   "git_commit_created": false,
   "changed_paths": [
-    "internal/auth/stepup.go",
-    "internal/auth/stepup_test.go",
-    "tests/stepup_test.go",
-    "tests/fixtures/keyhelix/C10/positive.json",
-    "tests/fixtures/keyhelix/C10/metadata.json",
-    "tests/fixtures/keyhelix/C10/negative.json",
-    "tests/fixtures/keyhelix/C10/expected-output.json",
-    "docs/evidence/C10.json",
+    "internal/auth/scope.go",
+    "internal/auth/scope_test.go",
+    "tests/scope_test.go",
+    "tests/fixtures/keyhelix/C11/positive.json",
+    "tests/fixtures/keyhelix/C11/metadata.json",
+    "tests/fixtures/keyhelix/C11/negative.json",
+    "tests/fixtures/keyhelix/C11/expected-output.json",
+    "docs/evidence/C11.json",
     "plans/progress.json",
     "apps/web/src/generated/project.json"
   ],
@@ -41,11 +42,11 @@
     "npm run validate:plan",
     "git diff --check"
   ],
-  "validation_results": "docs/evidence/C10.json",
-  "final_source_identity": "sha256:7a021ba8d8247d14d801a49e16a2b7105431351d790134e34165c04b54e7ffda",
+  "validation_results": "docs/evidence/C11.json",
+  "final_source_identity": "sha256:c3c07a2cd84e6f355279f6abd21d221c684fe9fd8c9b5495b0c50418eccb5e56",
   "protected_paths_changed": [],
   "current_core_ready": false,
-  "next_task": "C11",
+  "next_task": "C12",
   "next_command": "npm run plan -- next",
-  "continuation": "C01-C10 are verified locally. Proceed with C11: feat(authorization): map user identities to provider scope."
+  "continuation": "C01-C11 are verified locally. Proceed with C12: feat(vaults): list only authorized vault metadata."
 }

@@ -141,7 +141,7 @@
       "id": "C11",
       "title": "feat(authorization): map user identities to provider scope",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Server-side path manipulation cannot widen effective provider permissions."
       ],

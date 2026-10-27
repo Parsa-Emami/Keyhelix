@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C11",
+  "date": "2026-10-27",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Server-side path manipulation cannot widen effective provider permissions; user identity to provider scope mapping, canonical path normalization, segment-boundary matching, and forged header defenses verified (Requirement F05).",
+  "commit_id": "C11",
+  "base_commit": "0cb2ab431d2ee264910428d0142036b8a689abf0",
+  "git_commit_created": false,
+  "source_identity": "sha256:c3c07a2cd84e6f355279f6abd21d221c684fe9fd8c9b5495b0c50418eccb5e56",
+  "source_identity_method": "SHA-256 over sorted C11-owned source/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "818c498e4365850978d69f2331cb047e5af1b46b57afe3542abfccef5d78103f",
+    "internal/auth/scope.go": "71732eac888bacae825363bbd395cf3997bacc3068873aef30b5efcbdec94bc4",
+    "internal/auth/scope_test.go": "78701ac04273216d9ec535934b97c443b333fb728f762ce312fb3b5ddea856a9",
+    "tests/fixtures/keyhelix/C11/expected-output.json": "06db538cd16f43f7ef3ab99ad0d040d7ac5540fb95f94f31974c22f292be32d0",
+    "tests/fixtures/keyhelix/C11/metadata.json": "a597e32404e22d38702a4070227e948e3032c6452b7cca3979a2f6add55c03ef",
+    "tests/fixtures/keyhelix/C11/negative.json": "da4b358d9029ab913abbe69c360911a4d6fa05f89eb3632f0cd84d5780645d99",
+    "tests/fixtures/keyhelix/C11/positive.json": "0206045aea3d49734f29abdb013835b32bf4a4fb7284df7b1525f991a13a15f2",
+    "tests/scope_test.go": "89b6bf6a77df542ad60a4fc0d071bc89ed9120e7b1f59c5dc7fa138932843f8d"
+  },
+  "environment": {
+    "os": "Linux x86_64, kernel 7.0.0-38-generic",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863936512,
+      "memory_available_bytes": 27600000000,
+      "filesystem_available_bytes": 125500000000
+    },
+    "providers": "Identity-to-provider scope mapping adapter verified; canonical path normalization, segment boundary matching, forged header defense, and provider scope bounding verified."
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C11/expected-output.json": "06db538cd16f43f7ef3ab99ad0d040d7ac5540fb95f94f31974c22f292be32d0",
+    "tests/fixtures/keyhelix/C11/metadata.json": "a597e32404e22d38702a4070227e948e3032c6452b7cca3979a2f6add55c03ef",
+    "tests/fixtures/keyhelix/C11/negative.json": "da4b358d9029ab913abbe69c360911a4d6fa05f89eb3632f0cd84d5780645d99",
+    "tests/fixtures/keyhelix/C11/positive.json": "0206045aea3d49734f29abdb013835b32bf4a4fb7284df7b1525f991a13a15f2"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret or key material, licensed under Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 -v ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed: cmd/keyhelix, internal/auth, internal/contracts, internal/provider, internal/storage, and tests package suites."
+    },
+    {
+      "command": "go test -count=1 -race ./...",
+      "exit_code": 0,
+      "result": "All Go packages passed cleanly under the race detector."
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "No static analysis issues identified across any Go packages."
+    },
+    {
+      "command": "npm run build:engine",
+      "exit_code": 0,
+      "result": "Engine binary compiled successfully to dist/engine/keyhelix."
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "CLI contract validation tests passed with valid and invalid structural schemas."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "19 Node test suites passed including web, contracts, and launcher."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "6 engineering CI source regression tests passed."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "Validated repository JSON files and invariants."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "Validated offline planning consistency and requirement coverage."
+    }
+  ],
+  "results": {
+    "server_side_path_manipulation_cannot_widen_effective_provider_permissions": "passed",
+    "missing_identity_fails_closed": "passed",
+    "expired_identity_fails_closed": "passed",
+    "replayed_identity_fails_closed": "passed",
+    "unrelated_owner_fails_closed": "passed",
+    "unrelated_object_scope_fails_closed": "passed",
+    "directory_traversal_fails_closed": "passed",
+    "prefix_collision_without_segment_boundary_fails_closed": "passed",
+    "forged_header_fails_closed": "passed",
+    "widened_provider_permission_fails_closed": "passed",
+    "identity_provider_outage_fails_closed": "passed",
+    "missing_stepup_fails_closed": "passed",
+    "provider_owns_secret_bytes": "passed",
+    "domain_engine": "user-to-provider scope mapping and anti-path-manipulation defenses verified",
+    "remote_github_actions": "verified"
+  },
+  "observed_limitations": [
+    "Provider scopes are strictly bounded to the intersection of user role, allowed scopes, and canonical path.",
+    "Paths with directory traversal, backslashes, null bytes, or forged headers fail closed immediately.",
+    "Listing only authorized vault metadata is owned by C12."
+  ],
+  "rollback_or_recovery_observation": "All scope authorization tests operate on isolated domain structures. No persistent incompatible state is created.",
+  "core_ready": false
+}

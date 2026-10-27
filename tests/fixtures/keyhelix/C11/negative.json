@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C11 scope mapping negative cases; contains no real secret or key material.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "missing-identity-rejected",
+      "kind": "identity_guard",
+      "description": "Missing or nil identity token fails before any sensitive action can be authorized",
+      "action": "reveal_secret",
+      "expected_code": "INVALID_TOKEN"
+    },
+    {
+      "case": "expired-identity-rejected",
+      "kind": "expiration_guard",
+      "description": "Expired identity token fails before sensitive side effects",
+      "action": "reveal_secret",
+      "expected_code": "EXPIRED_TOKEN"
+    },
+    {
+      "case": "replayed-identity-rejected",
+      "kind": "replay_guard",
+      "description": "Replayed or mismatched nonce in identity token is rejected",
+      "action": "reveal_secret",
+      "expected_code": "NONCE_MISMATCH"
+    },
+    {
+      "case": "unrelated-owner-denied",
+      "kind": "authorization_guard",
+      "description": "Identity attempting to access an unrelated owner is denied before sensitive side effects",
+      "actor": "alice@keyhelix.local",
+      "target_owner": "bob@keyhelix.local",
+      "action": "secret:read",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "unrelated-object-scope-denied",
+      "kind": "scope_guard",
+      "description": "Identity attempting an action beyond allowed object scopes is denied",
+      "actor": "alice@keyhelix.local",
+      "target_owner": "alice@keyhelix.local",
+      "action": "admin:system:override",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "directory-traversal-cannot-widen-scope",
+      "kind": "path_manipulation_guard",
+      "description": "Directory traversal sequences cannot escape vault boundary or widen provider permissions",
+      "raw_path": "app/prod/../../../etc/passwd",
+      "expected_code": "PATH_TRAVERSAL"
+    },
+    {
+      "case": "dot-dot-slash-escape-cannot-widen-scope",
+      "kind": "path_manipulation_guard",
+      "description": "Relative directory traversal within path cannot escape authorized subtree to widen permissions",
+      "raw_path": "app/prod/../dev/secret",
+      "expected_code": "PATH_TRAVERSAL"
+    },
+    {
+      "case": "url-encoded-traversal-rejected",
+      "kind": "encoding_guard",
+      "description": "URL-encoded traversal sequences are detected and rejected",
+      "raw_path": "app/prod/%2e%2e%2fdev/secret",
+      "expected_code": "PATH_TRAVERSAL"
+    },
+    {
+      "case": "null-byte-injection-rejected",
+      "kind": "poisoning_guard",
+      "description": "Null byte poisoning in secret paths is rejected",
+      "raw_path": "app/prod/database-url%00/escalate",
+      "expected_code": "INVALID_PATH"
+    },
+    {
+      "case": "backslash-traversal-rejected",
+      "kind": "path_manipulation_guard",
+      "description": "Backslashes in secret paths are rejected to prevent cross-platform separator confusion",
+      "raw_path": "app\\prod\\database-url",
+      "expected_code": "INVALID_PATH"
+    },
+    {
+      "case": "prefix-collision-cannot-widen-scope",
+      "kind": "boundary_guard",
+      "description": "Prefix matching without segment boundary cannot widen scope granted for app/prod/*",
+      "raw_path": "app/prod-secret/database-url",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "forged-header-cannot-widen-permissions",
+      "kind": "header_guard",
+      "description": "Forged client or proxy headers cannot override server-side path or widen provider permissions",
+      "headers": {
+        "X-Original-URL": "/v1/vaults/admin/keys",
+        "X-Vault-Path": "admin/keys",
+        "X-Provider-Scope": "transit:admin"
+      },
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "widened-provider-permission-denied",
+      "kind": "provider_scope_guard",
+      "description": "Identity cannot access KEK or transit capabilities for unauthorized foreign vault",
+      "target_vault": "vault-foreign",
+      "action": "reveal_secret",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "identity-provider-unavailable-fails-closed",
+      "kind": "outage_guard",
+      "description": "When identity provider is offline or returns server error, authorization fails closed",
+      "provider_offline": true,
+      "expected_code": "IDP_UNAVAILABLE"
+    },
+    {
+      "case": "missing-stepup-for-sensitive-action",
+      "kind": "stepup_guard",
+      "description": "Sensitive actions without fresh step-up authentication fail closed before reveal",
+      "action": "reveal_secret",
+      "expected_code": "STEPUP_REQUIRED"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "kind": "plaintext_canary",
+      "canary": "synthetic-c11-secret-bytes-canary",
+      "description": "Plaintext secret bytes are owned by provider and never stored or exposed by scope authorizer",
+      "expected_persisted": false
+    }
+  ]
+}

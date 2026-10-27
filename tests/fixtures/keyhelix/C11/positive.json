@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C11 identity-to-provider scope mapping fixture; contains no real secret or key material.",
+  "license": "Apache-2.0",
+  "identity": {
+    "subject": "usr_alice_01",
+    "email": "alice@keyhelix.local",
+    "vault_role": "vault-admin",
+    "allowed_owners": [
+      "alice@keyhelix.local",
+      "org:platform"
+    ],
+    "allowed_scopes": [
+      "vault:read",
+      "vault:write",
+      "secret:read",
+      "secret:write",
+      "policy:write"
+    ],
+    "path_scopes": [
+      "app/prod/*",
+      "app/dev/*",
+      "shared/public/*"
+    ]
+  },
+  "target_reveal": {
+    "vault_id": "vault-prod",
+    "secret_path": "app/prod/database-url",
+    "canonical_path": "app/prod/database-url",
+    "action": "reveal_secret",
+    "required_scope": "secret:read",
+    "expected_provider_scopes": [
+      "transit:decrypt"
+    ],
+    "expected_kek_id": "kek-v1-openbao",
+    "expected_provider_mount": "transit"
+  },
+  "target_write": {
+    "vault_id": "vault-prod",
+    "secret_path": "app/prod/api-keys",
+    "canonical_path": "app/prod/api-keys",
+    "action": "secret:write",
+    "required_scope": "secret:write",
+    "expected_provider_scopes": [
+      "transit:encrypt"
+    ],
+    "expected_kek_id": "kek-v1-openbao",
+    "expected_provider_mount": "transit"
+  },
+  "plaintext_canary": "synthetic-c11-secret-bytes-canary",
+  "metadata_file": "metadata.json"
+}
