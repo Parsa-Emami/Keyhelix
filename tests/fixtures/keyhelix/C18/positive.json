@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C18 resumable version rotation fixture; contains no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "vault": {
+    "vault_id": "vault-prod",
+    "kek_id": "kek-v1-openbao",
+    "mount": "transit",
+    "role": "vault-admin"
+  },
+  "operator_identity": {
+    "subject": "usr_c18_alice",
+    "email": "alice@keyhelix.local",
+    "vault_role": "vault-admin",
+    "allowed_owners": [
+      "alice@keyhelix.local",
+      "org:platform"
+    ],
+    "allowed_scopes": [
+      "secret:read",
+      "secret:write",
+      "production/services/*"
+    ]
+  },
+  "job_id": "rot-c18-payment-v2",
+  "target_kek_id": "kek-v1-openbao",
+  "target_kek_version": "v2",
+  "secrets": [
+    {
+      "secret_path": "production/services/payment/api-key",
+      "classification": "restricted",
+      "sentinel": "sentinel-canary-c18-primary-secret-91a4"
+    },
+    {
+      "secret_path": "production/services/payment/webhook-secret",
+      "classification": "restricted",
+      "sentinel": "sentinel-canary-c18-secondary-secret-82b5"
+    }
+  ],
+  "expected_events": [
+    "key.rotation_started.v1",
+    "key.envelope_rewrapped.v1",
+    "key.rotation_completed.v1"
+  ],
+  "metadata_file": "metadata.json"
+}

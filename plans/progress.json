@@ -159,10 +159,12 @@
     },
     {
       "id": "C18",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C18.json"
+      ],
+      "source_identity": "sha256:6dc4d89ec519845f22d30838d0c8db7ad43d0d5fbaaf47509c0009e98ecca2d2",
+      "notes": "Resumable provider version and KEK rotations verified locally; partial rotation resumes from durable checkpoint without deleting valid prior secret version."
     },
     {
       "id": "C19",

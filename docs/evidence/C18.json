@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C18",
+  "date": "2026-10-27",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Partial rotation resumes without deleting valid prior secret version (Requirement F12).",
+  "commit_id": "C18",
+  "base_commit": "84b3f582f3c0ce2f4ad7172ec1ebfa3748259d59",
+  "git_commit_created": false,
+  "source_identity": "sha256:6dc4d89ec519845f22d30838d0c8db7ad43d0d5fbaaf47509c0009e98ecca2d2",
+  "source_identity_method": "SHA-256 over sorted C18-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "3c227cce3257d17f43c63605e3c636e83a83836f2643b196a28fbc6aaffc70f1",
+    "internal/rotation/service.go": "93800ce90ca8f67bba686f66a8fc0d70e3b35be03bdeded88cc3ac23467befb9",
+    "internal/rotation/service_test.go": "ce280f52c61fcda902ea1c82aaa7a0e2d418679463a21e21fa327c38052712b0",
+    "tests/fixtures/keyhelix/C18/expected-output.json": "a41a585f46addeeff8588ea7a68f4932fdfe0d4a06e41b7c1b50aa732504ca1c",
+    "tests/fixtures/keyhelix/C18/metadata.json": "e985d471404efe5aa440d88aeeb60bfca99fd4b533c637e63474204968ece436",
+    "tests/fixtures/keyhelix/C18/negative.json": "9f9a5676eef13cc2dbb162adec7772ad0e69e9e16c01d3cee7f0855d675b1eaf",
+    "tests/fixtures/keyhelix/C18/positive.json": "3530b20e565b64d8e99cdafee5b23e979ecf9bbd0f51e0b61b918791e3bd635f",
+    "tests/rotation_test.go": "0aca3b1e34fb9b49be876f9bae5589c498dbea6424a48ff185fc2c509a95c3f1"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 GNU/Linux (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863936512,
+      "memory_available_bytes": 23881408512,
+      "filesystem_available_bytes": 126222049280
+    },
+    "providers": "No external service was used. The OpenBao adapter was exercised against an in-process OpenBao-compatible HTTP fixture implementing /v1/sys/health, /v1/transit/encrypt|decrypt and KV v2 /v1/kv/data; storage, session, step-up, scope-mapper, security, audit, secrets, and rotation collaborators were real repository implementations.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://www.keycloak.org/documentation",
+      "https://openid.net/specs/openid-connect-core-1_0.html",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C18/expected-output.json": "a41a585f46addeeff8588ea7a68f4932fdfe0d4a06e41b7c1b50aa732504ca1c",
+    "tests/fixtures/keyhelix/C18/metadata.json": "e985d471404efe5aa440d88aeeb60bfca99fd4b533c637e63474204968ece436",
+    "tests/fixtures/keyhelix/C18/negative.json": "9f9a5676eef13cc2dbb162adec7772ad0e69e9e16c01d3cee7f0855d675b1eaf",
+    "tests/fixtures/keyhelix/C18/positive.json": "3530b20e565b64d8e99cdafee5b23e979ecf9bbd0f51e0b61b918791e3bd635f"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret, key or credential material, licensed under Apache-2.0.",
+  "implementation_summary": [
+    "internal/rotation/service.go: Resumable rotation service implementing KeyRotation state transitions (PLANNED -> REWRAPPING -> VERIFYING -> COMPLETE | FAILED_ROLLBACK), mandatory fresh step-up authentication (ActionPolicyChange), durable per-item checkpointing in storage.Port, preservation of valid prior secret versions in provider KV v2 and storage, KEK retirement guard (CanRetirePriorKEK) blocking retirement until all live envelopes are verified rewrapped, and CloudEvents 1.0 audit emission (key.rotation_started.v1, key.envelope_rewrapped.v1, key.rotation_completed.v1).",
+    "internal/rotation/service_test.go: Unit tests covering legal and illegal KeyRotation state transitions and prerequisite validation.",
+    "tests/fixtures/keyhelix/C18/: Synthetic positive, negative, expected-output, and metadata fixtures covering resumable version rotations, mid-rotation interruption, provider outage, restart recovery, and negative cases.",
+    "tests/rotation_test.go: TestC18PartialRotationResumesWithoutDeletingPriorVersionF12 (proving mid-rotation pause, preservation of prior version v1 in provider and storage, KEK retirement block during partial state, recovery across storage close/reopen restart, resumption to COMPLETE, and CloudEvents emission) and TestC18NegativeCasesF12 (missing step-up, malformed fixtures, provider outage mid-rotation preserving prior version, premature KEK retirement blocked, restart recovery, and provider-owned secret bytes)."
+  ],
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 ./...",
+      "exit_code": 0,
+      "result": "ok cmd/keyhelix, internal/audit, internal/auth, internal/contracts, internal/grants, internal/provider, internal/rotation, internal/secrets, internal/security, internal/storage, internal/vaults, tests"
+    },
+    {
+      "command": "go test -count=1 -v -run 'TestC18' ./tests/",
+      "exit_code": 0,
+      "result": "--- PASS: TestC18PartialRotationResumesWithoutDeletingPriorVersionF12 (0.02s); --- PASS: TestC18NegativeCasesF12 (0.02s); ok github.com/parsa-emami/keyhelix/tests 0.050s"
+    },
+    {
+      "command": "go test -count=1 -race ./...",
+      "exit_code": 0,
+      "result": "ok cmd/keyhelix, internal/audit, internal/auth, internal/contracts, internal/grants, internal/provider, internal/rotation, internal/secrets, internal/security, internal/storage, internal/vaults, tests under race detector"
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "clean - zero diagnostics"
+    },
+    {
+      "command": "npm run build:engine",
+      "exit_code": 0,
+      "result": "Engine binary compiled successfully to dist/engine/keyhelix."
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "tests 2, pass 2, fail 0, duration_ms 376.41"
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "tests 19, pass 19, fail 0, duration_ms 613.76"
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "Ran 6 tests in 0.672s - OK"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "VALIDATION PASSED - Checked 213 JSON files and repository contract invariants."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "PLAN VALIDATION PASSED - 40 intents, coverage and progress checked; no application runtime tests performed"
+    },
+    {
+      "command": "npm run prepare:web",
+      "exit_code": 0,
+      "result": "Project web data generated successfully."
+    }
+  ],
+  "results": {
+    "partial_rotation_resumes": true,
+    "prior_secret_version_preserved": true,
+    "kek_retirement_blocked_until_verified": true,
+    "restart_and_resume_recovery_verified": true,
+    "missing_prerequisites_or_step_up_rejected": true,
+    "malformed_fixture_rejected": true,
+    "unavailable_provider_fails_explicitly": true,
+    "audit_events_emitted_for_rotation": true,
+    "provider_owns_secret_bytes": true,
+    "domain_engine": true
+  },
+  "verification_details": [
+    "RESUMABLE PARTIAL ROTATION: Pausing after rotating the first secret left the job in REWRAPPING with secret 1 at v2 and secret 2 at v1; resuming after storage restart completed secret 2 without re-rotating secret 1.",
+    "PRIOR VERSION PRESERVATION: Verified that v1 sealed payloads in OpenBao KV v2 remained intact and readable both during partial rotation, after provider outage, and after rotation completion.",
+    "KEK RETIREMENT INVARIANT: Verified that CanRetirePriorKEK fails closed with ROTATION_INCOMPLETE while rotation is partial and succeeds only after all target envelopes are verified rewrapped.",
+    "ATTRIBUTABLE AUDIT & ZERO LEAKAGE: Emitted CloudEvents 1.0 events (key.rotation_started.v1, key.envelope_rewrapped.v1, key.rotation_completed.v1) with zero sentinel secret leakage in storage or audit logs."
+  ],
+  "ci_defect_fixes": [],
+  "observed_limitations": "Hardware performance target (4 vCPU / 8 GiB RAM / 20 GiB disk) remains unmeasured until C28; OpenBao is exercised via an in-process wire fixture.",
+  "rollback_or_recovery_observation": "Revert the isolated C18 change if necessary. No database schema or migration was altered. All rotation job records and secret versions remain clean and backward-compatible.",
+  "core_ready": false
+}

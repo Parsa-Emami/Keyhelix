@@ -225,7 +225,7 @@
       "id": "C18",
       "title": "feat(rotation): track resumable provider version rotations",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Partial rotation resumes without deleting valid prior secret version."
       ],

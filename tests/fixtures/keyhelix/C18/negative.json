@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "case": "missing-prerequisites-or-step-up-rejected",
+      "description": "Missing prerequisites or absent/invalid step-up token fails closed before rotation side effects",
+      "expected_code": "STEP_UP_REQUIRED"
+    },
+    {
+      "case": "malformed-fixture-rejected",
+      "description": "Malformed secret metadata fixture is rejected by the frozen v1 contract validator",
+      "malformed_json": "{\"schema_version\":\"1\",\"vault_id\":\"\",\"version\":0}",
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "unavailable-provider-mid-rotation-preserves-prior-version",
+      "description": "Provider outage during rotation produces explicit PROVIDER_UNAVAILABLE error without deleting prior valid secret version",
+      "expected_code": "PROVIDER_UNAVAILABLE"
+    },
+    {
+      "case": "premature-kek-retirement-blocked",
+      "description": "Retiring prior KEK while rotation is partial/incomplete is forbidden",
+      "expected_code": "ROTATION_INCOMPLETE"
+    },
+    {
+      "case": "restart-and-resume-recovery-verified",
+      "description": "Partial rotation state recovers across storage close/reopen and resumes to COMPLETE without losing prior version",
+      "expected_code": "COMPLETE"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "description": "Plaintext secret sentinels never enter rotation or secret metadata storage files or audit logs",
+      "sentinel": "sentinel-canary-c18-primary-secret-91a4",
+      "expected_storage_occurrence_count": 0
+    }
+  ]
+}

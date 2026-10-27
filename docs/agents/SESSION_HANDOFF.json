@@ -2,7 +2,7 @@
   "project": "KeyHelix",
   "date": "2026-10-27",
   "base_commit": "84b3f582f3c0ce2f4ad7172ec1ebfa3748259d59",
-  "scope": "Member changes require step-up; privilege reduction takes effect on next sensitive request (C17 / F11)",
+  "scope": "Partial rotation resumes without deleting valid prior secret version (C18 / F12)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -20,27 +20,28 @@
     "C14",
     "C15",
     "C16",
-    "C17"
+    "C17",
+    "C18"
   ],
   "git_commit_created": false,
   "changed_paths": [
     "apps/web/src/generated/project.json",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C17.json",
-    "internal/grants/service.go",
-    "internal/grants/service_test.go",
+    "docs/evidence/C18.json",
+    "internal/rotation/service.go",
+    "internal/rotation/service_test.go",
     "plans/progress.json",
-    "tests/fixtures/keyhelix/C17/expected-output.json",
-    "tests/fixtures/keyhelix/C17/metadata.json",
-    "tests/fixtures/keyhelix/C17/negative.json",
-    "tests/fixtures/keyhelix/C17/positive.json",
-    "tests/grants_test.go"
+    "tests/fixtures/keyhelix/C18/expected-output.json",
+    "tests/fixtures/keyhelix/C18/metadata.json",
+    "tests/fixtures/keyhelix/C18/negative.json",
+    "tests/fixtures/keyhelix/C18/positive.json",
+    "tests/rotation_test.go"
   ],
   "ci_defect_fixes": [],
   "commands": [
     "npm run validate:plan",
     "go test -count=1 ./...",
-    "go test -count=1 -v -run 'TestC17' ./tests/",
+    "go test -count=1 -v -run 'TestC18' ./tests/",
     "go test -count=1 -race ./...",
     "go vet ./...",
     "npm run build:engine",
@@ -49,14 +50,13 @@
     "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
     "python3 scripts/validate_repo.py",
     "python3 scripts/plan.py validate",
-    "npm run prepare:web",
-    "git diff --check"
+    "npm run prepare:web"
   ],
-  "validation_results": "docs/evidence/C17.json",
-  "final_source_identity": "sha256:8f1ad0298e5176c7e526f2f99a85d3a3ba2ff2b3e4fbcd9e7d3858366a9ba637",
+  "validation_results": "docs/evidence/C18.json",
+  "final_source_identity": "sha256:6dc4d89ec519845f22d30838d0c8db7ad43d0d5fbaaf47509c0009e98ecca2d2",
   "protected_paths_changed": [],
   "current_core_ready": false,
-  "next_task": "C18",
+  "next_task": "C19",
   "next_command": "npm run plan -- next",
-  "continuation": "C01-C17 are verified locally. Proceed with C18: feat(rotation): track resumable provider version rotations. The worktree is not committed; the owner must commit the listed paths before CI can test them."
+  "continuation": "C01-C18 are verified locally. Proceed with C19: feat(deletion): apply provider retention and explicit destruction. The worktree is not committed; the owner must commit the listed paths before CI can test them."
 }

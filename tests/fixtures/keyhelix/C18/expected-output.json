@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "requirement": "F12",
+  "acceptance": "Partial rotation resumes without deleting valid prior secret version.",
+  "status": "passed",
+  "metadata_sha256": "e985d471404efe5aa440d88aeeb60bfca99fd4b533c637e63474204968ece436",
+  "partial_rotation_resumes": true,
+  "prior_secret_version_preserved": true,
+  "kek_retirement_blocked_until_verified": true,
+  "guard_codes": {
+    "step_up_required": "STEP_UP_REQUIRED",
+    "invalid_input": "INVALID_INPUT",
+    "provider_unavailable": "PROVIDER_UNAVAILABLE",
+    "rotation_incomplete": "ROTATION_INCOMPLETE"
+  },
+  "provider_owns_secret_bytes": true
+}
