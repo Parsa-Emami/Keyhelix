@@ -82,5 +82,13 @@
     "retention_applied_on_delete": true,
     "explicit_operator_action_enforced": true,
     "destruction_irreversible_across_restart": true
+  },
+  "results": {
+    "delete_and_destroy_are_distinct": true,
+    "retention_applied_on_delete": true,
+    "explicit_operator_action_enforced": true,
+    "destruction_irreversible_across_restart": true,
+    "provider_owns_secret_bytes": true,
+    "domain_engine": true
   }
 }

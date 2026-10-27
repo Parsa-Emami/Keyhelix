@@ -84,5 +84,11 @@
     "ui_never_fetches_plaintext_for_list": true,
     "metadata_streaming_authenticated": true,
     "zero_plaintext_persistence": true
+  },
+  "results": {
+    "ui_never_fetches_plaintext_for_list": true,
+    "metadata_streaming_authenticated": true,
+    "zero_plaintext_persistence": true,
+    "provider_owns_secret_bytes": true
   }
 }
