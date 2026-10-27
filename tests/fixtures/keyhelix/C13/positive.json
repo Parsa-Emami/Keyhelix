@@ -1,0 +1,19 @@
+{
+  "scenario": "versioned-cas-secret-write",
+  "vault_id": "vlt-prod-primary",
+  "secret_path": "production/databases/postgres/credentials",
+  "initial_write": {
+    "expected_version": 0,
+    "payload_canary": "super-secret-password-initial",
+    "kek_id": "kek-database-prod",
+    "classification": "CONFIDENTIAL",
+    "expected_resulting_version": 1
+  },
+  "subsequent_write": {
+    "expected_version": 1,
+    "payload_canary": "super-secret-password-rotated",
+    "kek_id": "kek-database-prod",
+    "classification": "CONFIDENTIAL",
+    "expected_resulting_version": 2
+  }
+}

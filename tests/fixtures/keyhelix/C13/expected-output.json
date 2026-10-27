@@ -1,0 +1,13 @@
+{
+  "requirement": "F07",
+  "acceptance": "CAS version prevents lost update; bytes never enter metadata storage.",
+  "status": "passed",
+  "guard_codes": [
+    "STALE_VERSION",
+    "DUPLICATE_CREATE",
+    "PROVIDER_UNAVAILABLE",
+    "INVALID_INPUT"
+  ],
+  "storage_plaintext_leak_count": 0,
+  "cas_enforced": true
+}

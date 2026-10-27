@@ -114,10 +114,12 @@
     },
     {
       "id": "C13",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C13.json"
+      ],
+      "source_identity": "sha256:988644446450a5f7b5cfde8e3e449e5c9111dbfbcec5806f084a288a3ea0e30e",
+      "notes": "CAS version prevents lost update; bytes never enter metadata storage; provider-owned DEK envelopes verified."
     },
     {
       "id": "C14",

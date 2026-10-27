@@ -1,0 +1,40 @@
+{
+  "cases": [
+    {
+      "id": "stale-version-conflict-rejected",
+      "vault_id": "vlt-prod-primary",
+      "secret_path": "production/databases/postgres/credentials",
+      "expected_version": 99,
+      "payload_canary": "should-never-persist",
+      "expected_error": "STALE_VERSION"
+    },
+    {
+      "id": "duplicate-create-rejected",
+      "vault_id": "vlt-prod-primary",
+      "secret_path": "production/databases/postgres/credentials",
+      "expected_version": 0,
+      "payload_canary": "should-never-persist",
+      "expected_error": "DUPLICATE_CREATE"
+    },
+    {
+      "id": "provider-offline-fails-closed",
+      "vault_id": "vlt-prod-primary",
+      "secret_path": "production/databases/postgres/offline-target",
+      "expected_version": 0,
+      "payload_canary": "offline-canary-secret",
+      "provider_state": "unavailable",
+      "expected_error": "PROVIDER_UNAVAILABLE"
+    },
+    {
+      "id": "provider-owns-secret-bytes",
+      "description": "Plaintext secret bytes must never enter metadata storage",
+      "canary_token": "CANARY_TOKEN_NEVER_ENTER_STORAGE_XYZ987",
+      "expected_storage_occurrence_count": 0
+    },
+    {
+      "id": "malformed-contract-rejected",
+      "description": "Invalid metadata structures or empty payload rejected",
+      "expected_error": "INVALID_INPUT"
+    }
+  ]
+}

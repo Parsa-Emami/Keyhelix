@@ -165,7 +165,7 @@
       "id": "C13",
       "title": "feat(secrets): write provider owned versioned secrets",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "CAS version prevents lost update; bytes never enter metadata storage."
       ],

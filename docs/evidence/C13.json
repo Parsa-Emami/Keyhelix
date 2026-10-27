@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C13",
+  "date": "2026-10-27",
+  "passed": true,
+  "planning_template": false,
+  "scope": "CAS version prevents lost update; bytes never enter metadata storage (Requirement F07).",
+  "commit_id": "C13",
+  "base_commit": "66722ee04c264bfbeea4eb832960682fb4f5351a",
+  "git_commit_created": false,
+  "source_identity": "sha256:988644446450a5f7b5cfde8e3e449e5c9111dbfbcec5806f084a288a3ea0e30e",
+  "source_identity_method": "SHA-256 over sorted C13-owned source/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "bbf0f8af6eac6fdedf39a84d4b80d1e23aa5104137544edd3674aafbb7dd6de1",
+    "internal/secrets/write.go": "68bc00cfba6bed542f797f794144049fff98ad0476b660eeb18cfeae93280f06",
+    "internal/secrets/write_test.go": "d2702f1088442730cea1da1d00d59daf0ebff3e5b366e98d700fa2a43a5cccf2",
+    "tests/fixtures/keyhelix/C13/expected-output.json": "a934550331cefa2a8ea66b203930de812d04699adc9487bfcd72149f8a6f4494",
+    "tests/fixtures/keyhelix/C13/metadata.json": "d42778a5b9f3ca7fcc89555519759c01c85eee7e05ac7d86d2bee2df895ed098",
+    "tests/fixtures/keyhelix/C13/negative.json": "0ca881abf94c4767922650a88b6e84a981a78a5606c215812b580e929b494bc8",
+    "tests/fixtures/keyhelix/C13/positive.json": "1880419da530b49c088ea9ccdf60f43a0746e4a9dce71c196580cb4312d302dc",
+    "tests/version_test.go": "8590cd6bd6f0efabcfe648e09061d6e94f89d94858bc7ca1dfd6eb834b6d7e50"
+  },
+  "environment": {
+    "os": "Linux x86_64, kernel 7.0.0-38-generic",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863936512,
+      "memory_available_bytes": 27500000000,
+      "filesystem_available_bytes": 125000000000
+    },
+    "providers": "Versioned secrets domain service verified; CAS updates enforce single-writer progression, provider-owned DEK encryption envelope isolates plaintext from metadata store."
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C13/expected-output.json": "a934550331cefa2a8ea66b203930de812d04699adc9487bfcd72149f8a6f4494",
+    "tests/fixtures/keyhelix/C13/metadata.json": "d42778a5b9f3ca7fcc89555519759c01c85eee7e05ac7d86d2bee2df895ed098",
+    "tests/fixtures/keyhelix/C13/negative.json": "0ca881abf94c4767922650a88b6e84a981a78a5606c215812b580e929b494bc8",
+    "tests/fixtures/keyhelix/C13/positive.json": "1880419da530b49c088ea9ccdf60f43a0746e4a9dce71c196580cb4312d302dc"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret or key material, licensed under Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 -v ./internal/secrets/...",
+      "exit_code": 0,
+      "result": "=== RUN   TestWriteSecretCASAndBytesNeverStored\n--- PASS: TestWriteSecretCASAndBytesNeverStored (0.06s)\n=== RUN   TestWriteSecretProviderUnavailable\n--- PASS: TestWriteSecretProviderUnavailable (0.01s)\n=== RUN   TestWriteSecretUnauthorized\n--- PASS: TestWriteSecretUnauthorized (0.01s)\nPASS\nok   github.com/parsa-emami/keyhelix/internal/secrets 0.090s"
+    },
+    {
+      "command": "go test -count=1 -v ./tests/version_test.go",
+      "exit_code": 0,
+      "result": "=== RUN   TestVersionedSecretWriteF07\n--- PASS: TestVersionedSecretWriteF07 (0.10s)\nPASS\nok   command-line-arguments 0.105s"
+    },
+    {
+      "command": "go test -count=1 -race ./internal/secrets/... ./tests/...",
+      "exit_code": 0,
+      "result": "ok   github.com/parsa-emami/keyhelix/internal/secrets 1.106s\nok   github.com/parsa-emami/keyhelix/tests 12.767s"
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "clean - zero diagnostics"
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "pass 2, fail 0, 186.81ms"
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "pass 19, fail 0, 197.78ms"
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "Ran 6 tests in 0.369s, OK"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "VALIDATION PASSED (188 JSON files checked)"
+    }
+  ],
+  "verification_details": {
+    "cas_protection": "Demonstrated that concurrent writers attempting the same ExpectedVersion results in exactly one winner and one STALE_VERSION rejection.",
+    "plaintext_isolation": "Exhaustive scans of Store.Read and every raw on-disk file in the storage directory confirmed 0 occurrences of plaintext canary secret bytes.",
+    "restart_recovery": "Store restart successfully retains manifest version and prevents stale CAS replay while correctly accepting the next sequential version."
+  }
+}
