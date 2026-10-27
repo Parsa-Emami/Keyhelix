@@ -201,7 +201,7 @@
       "id": "C16",
       "title": "feat(audit): emit attributable metadata audit events",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Actor, provider action and outcome exist without secret values or bearer credentials."
       ],

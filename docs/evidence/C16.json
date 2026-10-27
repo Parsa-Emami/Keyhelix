@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C16",
+  "date": "2026-10-27",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Actor, provider action and outcome exist without secret values or bearer credentials (Requirement F10).",
+  "commit_id": "C16",
+  "base_commit": "84b3f582f3c0ce2f4ad7172ec1ebfa3748259d59",
+  "git_commit_created": false,
+  "source_identity": "sha256:3e5a837b7780833285eb7b990d606b7b7663a40e34eec9289be3a3bd92a9cf5b",
+  "source_identity_method": "SHA-256 over sorted C16-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "db94e5fdd27037d27e7e6346b85fddb1e7ecd52d2964f6409ae862aede65685a",
+    "internal/audit/events.go": "419df6f83bff2fca1849006a91476771f3f21ca10a96cc380e8ffbf3439eb1ac",
+    "internal/audit/events_test.go": "4bdc3fcbe7eb7004466b829e49bc5b75c0188158ca4a798926a736aa898a335d",
+    "tests/audit_test.go": "b490c5c328361619348b9c87f1a4bb0cd9f50b66c5cff7a131ab9bba977555a8",
+    "tests/fixtures/keyhelix/C16/expected-output.json": "b6d4dbf9ab4a5df442b2d1a2cd16dd085a6d6fea54c046547a9521e091560461",
+    "tests/fixtures/keyhelix/C16/metadata.json": "a633c52fe072f1bffac85b2fc40f2c5e7c2e7d2261e416d13eb0d091c1bfa8c0",
+    "tests/fixtures/keyhelix/C16/negative.json": "7faa083baf07aec6efc516a942e9712cac1f99c08a72824b7375a522ab84f9e3",
+    "tests/fixtures/keyhelix/C16/positive.json": "0b7b14dea1a5f47a7045977d081fc49f11746c4ad1cee992c5fe29fe87e308d4"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 GNU/Linux (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863936512,
+      "memory_available_bytes": 23881408512,
+      "filesystem_available_bytes": 126222049280
+    },
+    "providers": "No external service was used. The OpenBao adapter was exercised against an in-process OpenBao-compatible HTTP fixture implementing /v1/sys/health, /v1/transit/encrypt|decrypt and KV v2 /v1/kv/data; storage, session, step-up, scope-mapper, security, and audit collaborators were real repository implementations.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://cloudevents.io/",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C16/expected-output.json": "b6d4dbf9ab4a5df442b2d1a2cd16dd085a6d6fea54c046547a9521e091560461",
+    "tests/fixtures/keyhelix/C16/metadata.json": "a633c52fe072f1bffac85b2fc40f2c5e7c2e7d2261e416d13eb0d091c1bfa8c0",
+    "tests/fixtures/keyhelix/C16/negative.json": "7faa083baf07aec6efc516a942e9712cac1f99c08a72824b7375a522ab84f9e3",
+    "tests/fixtures/keyhelix/C16/positive.json": "0b7b14dea1a5f47a7045977d081fc49f11746c4ad1cee992c5fe29fe87e308d4"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret, key or credential material, licensed under Apache-2.0.",
+  "implementation_summary": [
+    "internal/audit/events.go: CloudEvents 1.0 envelope structure (specversion, id, source, type, time, subject, datacontenttype, data, traceparent) matching AsyncAPI schemas; NewEvent constructor with mandatory attributable metadata validation (actor, action, outcome); bounded in-memory Recorder ring buffer with automatic security scrubbing via security.Redactor; FindEvents lookup filter.",
+    "internal/audit/events_test.go: Unit tests covering CloudEvents validation, ring-buffer FIFO eviction, event lookup, and secret/canary scrubbing.",
+    "tests/fixtures/keyhelix/C16/: synthetic positive, negative, expected-output, and metadata fixtures covering attributable metadata requirements, CloudEvents compliance, and negative cases.",
+    "tests/audit_test.go: TestC16AttributableMetadataAuditEventsF10 (verifying secret.version_created.v1 and secret.revealed.v1 events contain actor, provider action, outcome, and zero sentinel secret or bearer token credentials), TestC16NegativeCasesF10 (missing fields, unregistered types, malformed envelope rejection, provider offline fail-closed, provider-owned secret bytes), and TestC16AuditRestartPreservesEvents (verifying durable persistence and recovery across store restart)."
+  ],
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 ./...",
+      "exit_code": 0,
+      "result": "ok cmd/keyhelix, internal/audit, internal/auth, internal/contracts, internal/provider, internal/secrets, internal/security, internal/storage, internal/vaults, tests"
+    },
+    {
+      "command": "go test -count=1 -v -run 'TestC16' ./tests/",
+      "exit_code": 0,
+      "result": "--- PASS: TestC16AttributableMetadataAuditEventsF10 (0.04s); --- PASS: TestC16NegativeCasesF10 (0.00s); --- PASS: TestC16AuditRestartPreservesEvents (0.04s); ok github.com/parsa-emami/keyhelix/tests 0.089s"
+    },
+    {
+      "command": "go test -count=1 -race ./...",
+      "exit_code": 0,
+      "result": "ok cmd/keyhelix, internal/audit, internal/auth, internal/contracts, internal/provider, internal/secrets, internal/security, internal/storage, internal/vaults, tests under race detector"
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "clean - zero diagnostics"
+    },
+    {
+      "command": "npm run build:engine",
+      "exit_code": 0,
+      "result": "Engine binary compiled successfully to dist/engine/keyhelix."
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "tests 2, pass 2, fail 0, duration_ms 179.40"
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "tests 19, pass 19, fail 0, duration_ms 218.44"
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "Ran 6 tests in 0.337s - OK"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "VALIDATION PASSED - Checked 203 JSON files and repository contract invariants."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "PLAN VALIDATION PASSED - 40 intents, coverage and progress checked; no application runtime tests performed"
+    },
+    {
+      "command": "npm run prepare:web",
+      "exit_code": 0,
+      "result": "Project web data generated successfully."
+    }
+  ],
+  "results": {
+    "actor_action_outcome_exist": true,
+    "secret_values_excluded": true,
+    "bearer_credentials_excluded": true,
+    "cloudevents_profile_compliant": true,
+    "secret_leak_count": 0,
+    "bearer_credential_leak_count": 0,
+    "malformed_envelope_rejected": true,
+    "missing_actor_rejected": true,
+    "missing_action_rejected": true,
+    "missing_outcome_rejected": true,
+    "unregistered_event_type_rejected": true,
+    "restart_preserves_audit_state": true,
+    "provider_owns_secret_bytes": true,
+    "domain_engine": true
+  },
+  "verification_details": [
+    "CLOUDEVENTS 1.0 COMPLIANCE: Validated specversion 1.0, minimum 16-character hex identifier, RFC3339 timestamp, application/json content type, and subject against the AsyncAPI contract schema.",
+    "ATTRIBUTABILITY: All emitted audit events (version created, revealed) provably record the authentic actor (alice@keyhelix.local), provider action, and outcome.",
+    "ZERO CREDENTIAL LEAKAGE: Asserted 0 occurrences of secret canaries or bearer token credentials across all recorded audit event payloads and marshaled outputs.",
+    "RESTART RECOVERY: Verified that audit events persisted into local metadata storage remain byte-level identical and recoverable after store shutdown and restart.",
+    "NEGATIVE ENFORCEMENT: Missing actor, missing action, missing outcome, or unregistered event types reject with INVALID_EVENT. Over-limit/tainted events are scrubbed via security.Redactor."
+  ],
+  "ci_defect_fixes": [],
+  "observed_limitations": "Hardware performance target (4 vCPU / 8 GiB RAM / 20 GiB disk) remains unmeasured until C28; OpenBao is exercised via an in-process wire fixture; external message broker publishing is planned for a subsequent integration milestone.",
+  "rollback_or_recovery_observation": "Revert the isolated C16 change if necessary. No database schema or migration was altered. All audit records and metadata remain clean and backward-compatible.",
+  "core_ready": false
+}

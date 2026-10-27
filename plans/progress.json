@@ -141,10 +141,12 @@
     },
     {
       "id": "C16",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C16.json"
+      ],
+      "source_identity": "sha256:3e5a837b7780833285eb7b990d606b7b7663a40e34eec9289be3a3bd92a9cf5b",
+      "notes": "Attributable metadata audit events adhering to the CloudEvents 1.0 profile verified locally with actor, action, and outcome preserved, and zero secret or bearer credential leakage."
     },
     {
       "id": "C17",

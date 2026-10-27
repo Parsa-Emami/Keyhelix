@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "requirement": "F10",
+  "acceptance": "Actor, provider action and outcome exist without secret values or bearer credentials.",
+  "status": "passed",
+  "metadata_sha256": "a633c52fe072f1bffac85b2fc40f2c5e7c2e7d2261e416d13eb0d091c1bfa8c0",
+  "sentinel_secret": "sentinel-canary-c16-audit-secret-91a4",
+  "bearer_token": "Bearer test-bearer-credential-to-block-99f2",
+  "audit_leak_counts": {
+    "secret_values": 0,
+    "bearer_credentials": 0
+  },
+  "guard_codes": {
+    "invalid_event": "INVALID_EVENT",
+    "leak_blocked": "AUDIT_LEAK_BLOCKED"
+  },
+  "provider_owns_secret_bytes": true
+}

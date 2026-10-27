@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "case": "missing-actor-rejected",
+      "description": "Audit event creation without attributable actor is explicitly rejected",
+      "event_type": "secret.revealed.v1",
+      "subject": "vault-prod/production/services/auth/signing-key",
+      "actor": "",
+      "action": "reveal",
+      "outcome": "success",
+      "expected_code": "INVALID_EVENT"
+    },
+    {
+      "case": "missing-action-rejected",
+      "description": "Audit event creation without provider action is explicitly rejected",
+      "event_type": "secret.revealed.v1",
+      "subject": "vault-prod/production/services/auth/signing-key",
+      "actor": "alice@keyhelix.local",
+      "action": "",
+      "outcome": "success",
+      "expected_code": "INVALID_EVENT"
+    },
+    {
+      "case": "missing-outcome-rejected",
+      "description": "Audit event creation without outcome is explicitly rejected",
+      "event_type": "secret.revealed.v1",
+      "subject": "vault-prod/production/services/auth/signing-key",
+      "actor": "alice@keyhelix.local",
+      "action": "reveal",
+      "outcome": "",
+      "expected_code": "INVALID_EVENT"
+    },
+    {
+      "case": "unregistered-event-type-rejected",
+      "description": "Audit event with unregistered event type is explicitly rejected",
+      "event_type": "custom.unknown.type.v1",
+      "subject": "vault-prod/production/services/auth/signing-key",
+      "actor": "alice@keyhelix.local",
+      "action": "custom",
+      "outcome": "success",
+      "expected_code": "INVALID_EVENT"
+    },
+    {
+      "case": "malformed-envelope-rejected-by-recorder",
+      "description": "Recorder explicitly rejects invalid specversion or missing id",
+      "specversion": "0.9",
+      "expected_code": "INVALID_EVENT"
+    },
+    {
+      "case": "provider-offline-fails-closed",
+      "description": "Unavailable provider fails closed before emitting successful audit event",
+      "provider_state": "unavailable",
+      "expected_outcome": "failed"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "description": "Plaintext secret bytes are owned by provider and never enter audit event payloads",
+      "sentinel": "sentinel-canary-c16-audit-secret-91a4",
+      "expected_audit_leak_count": 0
+    }
+  ]
+}

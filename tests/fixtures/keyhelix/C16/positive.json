@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C16 metadata audit fixture; contains no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "vault": {
+    "vault_id": "vault-prod",
+    "kek_id": "kek-v1-openbao",
+    "mount": "transit",
+    "role": "vault-admin"
+  },
+  "identity": {
+    "subject": "usr_c16_alice",
+    "email": "alice@keyhelix.local",
+    "vault_role": "vault-admin",
+    "allowed_owners": [
+      "alice@keyhelix.local",
+      "org:platform"
+    ],
+    "allowed_scopes": [
+      "secret:read",
+      "production/services/auth/*"
+    ]
+  },
+  "secret_path": "production/services/auth/signing-key",
+  "classification": "restricted",
+  "sentinel_secret": "sentinel-canary-c16-audit-secret-91a4",
+  "bearer_token": "Bearer test-bearer-credential-to-block-99f2",
+  "expected_events": [
+    "secret.version_created.v1",
+    "secret.revealed.v1"
+  ],
+  "expected_attributable_fields": [
+    "actor",
+    "action",
+    "outcome",
+    "vault_id",
+    "secret_path"
+  ],
+  "metadata_file": "metadata.json"
+}
