@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "case": "member-change-without-step-up-rejected",
+      "description": "Attempting to create or revoke member grants without step-up fails closed",
+      "expected_code": "STEP_UP_REQUIRED"
+    },
+    {
+      "case": "missing-expired-identity-rejected",
+      "description": "Missing or expired identity cannot modify grants or access secrets",
+      "expected_code": "UNAUTHORIZED"
+    },
+    {
+      "case": "unrelated-owner-scope-rejected",
+      "description": "Caller targeting unrelated owner or vault scope fails closed before sensitive actions",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "forged-header-cannot-authorize",
+      "description": "Forged forwarded headers cannot widen effective permissions",
+      "forged_header": "X-Forwarded-User",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "privilege-reduction-immediate-on-next-request",
+      "description": "Revoked member privilege immediately causes next sensitive request to fail closed",
+      "expected_code": "SCOPE_DENIED"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "description": "Plaintext secret bytes are owned by provider and never enter grants storage",
+      "sentinel": "sentinel-canary-c17-grants-secret-77b3",
+      "expected_storage_occurrence_count": 0
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C17 grants and membership fixture; contains no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "vault": {
+    "vault_id": "vault-prod",
+    "kek_id": "kek-v1-openbao",
+    "mount": "transit",
+    "role": "vault-admin"
+  },
+  "admin_identity": {
+    "subject": "usr_c17_alice",
+    "email": "alice@keyhelix.local",
+    "vault_role": "vault-admin",
+    "allowed_owners": [
+      "alice@keyhelix.local",
+      "org:platform"
+    ],
+    "allowed_scopes": [
+      "secret:read",
+      "secret:write",
+      "production/services/*"
+    ]
+  },
+  "member_identity": {
+    "subject": "usr_c17_bob",
+    "email": "bob@keyhelix.local",
+    "vault_role": "vault-member",
+    "allowed_owners": [
+      "bob@keyhelix.local",
+      "alice@keyhelix.local"
+    ],
+    "allowed_scopes": [
+      "secret:read",
+      "production/services/payment/*"
+    ]
+  },
+  "secret_path": "production/services/payment/api-key",
+  "classification": "restricted",
+  "sentinel_secret": "sentinel-canary-c17-grants-secret-77b3",
+  "member_permissions": [
+    "secret:read",
+    "production/services/payment/*"
+  ],
+  "expected_events": [
+    "grant.created.v1",
+    "grant.revoked.v1"
+  ],
+  "metadata_file": "metadata.json"
+}

@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C17",
+  "date": "2026-10-27",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Member changes require step-up; privilege reduction takes effect on next sensitive request (Requirement F11).",
+  "commit_id": "C17",
+  "base_commit": "84b3f582f3c0ce2f4ad7172ec1ebfa3748259d59",
+  "git_commit_created": false,
+  "source_identity": "sha256:8f1ad0298e5176c7e526f2f99a85d3a3ba2ff2b3e4fbcd9e7d3858366a9ba637",
+  "source_identity_method": "SHA-256 over sorted C17-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "dde497e402626292db5f18e94b3db7ed242a97b8b5fb63cfe38bceec638d8371",
+    "internal/grants/service.go": "35ef85e0791dd39b89b2cec6030ee4817f47a30ddbe6be64cc67ff11f1d97660",
+    "internal/grants/service_test.go": "68c5eb3fa8b55cdf088339f3d5d2e68dc4566be354111fd287700b3ec13e945b",
+    "tests/fixtures/keyhelix/C17/expected-output.json": "ebb221f3a54886c15921b9317d980e7d4af160b5a45a6fdf423f41b6393ac82d",
+    "tests/fixtures/keyhelix/C17/metadata.json": "f626a916c71d08ed182bf9d0e88c0f63c20ae3deb106eec5a548174834c45a8a",
+    "tests/fixtures/keyhelix/C17/negative.json": "3aecf8a6409b04a598480a615e6e3c6ec4b03814a8e7588baf09a6eb60e72e97",
+    "tests/fixtures/keyhelix/C17/positive.json": "20c3a72f2410343b5c3af214609dd5048a9ca04406558678fc119eb2d79c7fbc",
+    "tests/grants_test.go": "6f1d55ebd2914c7f3b584f8d44cf623dfba51f85dbb4f17164f906444c6d0ab3"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 GNU/Linux (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863936512,
+      "memory_available_bytes": 23881408512,
+      "filesystem_available_bytes": 126222049280
+    },
+    "providers": "No external service was used. The OpenBao adapter was exercised against an in-process OpenBao-compatible HTTP fixture implementing /v1/sys/health, /v1/transit/encrypt|decrypt and KV v2 /v1/kv/data; storage, session, step-up, scope-mapper, security, audit, and grants collaborators were real repository implementations.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://www.keycloak.org/documentation",
+      "https://openid.net/specs/openid-connect-core-1_0.html",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C17/expected-output.json": "ebb221f3a54886c15921b9317d980e7d4af160b5a45a6fdf423f41b6393ac82d",
+    "tests/fixtures/keyhelix/C17/metadata.json": "f626a916c71d08ed182bf9d0e88c0f63c20ae3deb106eec5a548174834c45a8a",
+    "tests/fixtures/keyhelix/C17/negative.json": "3aecf8a6409b04a598480a615e6e3c6ec4b03814a8e7588baf09a6eb60e72e97",
+    "tests/fixtures/keyhelix/C17/positive.json": "20c3a72f2410343b5c3af214609dd5048a9ca04406558678fc119eb2d79c7fbc"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret, key or credential material, licensed under Apache-2.0.",
+  "implementation_summary": [
+    "internal/grants/service.go: Grants management service implementing least privilege permissions, mandatory fresh step-up authentication (ActionPolicyChange) for member grant creation and revocation, immediate synchronous privilege reduction with step-up invalidation taking effect on the next sensitive request, and CloudEvents 1.0 audit event emission (grant.created.v1, grant.revoked.v1).",
+    "internal/grants/service_test.go: Unit tests covering path and action permission evaluation, mandatory step-up rejection on missing token, grant creation and immediate revocation lifecycle.",
+    "tests/fixtures/keyhelix/C17/: synthetic positive, negative, expected-output, and metadata fixtures covering member changes, step-up requirements, immediate privilege reduction, and negative cases.",
+    "tests/grants_test.go: TestC17MemberChangesRequireStepUpAndImmediatePrivilegeReductionF11 (verifying grant creation requires ActionPolicyChange step-up, authorized member reveal, grant revocation with step-up, immediate failure of member on next sensitive reveal request, and audit event emission) and TestC17NegativeCasesF11 (missing/expired identity, unrelated owner/object scopes, forged headers, immediate privilege reduction, and provider-owned secret bytes)."
+  ],
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 ./...",
+      "exit_code": 0,
+      "result": "ok cmd/keyhelix, internal/audit, internal/auth, internal/contracts, internal/grants, internal/provider, internal/secrets, internal/security, internal/storage, internal/vaults, tests"
+    },
+    {
+      "command": "go test -count=1 -v -run 'TestC17' ./tests/",
+      "exit_code": 0,
+      "result": "--- PASS: TestC17MemberChangesRequireStepUpAndImmediatePrivilegeReductionF11 (0.08s); --- PASS: TestC17NegativeCasesF11 (0.01s); ok github.com/parsa-emami/keyhelix/tests 0.103s"
+    },
+    {
+      "command": "go test -count=1 -race ./...",
+      "exit_code": 0,
+      "result": "ok cmd/keyhelix, internal/audit, internal/auth, internal/contracts, internal/grants, internal/provider, internal/secrets, internal/security, internal/storage, internal/vaults, tests under race detector"
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "clean - zero diagnostics"
+    },
+    {
+      "command": "npm run build:engine",
+      "exit_code": 0,
+      "result": "Engine binary compiled successfully to dist/engine/keyhelix."
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "tests 2, pass 2, fail 0, duration_ms 172.36"
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "tests 19, pass 19, fail 0, duration_ms 189.77"
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "Ran 6 tests in 0.336s - OK"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "VALIDATION PASSED - Checked 208 JSON files and repository contract invariants."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "PLAN VALIDATION PASSED - 40 intents, coverage and progress checked; no application runtime tests performed"
+    },
+    {
+      "command": "npm run prepare:web",
+      "exit_code": 0,
+      "result": "Project web data generated successfully."
+    }
+  ],
+  "results": {
+    "member_changes_require_step_up": true,
+    "privilege_reduction_immediate": true,
+    "next_sensitive_request_fails_closed": true,
+    "audit_events_emitted_for_grants": true,
+    "missing_expired_identity_rejected": true,
+    "unrelated_owner_scope_rejected": true,
+    "forged_header_cannot_authorize": true,
+    "provider_owns_secret_bytes": true,
+    "domain_engine": true
+  },
+  "verification_details": [
+    "STEP-UP ENFORCEMENT: Attempted creation or revocation of grants without valid ActionPolicyChange step-up token failed closed with UNAUTHORIZED / STEP_UP_REQUIRED.",
+    "IMMEDIATE PRIVILEGE REDUCTION: When member grant was revoked by admin, member session step-up grants were synchronously invalidated so the immediate next reveal request failed closed before any provider interaction.",
+    "ATTRIBUTABLE AUDIT: Grant creation and revocation emitted CloudEvents 1.0 events (grant.created.v1, grant.revoked.v1) recording actor alice@keyhelix.local, target principal bob@keyhelix.local, and outcome success without secrets.",
+    "NEGATIVE SECURITY GATES: Verified that expired identity, forged X-Forwarded headers, and widened paths failed closed before sensitive side effects."
+  ],
+  "ci_defect_fixes": [],
+  "observed_limitations": "Hardware performance target (4 vCPU / 8 GiB RAM / 20 GiB disk) remains unmeasured until C28; OpenBao is exercised via an in-process wire fixture; member directory synchronization with external Keycloak is planned for a subsequent integration milestone.",
+  "rollback_or_recovery_observation": "Revert the isolated C17 change if necessary. No database schema or migration was altered. All grant records and metadata remain clean and backward-compatible.",
+  "core_ready": false
+}

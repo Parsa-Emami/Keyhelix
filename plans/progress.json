@@ -150,10 +150,12 @@
     },
     {
       "id": "C17",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C17.json"
+      ],
+      "source_identity": "sha256:8f1ad0298e5176c7e526f2f99a85d3a3ba2ff2b3e4fbcd9e7d3858366a9ba637",
+      "notes": "Least privilege provider grants verified locally with mandatory step-up for member changes and immediate privilege reduction taking effect on next sensitive request."
     },
     {
       "id": "C18",

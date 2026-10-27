@@ -213,7 +213,7 @@
       "id": "C17",
       "title": "feat(grants): manage least privilege provider grants",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Member changes require step-up; privilege reduction takes effect on next sensitive request."
       ],

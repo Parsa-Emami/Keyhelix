@@ -1,0 +1,16 @@
+{
+  "schema_version": "1",
+  "vault_id": "vault-prod",
+  "secret_id": "sec-c17-grants-target",
+  "secret_path": "production/services/payment/api-key",
+  "version": 1,
+  "classification": "restricted",
+  "created_at": "2026-10-27T16:00:00Z",
+  "envelope": {
+    "algorithm": "AES-256-GCM",
+    "wrapped_dek": "bao:v1:c17-wrapped-dek-fixture",
+    "nonce": "0123456789abcdef01234567",
+    "tag": "abcdef0123456789abcdef0123456789",
+    "kek_id": "kek-v1-openbao"
+  }
+}

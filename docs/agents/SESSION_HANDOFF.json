@@ -2,7 +2,7 @@
   "project": "KeyHelix",
   "date": "2026-10-27",
   "base_commit": "84b3f582f3c0ce2f4ad7172ec1ebfa3748259d59",
-  "scope": "Actor, provider action and outcome exist without secret values or bearer credentials (C16 / F10)",
+  "scope": "Member changes require step-up; privilege reduction takes effect on next sensitive request (C17 / F11)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -19,27 +19,28 @@
     "C13",
     "C14",
     "C15",
-    "C16"
+    "C16",
+    "C17"
   ],
   "git_commit_created": false,
   "changed_paths": [
-    "internal/audit/events.go",
-    "internal/audit/events_test.go",
-    "tests/audit_test.go",
-    "tests/fixtures/keyhelix/C16/positive.json",
-    "tests/fixtures/keyhelix/C16/metadata.json",
-    "tests/fixtures/keyhelix/C16/negative.json",
-    "tests/fixtures/keyhelix/C16/expected-output.json",
-    "docs/evidence/C16.json",
-    "plans/progress.json",
     "apps/web/src/generated/project.json",
-    "docs/agents/SESSION_HANDOFF.json"
+    "docs/agents/SESSION_HANDOFF.json",
+    "docs/evidence/C17.json",
+    "internal/grants/service.go",
+    "internal/grants/service_test.go",
+    "plans/progress.json",
+    "tests/fixtures/keyhelix/C17/expected-output.json",
+    "tests/fixtures/keyhelix/C17/metadata.json",
+    "tests/fixtures/keyhelix/C17/negative.json",
+    "tests/fixtures/keyhelix/C17/positive.json",
+    "tests/grants_test.go"
   ],
   "ci_defect_fixes": [],
   "commands": [
     "npm run validate:plan",
     "go test -count=1 ./...",
-    "go test -count=1 -v -run 'TestC16' ./tests/",
+    "go test -count=1 -v -run 'TestC17' ./tests/",
     "go test -count=1 -race ./...",
     "go vet ./...",
     "npm run build:engine",
@@ -51,11 +52,11 @@
     "npm run prepare:web",
     "git diff --check"
   ],
-  "validation_results": "docs/evidence/C16.json",
-  "final_source_identity": "sha256:3e5a837b7780833285eb7b990d606b7b7663a40e34eec9289be3a3bd92a9cf5b",
+  "validation_results": "docs/evidence/C17.json",
+  "final_source_identity": "sha256:8f1ad0298e5176c7e526f2f99a85d3a3ba2ff2b3e4fbcd9e7d3858366a9ba637",
   "protected_paths_changed": [],
   "current_core_ready": false,
-  "next_task": "C17",
+  "next_task": "C18",
   "next_command": "npm run plan -- next",
-  "continuation": "C01-C16 are verified locally. Proceed with C17: feat(grants): manage least privilege provider grants. The worktree is not committed; the owner must commit the listed paths before CI can test them."
+  "continuation": "C01-C17 are verified locally. Proceed with C18: feat(rotation): track resumable provider version rotations. The worktree is not committed; the owner must commit the listed paths before CI can test them."
 }

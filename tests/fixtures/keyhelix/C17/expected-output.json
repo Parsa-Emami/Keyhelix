@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "requirement": "F11",
+  "acceptance": "Member changes require step-up; privilege reduction takes effect on next sensitive request.",
+  "status": "passed",
+  "metadata_sha256": "f626a916c71d08ed182bf9d0e88c0f63c20ae3deb106eec5a548174834c45a8a",
+  "step_up_enforced_on_member_changes": true,
+  "immediate_privilege_reduction_verified": true,
+  "guard_codes": {
+    "step_up_required": "STEP_UP_REQUIRED",
+    "unauthorized": "UNAUTHORIZED",
+    "scope_denied": "SCOPE_DENIED"
+  },
+  "provider_owns_secret_bytes": true
+}
