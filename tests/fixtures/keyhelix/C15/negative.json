@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "case": "cyclic-input-terminates",
+      "description": "Cyclic pointer or self-referential graph terminates with explicit cycle status without stack overflow",
+      "expected_code": "CYCLE_DETECTED",
+      "expected_placeholder": "[CYCLE_DETECTED]"
+    },
+    {
+      "case": "high-degree-over-limit-input",
+      "description": "High-degree or deeply nested structure exceeding traversal bounds terminates with explicit truncation",
+      "expected_code": "OVER_LIMIT",
+      "expected_placeholder": "[TRUNCATED]"
+    },
+    {
+      "case": "cancelled-context-terminates",
+      "description": "Cancelled context terminates redaction with explicit cancellation status",
+      "expected_code": "CANCELLED"
+    },
+    {
+      "case": "timeout-context-terminates",
+      "description": "Deadline-exceeded context terminates redaction with explicit timeout status",
+      "expected_code": "TIMEOUT"
+    },
+    {
+      "case": "equivalent-reordered-input-deterministic",
+      "description": "Reordered equivalent inputs produce deterministic canonical output",
+      "deterministic": true
+    },
+    {
+      "case": "changed-semantic-fact-distinct-effect",
+      "description": "Changed semantic fact produces a distinct explainable effect",
+      "distinct_effect": true
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "description": "Plaintext secret bytes are owned by provider and never enter metadata storage, logs, trace, disk or browser storage",
+      "sentinel": "sentinel-canary-c15-secret-9b2f",
+      "expected_storage_occurrence_count": 0,
+      "expected_disk_occurrence_count": 0,
+      "expected_log_occurrence_count": 0,
+      "expected_trace_occurrence_count": 0,
+      "expected_browser_storage_occurrence_count": 0
+    }
+  ]
+}

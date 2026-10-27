@@ -2,7 +2,7 @@
   "project": "KeyHelix",
   "date": "2026-10-27",
   "base_commit": "d44c39ce08e1c7d7a9227e307cabb4e00d41fba3",
-  "scope": "No-store response and mandatory fresh step-up; no secret in errors, traces or audit content (C14 / F08)",
+  "scope": "Sentinel secret does not appear in logs, DB, trace, disk or browser storage under tested paths (C15 / F09)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -17,34 +17,28 @@
     "C11",
     "C12",
     "C13",
-    "C14"
+    "C14",
+    "C15"
   ],
   "git_commit_created": false,
   "changed_paths": [
-    "internal/provider/openbao.go",
-    "internal/secrets/reveal.go",
-    "internal/secrets/write.go",
-    "internal/secrets/write_test.go",
-    "tests/reveal_test.go",
-    "tests/version_test.go",
-    "tests/fixtures/keyhelix/C14/positive.json",
-    "tests/fixtures/keyhelix/C14/metadata.json",
-    "tests/fixtures/keyhelix/C14/negative.json",
-    "tests/fixtures/keyhelix/C14/expected-output.json",
-    "docs/evidence/C14.json",
+    "internal/security/redact.go",
+    "internal/security/redact_test.go",
+    "tests/plaintext_leak_test.go",
+    "tests/fixtures/keyhelix/C15/positive.json",
+    "tests/fixtures/keyhelix/C15/metadata.json",
+    "tests/fixtures/keyhelix/C15/negative.json",
+    "tests/fixtures/keyhelix/C15/expected-output.json",
+    "docs/evidence/C15.json",
     "plans/progress.json",
     "apps/web/src/generated/project.json",
-    ".gitignore",
-    "docs/evidence/C13.json"
+    "docs/agents/SESSION_HANDOFF.json"
   ],
-  "ci_defect_fixes": [
-    "docs/evidence/C13.json: added the missing results field required by scripts/plan.py (plan-consistency workflow), using only outcomes already recorded in that record.",
-    ".gitignore: the 'secrets/' pattern also ignored internal/secrets/, so the engine secrets package was missing from Git and a clean checkout could not compile tests/version_test.go. Added the negation '!internal/secrets/' and verified with a clean-tree simulation."
-  ],
+  "ci_defect_fixes": [],
   "commands": [
     "npm run validate:plan",
     "go test -count=1 ./...",
-    "go test -count=1 -v -run 'TestC14' ./tests/",
+    "go test -count=1 -v -run 'TestC15' ./tests/",
     "go test -count=1 -race ./...",
     "go vet ./...",
     "npm run build:engine",
@@ -54,14 +48,13 @@
     "python3 scripts/validate_repo.py",
     "python3 scripts/plan.py validate",
     "npm run prepare:web",
-    "git ls-files -co --exclude-standard | tar -T - -cf - | tar -x -C dist/ci-tree-check && (cd dist/ci-tree-check && go vet ./... && go test -count=1 ./...)",
     "git diff --check"
   ],
-  "validation_results": "docs/evidence/C14.json",
-  "final_source_identity": "sha256:4075c568811d1094fa05645d758b5d80436b5bbb12d9bdf8aa0ce10743d5c064",
+  "validation_results": "docs/evidence/C15.json",
+  "final_source_identity": "sha256:0efece3a5b8dbc2b5bb1ea7f7c1b1b24fe5a34150c4bc8d7d981d60e2452e135",
   "protected_paths_changed": [],
   "current_core_ready": false,
-  "next_task": "C15",
+  "next_task": "C16",
   "next_command": "npm run plan -- next",
-  "continuation": "C01-C14 are verified locally. Proceed with C15: feat(redaction): block plaintext persistence paths. The worktree is not committed; the owner must commit the listed paths (including the newly visible internal/secrets package) before CI can test them."
+  "continuation": "C01-C15 are verified locally. Proceed with C16: feat(audit): emit attributable metadata audit events. The worktree is not committed; the owner must commit the listed paths before CI can test them."
 }

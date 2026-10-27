@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C15 redaction and sentinel leak blocking fixture; contains no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "vault": {
+    "vault_id": "vlt-c15-sec",
+    "kek_id": "kek-v1-c15",
+    "mount": "transit",
+    "role": "vault-admin"
+  },
+  "identity": {
+    "subject": "usr_c15_alice",
+    "email": "alice@keyhelix.local",
+    "vault_role": "vault-admin",
+    "allowed_owners": [
+      "alice@keyhelix.local",
+      "org:platform"
+    ],
+    "allowed_scopes": [
+      "secret:read",
+      "production/services/api/*"
+    ]
+  },
+  "secret_path": "production/services/api/signing-key",
+  "classification": "restricted",
+  "sentinel_secret": "sentinel-canary-c15-secret-9b2f",
+  "rotated_sentinel_secret": "sentinel-canary-c15-rotated-secret-4e81",
+  "tested_sinks": [
+    "logs",
+    "db",
+    "trace",
+    "disk",
+    "browser_storage"
+  ],
+  "expected_no_store_headers": {
+    "Cache-Control": "no-store, no-cache, must-revalidate",
+    "Pragma": "no-cache",
+    "Expires": "0",
+    "X-Content-Type-Options": "nosniff"
+  },
+  "metadata_file": "metadata.json"
+}

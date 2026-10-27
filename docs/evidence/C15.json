@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C15",
+  "date": "2026-10-27",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Sentinel secret does not appear in logs, DB, trace, disk or browser storage under tested paths (Requirement F09).",
+  "commit_id": "C15",
+  "base_commit": "d44c39ce08e1c7d7a9227e307cabb4e00d41fba3",
+  "git_commit_created": false,
+  "source_identity": "sha256:0efece3a5b8dbc2b5bb1ea7f7c1b1b24fe5a34150c4bc8d7d981d60e2452e135",
+  "source_identity_method": "SHA-256 over sorted C15-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/generated/project.json": "b7f3736875cbf5d5e95287594ad2d69eb013427b25ce979634d9fac5281ef89e",
+    "internal/security/redact.go": "7d1dc6f5b83d17b4c6401993f18c9cd9f7e232f972cdbc5b566b6b8966db9413",
+    "internal/security/redact_test.go": "74e5c82a38a9981532b45996151a07c01effce05c011db460e24e8eea960beba",
+    "tests/fixtures/keyhelix/C15/expected-output.json": "894465cdf324f3b3eed88efa9a9c72df508478e51239217ebb05bed0fda0a193",
+    "tests/fixtures/keyhelix/C15/metadata.json": "c59a4460bd63a3dcc81ba5995517ed48e669816d6a2f6ba02a816582d4c3443e",
+    "tests/fixtures/keyhelix/C15/negative.json": "4503e5cb9294ef67225e6277e23be2609fa7853ffcb02734ec50c4862350bf94",
+    "tests/fixtures/keyhelix/C15/positive.json": "ace0c9eb6a809e13ba9e505210f1c5adbc6ae2c87126017374f95beb4f7024e7",
+    "tests/plaintext_leak_test.go": "288aed6dc21d84cb816f268e350ea0dd3005b0c14ca721de3cbbd0f6feb313b0"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 GNU/Linux (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863936512,
+      "memory_available_bytes": 23881408512,
+      "filesystem_available_bytes": 126222049280
+    },
+    "providers": "No external service was used. The OpenBao adapter was exercised against an in-process OpenBao-compatible HTTP fixture implementing /v1/sys/health, /v1/transit/encrypt|decrypt and KV v2 /v1/kv/data; storage, session, step-up, scope-mapper and security collaborators were real repository implementations.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://openbao.org/api-docs/secret/kv/kv-v2/",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C15/expected-output.json": "894465cdf324f3b3eed88efa9a9c72df508478e51239217ebb05bed0fda0a193",
+    "tests/fixtures/keyhelix/C15/metadata.json": "c59a4460bd63a3dcc81ba5995517ed48e669816d6a2f6ba02a816582d4c3443e",
+    "tests/fixtures/keyhelix/C15/negative.json": "4503e5cb9294ef67225e6277e23be2609fa7853ffcb02734ec50c4862350bf94",
+    "tests/fixtures/keyhelix/C15/positive.json": "ace0c9eb6a809e13ba9e505210f1c5adbc6ae2c87126017374f95beb4f7024e7"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret, key or credential material, licensed under Apache-2.0.",
+  "implementation_summary": [
+    "internal/security/redact.go: Centralized security Redactor with registered sentinel secret scrubbing, sensitive token/cookie/header regex pattern redaction, recursive traversal of structured values with pointer/map cycle detection ([CYCLE_DETECTED]), depth/node traversal limits ([TRUNCATED], CodeOverLimit), context cancellation/timeout handling (CodeCancelled, CodeTimeout), deterministic canonical JSON serialization with sorted keys, persistence sink assertions (AssertClean, AssertDirectoryClean), RedactedWriter for logging interception, EnforceNoStoreHeaders and SanitizeHeaders for HTTP responses, and Zeroize for wiping ephemeral plaintext secret buffers.",
+    "internal/security/redact_test.go: Unit tests covering string/byte redaction, size limits, clean and dirty persistence assertions, directory scanning, RedactedWriter logging interception, HTTP header sanitization, memory zeroization, and context cancellation/deadline enforcement.",
+    "tests/fixtures/keyhelix/C15/: synthetic positive, negative, expected-output and metadata fixtures covering all 5 persistence sinks (logs, DB, trace, disk, browser storage) and negative cases.",
+    "tests/plaintext_leak_test.go: TestC15SentinelPersistenceBlockedF09 (acceptance testing across all 5 persistence sinks with zero sentinel leaks detected in any sink) and TestC15NegativeCasesF09 (cyclic input, depth limits, cancelled/timed-out context, deterministic canonical reordered serialization, distinct semantic effects, and provider-owned secret bytes)."
+  ],
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 ./...",
+      "exit_code": 0,
+      "result": "ok cmd/keyhelix, internal/auth, internal/contracts, internal/provider, internal/secrets, internal/security, internal/storage, internal/vaults, tests"
+    },
+    {
+      "command": "go test -count=1 -v -run 'TestC15' ./tests/",
+      "exit_code": 0,
+      "result": "--- PASS: TestC15SentinelPersistenceBlockedF09 (0.07s); --- PASS: TestC15NegativeCasesF09 (0.00s) including all 7 subtests; ok github.com/parsa-emami/keyhelix/tests 0.075s"
+    },
+    {
+      "command": "go test -count=1 -race ./...",
+      "exit_code": 0,
+      "result": "ok cmd/keyhelix, internal/auth, internal/contracts, internal/provider, internal/secrets, internal/security, internal/storage, internal/vaults, tests under race detector"
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "clean - zero diagnostics"
+    },
+    {
+      "command": "npm run build:engine",
+      "exit_code": 0,
+      "result": "Engine binary compiled successfully to dist/engine/keyhelix."
+    },
+    {
+      "command": "npm run test:contracts",
+      "exit_code": 0,
+      "result": "tests 2, pass 2, fail 0, duration_ms 173.35"
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "tests 19, pass 19, fail 0, duration_ms 186.94"
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py' -v",
+      "exit_code": 0,
+      "result": "Ran 6 tests in 0.343s - OK"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "VALIDATION PASSED - Checked 198 JSON files and repository contract invariants."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "PLAN VALIDATION PASSED - 40 intents, coverage and progress checked; no application runtime tests performed"
+    },
+    {
+      "command": "npm run prepare:web",
+      "exit_code": 0,
+      "result": "Project web data generated successfully."
+    }
+  ],
+  "results": {
+    "sentinel_blocked_in_logs": true,
+    "sentinel_blocked_in_db": true,
+    "sentinel_blocked_in_trace": true,
+    "sentinel_blocked_in_disk": true,
+    "sentinel_blocked_in_browser_storage": true,
+    "log_leak_count": 0,
+    "db_leak_count": 0,
+    "trace_leak_count": 0,
+    "disk_leak_count": 0,
+    "browser_storage_leak_count": 0,
+    "cyclic_input_terminates": true,
+    "depth_over_limit_terminates": true,
+    "cancelled_context_terminates": true,
+    "timeout_context_terminates": true,
+    "equivalent_reordered_deterministic": true,
+    "changed_semantic_fact_distinct": true,
+    "provider_owns_secret_bytes": true,
+    "memory_zeroization_verified": true,
+    "domain_engine": true
+  },
+  "verification_details": [
+    "SINK 1 LOGS: RedactedWriter and Redactor scrubbed all registered sentinels and sensitive patterns (Bearer tokens, cookies, stepup tokens) with zero sentinel leaks detected in logged output.",
+    "SINK 2 DB: Storage metadata records and directory manifests read from storage.Port confirmed zero occurrences of plaintext secret canaries.",
+    "SINK 3 TRACE: Structured trace attributes, span contexts, and audit content sanitized via RedactValue confirmed zero occurrences of plaintext secret canaries.",
+    "SINK 4 DISK: Recursive walk of storage directory via AssertDirectoryClean confirmed zero occurrences of plaintext secret canaries across all files on disk.",
+    "SINK 5 BROWSER STORAGE: Mandatory no-store headers (Cache-Control, Pragma, Expires) verified on HTTP reveal response; no secret cookies set; simulated browser storage state confirmed clean of secret bytes.",
+    "NEGATIVE CASES: Cyclic pointer structures terminate with [CYCLE_DETECTED] and CodeCycleDetected; high-degree/depth structures terminate with [TRUNCATED] and CodeOverLimit; cancelled/deadline-exceeded contexts terminate with CodeCancelled/CodeTimeout; reordered equivalent inputs produce 100% byte-for-byte identical canonical output; changed semantic facts produce explainable distinct outputs; provider-owned sealed payloads verified with zero secret bytes in storage."
+  ],
+  "ci_defect_fixes": [],
+  "observed_limitations": "Hardware performance target (4 vCPU / 8 GiB RAM / 20 GiB disk) remains unmeasured until C28; OpenBao is exercised via an in-process wire fixture; full end-to-end web browser integration continues in subsequent milestones.",
+  "rollback_or_recovery_observation": "Revert the isolated C15 change if necessary. No database schema or migration was altered. All persistence sinks were verified clean with zero leaks.",
+  "core_ready": false
+}

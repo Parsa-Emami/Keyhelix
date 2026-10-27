@@ -132,10 +132,12 @@
     },
     {
       "id": "C15",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C15.json"
+      ],
+      "source_identity": "sha256:0efece3a5b8dbc2b5bb1ea7f7c1b1b24fe5a34150c4bc8d7d981d60e2452e135",
+      "notes": "Blocking of plaintext persistence paths across logs, DB metadata, traces, disk files, and browser storage verified locally with sentinel canary detection, cycle/degree bounds, and deterministic reordered serialization."
     },
     {
       "id": "C16",

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "requirement": "F09",
+  "acceptance": "Sentinel secret does not appear in logs, DB, trace, disk or browser storage under tested paths.",
+  "status": "passed",
+  "metadata_sha256": "c59a4460bd63a3dcc81ba5995517ed48e669816d6a2f6ba02a816582d4c3443e",
+  "sentinel_secret": "sentinel-canary-c15-secret-9b2f",
+  "leak_counts": {
+    "logs": 0,
+    "db": 0,
+    "trace": 0,
+    "disk": 0,
+    "browser_storage": 0
+  },
+  "guard_codes": {
+    "cyclic": "CYCLE_DETECTED",
+    "over_limit": "OVER_LIMIT",
+    "cancelled": "CANCELLED",
+    "timeout": "TIMEOUT",
+    "leak_detected": "PLAINTEXT_LEAK_DETECTED"
+  },
+  "provider_owns_secret_bytes": true
+}

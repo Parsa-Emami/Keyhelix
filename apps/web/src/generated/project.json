@@ -189,7 +189,7 @@
       "id": "C15",
       "title": "feat(redaction): block plaintext persistence paths",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Sentinel secret does not appear in logs, DB, trace, disk or browser storage under tested paths."
       ],
