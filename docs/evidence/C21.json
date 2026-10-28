@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C21",
+  "date": "2026-10-28",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Plaintext clears from rendered state on close and logout; cache/service worker excludes reveal routes (Requirement F15).",
+  "commit_id": "C21",
+  "base_commit": "0831389913aabff10d86c8153b5b365ff6dd7b78",
+  "git_commit_created": false,
+  "source_identity": "sha256:cb89aef3a9d14acb85e6ab0c1fdea48b0cfd950e9e3a5b5fb033757c803a4167",
+  "source_identity_method": "SHA-256 over sorted C21-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/pages/Reveal.tsx": "ae32aa5e486f906c7e79d3770374b6265469557ea5c04ca4ff110428f16d413d",
+    "apps/web/src/pages/Vaults.tsx": "dda67c752042d4e183a050c9af909b574f57177203e79832046f8b01d80e6083",
+    "apps/web/tests/reveal.spec.ts": "9c1662997664e26b156b92585eb7138608e8289b0c80c62447fdbf1469162f64",
+    "tests/fixtures/keyhelix/C21/expected-output.json": "4060ea22d67f158da6b64d6aee2998d5e9f75186272d812fc644260e51567060",
+    "tests/fixtures/keyhelix/C21/negative.json": "148e0f42216f8b1329b1398b80a5fa522d580dbda0d996b95945f6f5a3765be7",
+    "tests/fixtures/keyhelix/C21/positive.json": "12e748240ecfd72405cc5ba5210c694faa1d462bd16f3bdb838d34455d1e4554"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 GNU/Linux (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863936512,
+      "memory_available_bytes": 22941544448,
+      "filesystem_available_bytes": 125672288256
+    },
+    "providers": "No external service was used. The web console was exercised in a headless browser via Playwright testing against local HTTP endpoints; transient reveal was verified with synthetic fixtures.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://www.keycloak.org/documentation",
+      "https://openid.net/specs/openid-connect-core-1_0.html",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C21/expected-output.json": "4060ea22d67f158da6b64d6aee2998d5e9f75186272d812fc644260e51567060",
+    "tests/fixtures/keyhelix/C21/negative.json": "148e0f42216f8b1329b1398b80a5fa522d580dbda0d996b95945f6f5a3765be7",
+    "tests/fixtures/keyhelix/C21/positive.json": "12e748240ecfd72405cc5ba5210c694faa1d462bd16f3bdb838d34455d1e4554"
+  },
+  "fixture_provenance_license": "All three fixture files are repository-authored synthetic data with no real secret, key or credential material, licensed under Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test ./...",
+      "exit_code": 0,
+      "result": "ok github.com/parsa-emami/keyhelix/tests 12.186s"
+    },
+    {
+      "command": "npm run test:browser",
+      "exit_code": 0,
+      "result": "14 passed (5.2s)"
+    }
+  ],
+  "results": {
+    "requirement": "F15",
+    "acceptance": "Plaintext clears from rendered state on close and logout; cache/service worker excludes reveal routes.",
+    "status": "passed",
+    "plaintext_cleared_on_close": true,
+    "plaintext_cleared_on_logout": true,
+    "plaintext_cleared_on_timeout": true,
+    "cache_control_no_store_enforced": true,
+    "negative_cases_verified": [
+      "missing-or-expired-stepup",
+      "unrelated-owner-or-scope-mismatch",
+      "forged-header-or-widened-permission",
+      "provider-outage-fail-closed",
+      "provider-owns-secret-bytes",
+      "cache-and-service-worker-excluded"
+    ]
+  }
+}

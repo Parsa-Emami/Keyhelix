@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "case": "missing-or-expired-stepup",
+      "description": "Missing, expired or replayed step-up identity fails closed before reveal execution",
+      "expected_code": "STEP_UP_REQUIRED",
+      "expected_status": 401
+    },
+    {
+      "case": "unrelated-owner-or-scope-mismatch",
+      "description": "Token scoped to an unrelated owner or vault path fails before sensitive side effects",
+      "expected_code": "FORBIDDEN_SCOPE",
+      "expected_status": 403
+    },
+    {
+      "case": "forged-header-or-widened-permission",
+      "description": "Forged authorization header or widened path permissions cannot authorize reveal",
+      "expected_code": "ACCESS_DENIED",
+      "expected_status": 403
+    },
+    {
+      "case": "provider-outage-fail-closed",
+      "description": "Key provider disconnection or outage fails closed with explicit error; zero cached plaintext returned",
+      "expected_code": "PROVIDER_UNAVAILABLE",
+      "expected_status": 503
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "description": "Plaintext secret bytes are owned by provider, rendered transiently in memory, and zeroed upon modal close or logout",
+      "sentinel": "c21-transient-secret-key-3f8a9e2d1c",
+      "expected_persistent_occurrence_count": 0
+    },
+    {
+      "case": "cache-and-service-worker-excluded",
+      "description": "Reveal endpoints mandate Cache-Control no-store and are never cached by browser cache or service workers",
+      "expected_cache_control": "no-store"
+    }
+  ]
+}

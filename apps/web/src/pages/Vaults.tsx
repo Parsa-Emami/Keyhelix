@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Reveal } from './Reveal';
 
 export interface SecretSummary {
   vault_id: string;
@@ -13,15 +14,17 @@ export interface SecretSummary {
 export interface VaultsProps {
   vaultId?: string;
   onSelectSecret?: (secretPath: string) => void;
+  onLogout?: () => void;
 }
 
-export function Vaults({ vaultId = 'vault-prod', onSelectSecret }: VaultsProps) {
+export function Vaults({ vaultId = 'vault-prod', onSelectSecret, onLogout }: VaultsProps) {
   const [secrets, setSecrets] = useState<SecretSummary[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [search, setSearch] = useState<string>('');
   const [classificationFilter, setClassificationFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [activeRevealSecret, setActiveRevealSecret] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -154,20 +157,34 @@ export function Vaults({ vaultId = 'vault-prod', onSelectSecret }: VaultsProps) 
               <p className="muted">
                 Created: {new Date(sec.created_at).toLocaleString()} · Digest: <code>{sec.metadata_digest.slice(0, 16)}…</code>
               </p>
-              {onSelectSecret && (
-                <button
-                  type="button"
-                  className="file-button"
-                  style={{ marginTop: '8px' }}
-                  onClick={() => onSelectSecret(sec.secret_path)}
-                >
-                  Inspect / Request Reveal
-                </button>
-              )}
+              <button
+                type="button"
+                className="file-button"
+                style={{ marginTop: '8px' }}
+                data-testid={`reveal-btn-${sec.secret_path}`}
+                onClick={() => {
+                  setActiveRevealSecret(sec.secret_path);
+                  if (onSelectSecret) onSelectSecret(sec.secret_path);
+                }}
+              >
+                Inspect / Request Reveal
+              </button>
             </li>
           );
         })}
       </ol>
+
+      {activeRevealSecret && (
+        <Reveal
+          vaultId={vaultId}
+          secretPath={activeRevealSecret}
+          onClose={() => setActiveRevealSecret(null)}
+          onLogout={() => {
+            setActiveRevealSecret(null);
+            if (onLogout) onLogout();
+          }}
+        />
+      )}
     </div>
   );
 }

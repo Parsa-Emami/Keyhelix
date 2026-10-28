@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
-  "date": "2026-10-27",
-  "base_commit": "b164e7d174e929f95701ce587428f731c6a7ffec",
-  "scope": "UI never fetches plaintext merely to render a secret list (C20 / F14)",
+  "date": "2026-10-28",
+  "base_commit": "0831389913aabff10d86c8153b5b365ff6dd7b78",
+  "scope": "Transient reveal interaction; plaintext clears on close and logout, cache and service worker exclude reveal routes (C21 / F15)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -23,36 +23,31 @@
     "C17",
     "C18",
     "C19",
-    "C20"
+    "C20",
+    "C21"
   ],
   "git_commit_created": false,
   "changed_paths": [
-    "apps/web/src/generated/project.json",
-    "apps/web/src/main.tsx",
+    "apps/web/src/pages/Reveal.tsx",
     "apps/web/src/pages/Vaults.tsx",
-    "apps/web/tests/vaults.spec.ts",
+    "apps/web/tests/reveal.spec.ts",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C20.json",
+    "docs/evidence/C21.json",
     "plans/progress.json",
-    "playwright.config.ts",
-    "tests/fixtures/keyhelix/C20/expected-output.json",
-    "tests/fixtures/keyhelix/C20/metadata.json",
-    "tests/fixtures/keyhelix/C20/negative.json",
-    "tests/fixtures/keyhelix/C20/positive.json"
+    "tests/fixtures/keyhelix/C21/expected-output.json",
+    "tests/fixtures/keyhelix/C21/negative.json",
+    "tests/fixtures/keyhelix/C21/positive.json"
   ],
   "ci_defect_fixes": [],
   "commands": [
     "npm run validate:plan",
     "npm run test:browser",
     "npm run build",
-    "npm run check",
-    "go test -count=1 ./..."
+    "go test ./...",
+    "python3 scripts/plan.py validate"
   ],
-  "validation_results": "docs/evidence/C20.json",
-  "final_source_identity": "sha256:ce15d650b0697b98fb08c3696a33099a5f32d29dbbaadd6f66f59595df7e0ab6",
-  "protected_paths_changed": [],
-  "current_core_ready": false,
-  "next_task": "C21",
-  "next_command": "npm run plan -- next",
-  "continuation": "C01-C20 are verified locally. Proceed with C21: feat(ui): implement transient reveal interaction. The worktree is not committed; the owner must commit the listed paths before CI can test them."
+  "results": {
+    "C21": "Verified; transient reveal modal clears plaintext on close, escape, logout and timeout. Cache-Control no-store enforced. All Playwright and Go tests passing."
+  },
+  "next_recommended_task": "C22: feat(errors): render partial and failed provider operations visibly (F16)"
 }

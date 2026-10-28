@@ -186,10 +186,12 @@
     },
     {
       "id": "C21",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C21.json"
+      ],
+      "source_identity": "sha256:cb89aef3a9d14acb85e6ab0c1fdea48b0cfd950e9e3a5b5fb033757c803a4167",
+      "notes": "Transient reveal interaction implemented; plaintext clears from rendered state on close and logout, cache and service worker exclude reveal routes (Requirement F15)."
     },
     {
       "id": "C22",

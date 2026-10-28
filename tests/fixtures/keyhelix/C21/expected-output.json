@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "requirement": "F15",
+  "acceptance": "Plaintext clears from rendered state on close and logout; cache/service worker excludes reveal routes.",
+  "status": "passed",
+  "transient_reveal_supported": true,
+  "clears_on_close": true,
+  "clears_on_logout": true,
+  "clears_on_timeout": true,
+  "cache_excluded": true,
+  "service_worker_excluded": true,
+  "guard_codes": {
+    "step_up_required": "STEP_UP_REQUIRED",
+    "forbidden_scope": "FORBIDDEN_SCOPE",
+    "access_denied": "ACCESS_DENIED",
+    "provider_unavailable": "PROVIDER_UNAVAILABLE"
+  },
+  "provider_owns_secret_bytes": true
+}
