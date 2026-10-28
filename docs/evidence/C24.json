@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C24",
+  "date": "2026-10-28",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Restore requires operator-held recovery material and is tested on isolated instance (Requirement F18).",
+  "commit_id": "C24",
+  "base_commit": "ff9e2ce38a35163085d44d34f8fe1dbbbf0e8684",
+  "git_commit_created": false,
+  "source_identity": "sha256:512ee55dc037eaa40543e36b39eedcc632973e64eaa4539de2f91f0cb64f3818",
+  "source_identity_method": "SHA-256 over sorted C24-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "ops/provider-recovery.md": "4ffe1fe1f831a0b9e0a61497ae4a54709a920c748fd1f013966ef6e41df7cd00",
+    "tests/fixtures/keyhelix/C24/expected-output.json": "b9473847ac7131c88eec017662e562c1755163bf0ebae763f8415477ab5e1e85",
+    "tests/fixtures/keyhelix/C24/negative.json": "c843dcf8c49eb40caefcdce1658700add8ac9b2cba939e6f0bf84ac09cab2cd8",
+    "tests/fixtures/keyhelix/C24/positive.json": "d14491a653af22010e7a017cfc73adea08dd4f7bb87ba68c3e396652363d2ba8",
+    "tests/fixtures/keyhelix/C24/revoked-grant.json": "0a4aac4c933652b417be19f8a1baa1b711564715d3ddbf01af595d59e52b1b04",
+    "tests/restore_drill_test.go": "ce780b85b5abb0d7d20d532673ada5b99921045e62633c8f9241566a4bf6a2ac"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64 at /usr/local/go/bin/go",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863932416,
+      "memory_available_bytes": 25495617536,
+      "filesystem_available_bytes": 125562843136
+    },
+    "providers": "No live OpenBao or Keycloak instance was used. The real OpenBao capability adapter was exercised against the existing in-process OpenBao-compatible HTTP fixture (health, transit and KV v2) in tests/; storage, auth, secrets, grants and provider collaborators were real repository implementations. The operator-material gate is a drill harness, not an engine restore command. A live provider restore remains C30 work.",
+    "toolchain_note": "/usr/bin/go is go1.22.2 and its automatic toolchain download failed because the configured GOPROXY host was unreachable. Every Go command in this record used PATH=/usr/local/go/bin:$PATH and reported go1.26.2.",
+    "upstream_reference": [
+      "https://openbao.org/docs/commands/operator/raft/",
+      "https://openbao.org/docs/api/system/storage/raft/",
+      "https://openbao.org/docs/commands/operator/unseal/",
+      "https://openbao.org/docs/concepts/seal/",
+      "https://openbao.org/docs/commands/operator/generate-root/",
+      "https://openbao.org/docs/concepts/tokens/",
+      "https://openbao.org/docs/commands/token/revoke/",
+      "https://openbao.org/docs/api/system/seal-status/",
+      "https://openbao.org/docs/api/system/unseal/",
+      "https://www.keycloak.org/documentation",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C24/expected-output.json": "b9473847ac7131c88eec017662e562c1755163bf0ebae763f8415477ab5e1e85",
+    "tests/fixtures/keyhelix/C24/negative.json": "c843dcf8c49eb40caefcdce1658700add8ac9b2cba939e6f0bf84ac09cab2cd8",
+    "tests/fixtures/keyhelix/C24/positive.json": "d14491a653af22010e7a017cfc73adea08dd4f7bb87ba68c3e396652363d2ba8",
+    "tests/fixtures/keyhelix/C24/revoked-grant.json": "0a4aac4c933652b417be19f8a1baa1b711564715d3ddbf01af595d59e52b1b04"
+  },
+  "fixture_provenance_license": "All four fixture files are repository-authored synthetic data with no real secret, key or credential material, licensed under Apache-2.0. The operator material is generated per test run outside the backup directory and is never committed.",
+  "implementation_summary": [
+    "ops/provider-recovery.md: operator runbook for OpenBao root/unseal/recovery custody, root-token handling, backup scope, isolated restore, verification checklist, failure handling and the C24 drill. It records that live restore, clean-host proof and RPO/RTO remain C30/C28 obligations.",
+    "tests/restore_drill_test.go: isolated restore drill over the real storage adapter and real OpenBao capability adapter. It backs up only committed manifests and referenced blobs, exports provider-owned sealed payloads through the provider fixture, requires operator-held material before target writes, verifies every backup hash, restores through a temporary directory and publishes only after storage validation.",
+    "tests/restore_drill_test.go: restored provider starts sealed; the real adapter refuses construction with PROVIDER_SEALED; wrong material keeps it sealed for the bounded unseal attempts; correct material unseals it and the restored sealed payload is byte-identical to the source.",
+    "tests/restore_drill_test.go: kill-the-writer subprocess drill at 0, 1, 3 and 8 ms plus deterministic staged-byte, orphan-blob and complete-manifest boundaries; each restart exposes only the complete prior or complete new authoritative state.",
+    "tests/restore_drill_test.go: lost-ack replay, quota exhaustion (oversized metadata and the 256-record bound), revoked-grant preservation, source-unchanged proof and plaintext-canary scans across metadata, backup, provider snapshot, restored store and provider payload.",
+    "No production engine source changed. The engine already fails closed on a sealed provider (C23); C24 documents the operator procedure and proves the drill on an isolated instance."
+  ],
+  "commands": [
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 -v -run '^TestC24' ./tests/",
+      "exit_code": 0,
+      "result": "All three top-level C24 tests and all 8 restore subtests passed; crash-writer-boundary, staged-byte-boundary, orphan-blob-boundary, lost-ack-complete-manifest and quota-bounded passed; TestC24CrashWriterChild was skipped in the parent process; ok github.com/parsa-emami/keyhelix/tests 4.814s"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 -race -run '^TestC24' ./tests/",
+      "exit_code": 0,
+      "result": "ok github.com/parsa-emami/keyhelix/tests 6.700s under the race detector"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go vet ./... && PATH=/usr/local/go/bin:$PATH go test -count=1 ./...",
+      "exit_code": 0,
+      "result": "go vet produced zero diagnostics; every package reported ok (cmd/keyhelix, internal/audit, internal/auth, internal/contracts, internal/grants, internal/provider, internal/rotation, internal/secrets, internal/security, internal/storage, internal/vaults, tests); internal/health has no test files; tests package completed in 16.931s"
+    },
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "PLAN VALIDATION PASSED — 40 intents, coverage and progress checked; no application runtime tests performed"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "VALIDATION PASSED; Checked 240 JSON files and repository contract invariants."
+    }
+  ],
+  "results": {
+    "requirement": "F18",
+    "acceptance": "Restore requires operator-held recovery material and is tested on isolated instance.",
+    "status": "passed",
+    "recovery_material_required": true,
+    "restore_tested_on_isolated_instance": true,
+    "provider_sealed_until_unseal": true,
+    "revoked_grant_preserved": true,
+    "newer_target_not_overwritten": true,
+    "crash_boundary_complete_prior_or_new": true,
+    "replay_has_no_duplicate_side_effect": true,
+    "quota_bounded_without_partial_success": true,
+    "provider_owns_secret_bytes": true,
+    "negative_cases_verified": [
+      "missing-operator-material",
+      "wrong-operator-material-and-bounded-unseal",
+      "corrupt-backup-manifest",
+      "corrupt-backup-blob",
+      "missing-backup-blob",
+      "corrupt-provider-snapshot",
+      "restore-over-newer-target",
+      "interrupted-restore-no-partial-target",
+      "lost-ack-replay",
+      "quota-exhausted-bounded",
+      "staged-byte-and-manifest-boundaries",
+      "provider-owns-secret-bytes"
+    ]
+  },
+  "verification_details": {
+    "operator_material": "A 32-byte random recovery key is generated per drill outside the backup directory; the drill uses one representative material file, while production threshold shares remain the documented OpenBao custody model. Missing or empty material returns RECOVERY_MATERIAL_REQUIRED before any target write; a different key returns RECOVERY_MATERIAL_INVALID; the full backup tree is scanned for the raw, base64 and hex forms of the key and is rejected if it contains them or an unlisted recovery.key file.",
+    "isolated_restore": "The source store and restored store use separate temporary roots. The restore requires an absent or empty target, verifies the backup manifest schema, path bounds, file hashes and provider-snapshot hash before copying, writes through a temporary directory, validates the copied state with the real storage.Open, and publishes with one rename. The source tree hash is unchanged after the drill.",
+    "provider_sealed": "The restored provider fixture starts sealed. provider.NewOpenBaoAdapter returns PROVIDER_SEALED, three wrong material attempts leave it sealed, and the matching material unseals it. ReadSealedPayload then returns bytes equal to the source payload; the canary does not appear in the sealed bytes.",
+    "crash_boundary": "A child test process opens the store, signals readiness and writes a 60 KiB record; the parent sends SIGKILL at 0, 1, 3 and 8 ms delays. Each reopen exposes manifest version 1 or 2 with exactly one complete record; replay then either commits once from the prior state or returns Duplicate from the new state. Deterministic staged-byte, orphan-blob and complete-manifest-without-ACK cases cover the exact boundaries.",
+    "replay": "The lost-ACK case copies a valid version-2 manifest and its blob from a twin store without any acknowledgement. Reopen loads version 2, replay returns Duplicate with the same manifest and entity version, and exactly two manifest files remain.",
+    "quota": "Oversized metadata and the 256-record quota both return QUOTA_EXCEEDED on three repeated attempts with no partial metadata or additional manifest; retries are caller-bounded.",
+    "plaintext": "The source write uses the real secrets service with a plaintext canary. Exhaustive scans find zero occurrences in the source metadata, backup, provider snapshot, restored store and provider-owned sealed payload."
+  },
+  "durability_and_restart": {
+    "metadata": "Restored metadata is opened by the real storage adapter, which reloads the highest manifest, verifies referenced blobs and returns the expected manifest version and record count. Revoked grant bytes and state are preserved.",
+    "provider": "Provider-owned sealed payloads are exported from the provider fixture into the snapshot, restored into a fresh fixture and remain sealed until operator material is presented.",
+    "write_boundary": "SIGKILL and deterministic boundary tests prove restart exposes only the complete prior or complete new authoritative state; replay is idempotent and does not publish a second manifest."
+  },
+  "security_and_redaction": {
+    "provider_owns_secret_bytes": "Metadata and backup files contain no plaintext; the canary is absent from the provider-owned sealed payload as well.",
+    "operator_material": "The recovery key is never written into the backup, metadata, evidence or repository; it exists only under the test's temporary operator-material directory.",
+    "error_safety": "Drill errors carry typed codes and bounded stage labels; they do not include local paths or stored bytes.",
+    "no_automatic_provider_deletion": "A provider payload without a metadata reference is never auto-deleted by the drill; the runbook requires explicit operator reconciliation."
+  },
+  "observed_limitations": [
+    "No live OpenBao or Keycloak restore was performed; the drill uses the repository's in-process OpenBao-compatible wire fixture. Clean-host workflow, restart and live provider restore remain C30 evidence.",
+    "No engine backup/restore command was added. C24's exact deliverables are the operator runbook and the isolated drill; recovery remains an operator procedure and the provider owns the security boundary.",
+    "Physical disk-full behavior and measured RPO/RTO are not covered here. Quota and injected storage failures cover typed failure paths; C28 measures resources and full-disk behavior, and C30 measures the clean-host restore workflow.",
+    "Web build, browser tests and Playwright were not run because no web or TypeScript source changed.",
+    "The working tree is not committed. CI checks that inspect a checkout require the owner's approval to commit the listed paths."
+  ],
+  "rollback_or_recovery_observation": "Reverting the isolated source change removes the runbook, drill and fixtures; test data lives only in temporary directories. If a local store was used, preserve the highest valid manifest and its referenced blobs, never overwrite newer accepted state with an older backup, and repair forward with a new manifest version after review.",
+  "core_ready": false
+}

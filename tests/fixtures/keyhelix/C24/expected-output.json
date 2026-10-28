@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "requirement": "F18",
+  "acceptance": "Restore requires operator-held recovery material and is tested on isolated instance.",
+  "status": "passed",
+  "recovery_material_required": true,
+  "restore_tested_on_isolated_instance": true,
+  "provider_sealed_until_unseal": true,
+  "revoked_grant_preserved": true,
+  "newer_target_not_overwritten": true,
+  "crash_boundary_complete_prior_or_new": true,
+  "replay_has_no_duplicate_side_effect": true,
+  "quota_bounded_without_partial_success": true,
+  "provider_owns_secret_bytes": true,
+  "guard_codes": {
+    "recovery_material_required": "RECOVERY_MATERIAL_REQUIRED",
+    "recovery_material_invalid": "RECOVERY_MATERIAL_INVALID",
+    "backup_corrupt": "BACKUP_CORRUPT",
+    "target_not_empty": "TARGET_NOT_EMPTY",
+    "io_failure": "IO_FAILURE",
+    "provider_sealed": "PROVIDER_SEALED",
+    "quota_exceeded": "QUOTA_EXCEEDED",
+    "duplicate": "DUPLICATE",
+    "complete_prior_or_new": "COMPLETE_PRIOR_OR_NEW",
+    "no_canary": "NO_CANARY"
+  },
+  "revoked_grant_sha256": "0a4aac4c933652b417be19f8a1baa1b711564715d3ddbf01af595d59e52b1b04",
+  "manifest_version": 2,
+  "records": 2,
+  "plaintext_canary_occurrences": 0
+}

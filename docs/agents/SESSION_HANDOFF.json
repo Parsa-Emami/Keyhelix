@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-28",
-  "base_commit": "9fccf40950744fbd5cbd811b1ea514487c308417",
-  "scope": "Provider health surveillance and outage resilience; no plaintext fallback, strict audited reveal policy (C23 / F17)",
+  "base_commit": "ff9e2ce38a35163085d44d34f8fe1dbbbf0e8684",
+  "scope": "Provider root custody, backup and isolated restore drill; no live provider restore claimed (C24 / F18)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -26,28 +26,33 @@
     "C20",
     "C21",
     "C22",
-    "C23"
+    "C23",
+    "C24"
   ],
   "git_commit_created": false,
   "changed_paths": [
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C23.json",
-    "internal/health/provider.go",
+    "docs/evidence/C24.json",
+    "ops/provider-recovery.md",
     "plans/progress.json",
-    "tests/fixtures/keyhelix/C23/expected-output.json",
-    "tests/fixtures/keyhelix/C23/negative.json",
-    "tests/fixtures/keyhelix/C23/positive.json",
-    "tests/outage_test.go"
+    "tests/fixtures/keyhelix/C24/expected-output.json",
+    "tests/fixtures/keyhelix/C24/negative.json",
+    "tests/fixtures/keyhelix/C24/positive.json",
+    "tests/fixtures/keyhelix/C24/revoked-grant.json",
+    "tests/restore_drill_test.go"
   ],
   "ci_defect_fixes": [],
   "commands": [
+    "PATH=/usr/local/go/bin:$PATH go test -count=1 -v -run '^TestC24' ./tests/",
+    "PATH=/usr/local/go/bin:$PATH go test -count=1 -race -run '^TestC24' ./tests/",
+    "PATH=/usr/local/go/bin:$PATH go vet ./...",
+    "PATH=/usr/local/go/bin:$PATH go test -count=1 ./...",
     "npm run validate:plan",
-    "npm run test:browser",
-    "go test ./...",
-    "python3 scripts/plan.py validate"
+    "python3 scripts/plan.py validate",
+    "python3 scripts/validate_repo.py"
   ],
   "results": {
-    "C23": "Verified; provider health surveillance and fail closed on provider or audit failures implemented. Zero plaintext fallback during outage, sealed provider guard, and strict audited reveal policy passing all Go tests."
+    "C24": "Verified on an isolated synthetic instance. Restore requires operator material; missing/wrong material is refused before target writes; the restored provider starts sealed and fails closed until unsealed; revoked grants survive; crash boundaries expose only complete prior or new state; lost ACK replays idempotently; quota fails closed with bounded retries; no plaintext canary appears in metadata, backup, provider snapshot or sealed bytes. Live OpenBao/Keycloak restore and clean-host restore remain C30 work."
   },
-  "next_recommended_task": "C24: feat(recovery): verify isolated disaster recovery and audit verification (F18)"
+  "next_recommended_task": "C25: feat(checkpoints): verify separately stored audit checkpoints (F19)"
 }

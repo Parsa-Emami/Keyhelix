@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C24 provider custody and restore drill fixture; contains no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "vault": {
+    "vault_id": "vault-prod",
+    "kek_id": "kek-v1-openbao",
+    "mount": "transit",
+    "role": "vault-admin"
+  },
+  "identity": {
+    "subject": "usr_c24_alice",
+    "email": "alice@keyhelix.local",
+    "vault_role": "vault-admin",
+    "allowed_owners": [
+      "alice@keyhelix.local"
+    ],
+    "allowed_scopes": [
+      "secret:read",
+      "secret:write",
+      "app/prod/*"
+    ]
+  },
+  "secret": {
+    "secret_path": "app/prod/database-url",
+    "classification": "restricted",
+    "plaintext_canary": "sentinel-canary-c24-restore-f18-6e1d",
+    "write_operation_id": "op-c24-secret-001",
+    "expected_version": 0
+  },
+  "revoked_grant": {
+    "grant_id": "grnt-c24-revoked-001",
+    "operation_id": "op-c24-grant-001",
+    "file": "revoked-grant.json"
+  },
+  "operator_material": {
+    "custody": "operator-offline-material",
+    "threshold": 1,
+    "shares": 1,
+    "included_in_backup": false,
+    "file": "recovery.key"
+  },
+  "expected_restore": {
+    "manifest_version": 2,
+    "records": 2,
+    "revoked_grant_preserved": true,
+    "provider_sealed_until_unseal": true,
+    "target_must_be_empty": true
+  }
+}

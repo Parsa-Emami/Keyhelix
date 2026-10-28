@@ -213,10 +213,12 @@
     },
     {
       "id": "C24",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C24.json"
+      ],
+      "source_identity": "sha256:512ee55dc037eaa40543e36b39eedcc632973e64eaa4539de2f91f0cb64f3818",
+      "notes": "Provider root custody and an isolated restore drill verified with synthetic fixtures; live OpenBao/Keycloak restore and clean-host restore remain C30 work."
     },
     {
       "id": "C25",

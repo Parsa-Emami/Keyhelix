@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C24 recovery negative cases; injected failures only, no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "unseal_attempt_limit": 3,
+  "cases": [
+    {
+      "case": "missing-operator-material",
+      "kind": "restore_material_missing",
+      "description": "Restore without operator-held recovery material must be refused before any target bytes are written",
+      "expected_code": "RECOVERY_MATERIAL_REQUIRED"
+    },
+    {
+      "case": "wrong-operator-material",
+      "kind": "restore_material_invalid",
+      "description": "A mismatched recovery material must be refused and leave the isolated target absent",
+      "expected_code": "RECOVERY_MATERIAL_INVALID"
+    },
+    {
+      "case": "corrupt-backup-manifest",
+      "kind": "backup_corrupt_manifest",
+      "description": "A tampered backup manifest must fail integrity verification before restore",
+      "expected_code": "BACKUP_CORRUPT"
+    },
+    {
+      "case": "corrupt-backup-blob",
+      "kind": "backup_corrupt_blob",
+      "description": "A tampered committed blob must fail hash verification before restore",
+      "expected_code": "BACKUP_CORRUPT"
+    },
+    {
+      "case": "missing-backup-blob",
+      "kind": "backup_missing_blob",
+      "description": "An incomplete backup must be refused instead of restoring a partial store",
+      "expected_code": "BACKUP_CORRUPT"
+    },
+    {
+      "case": "corrupt-provider-snapshot",
+      "kind": "backup_corrupt_provider",
+      "description": "A tampered provider snapshot must be refused before the target store is created",
+      "expected_code": "BACKUP_CORRUPT"
+    },
+    {
+      "case": "restore-over-newer-target",
+      "kind": "target_not_empty",
+      "description": "Restoring an older backup over a non-empty target must be refused without overwriting newer accepted state",
+      "expected_code": "TARGET_NOT_EMPTY"
+    },
+    {
+      "case": "interrupted-restore-no-partial-target",
+      "kind": "restore_interrupted",
+      "description": "A copy failure mid-restore must leave no partial authoritative target and no usable staging directory",
+      "expected_code": "IO_FAILURE"
+    },
+    {
+      "case": "lost-ack-replay",
+      "kind": "lost_ack_replay",
+      "description": "A durable manifest published without an acknowledgement must replay idempotently after restart",
+      "expected_code": "DUPLICATE"
+    },
+    {
+      "case": "quota-exhausted-bounded",
+      "kind": "quota_exhausted",
+      "description": "Exhausted quota must fail closed with a stable typed error and no partial state or unbounded retry",
+      "expected_code": "QUOTA_EXCEEDED"
+    },
+    {
+      "case": "staged-byte-and-manifest-boundaries",
+      "kind": "crash_boundaries",
+      "description": "A killed writer must leave only a complete prior or complete new authoritative state after restart",
+      "expected_code": "COMPLETE_PRIOR_OR_NEW"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "kind": "provider_owns_bytes",
+      "description": "Plaintext sentinels must never appear in metadata, backup files or provider-owned sealed bytes",
+      "expected_code": "NO_CANARY"
+    }
+  ]
+}
