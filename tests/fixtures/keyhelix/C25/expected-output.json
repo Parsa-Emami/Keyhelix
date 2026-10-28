@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "requirement": "F19",
+  "acceptance": "Signature trust policy and unavailable checkpoint status are explicit; hash chain alone is not immutable.",
+  "status": "passed",
+  "signature_trust_policy_explicit": true,
+  "unavailable_status_explicit": true,
+  "hash_chain_alone_not_immutable": true,
+  "one_modified_byte_rejected": true,
+  "stale_or_replayed_revision_rejected": true,
+  "provider_owns_secret_bytes": true,
+  "guard_statuses": {
+    "trusted": "TRUSTED",
+    "unavailable": "UNAVAILABLE",
+    "untrusted_signer": "UNTRUSTED_SIGNER",
+    "invalid_signature": "INVALID_SIGNATURE",
+    "tampered_log": "TAMPERED_LOG",
+    "stale_revision": "STALE_REVISION",
+    "replay_rejected": "REPLAY_REJECTED",
+    "expired": "EXPIRED",
+    "malformed": "MALFORMED",
+    "unanchored_chain": "UNANCHORED_CHAIN"
+  },
+  "plaintext_canary_occurrences": 0
+}

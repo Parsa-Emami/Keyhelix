@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-28",
-  "base_commit": "ff9e2ce38a35163085d44d34f8fe1dbbbf0e8684",
-  "scope": "Provider root custody, backup and isolated restore drill; no live provider restore claimed (C24 / F18)",
+  "base_commit": "04b1edb4dac0a6462d924408d7c09c55b855c6a5",
+  "scope": "Separately stored audit checkpoint verification with explicit trust policy and unavailable status; hash chain alone not immutable (C25 / F19)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -27,24 +27,24 @@
     "C21",
     "C22",
     "C23",
-    "C24"
+    "C24",
+    "C25"
   ],
   "git_commit_created": false,
   "changed_paths": [
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C24.json",
-    "ops/provider-recovery.md",
+    "docs/evidence/C25.json",
+    "internal/audit/checkpoints.go",
     "plans/progress.json",
-    "tests/fixtures/keyhelix/C24/expected-output.json",
-    "tests/fixtures/keyhelix/C24/negative.json",
-    "tests/fixtures/keyhelix/C24/positive.json",
-    "tests/fixtures/keyhelix/C24/revoked-grant.json",
-    "tests/restore_drill_test.go"
+    "tests/checkpoint_test.go",
+    "tests/fixtures/keyhelix/C25/expected-output.json",
+    "tests/fixtures/keyhelix/C25/negative.json",
+    "tests/fixtures/keyhelix/C25/positive.json"
   ],
   "ci_defect_fixes": [],
   "commands": [
-    "PATH=/usr/local/go/bin:$PATH go test -count=1 -v -run '^TestC24' ./tests/",
-    "PATH=/usr/local/go/bin:$PATH go test -count=1 -race -run '^TestC24' ./tests/",
+    "PATH=/usr/local/go/bin:$PATH go test -count=1 -v -run '^TestC25' ./tests/",
+    "PATH=/usr/local/go/bin:$PATH go test -count=1 -race -run '^TestC25' ./tests/",
     "PATH=/usr/local/go/bin:$PATH go vet ./...",
     "PATH=/usr/local/go/bin:$PATH go test -count=1 ./...",
     "npm run validate:plan",
@@ -52,7 +52,7 @@
     "python3 scripts/validate_repo.py"
   ],
   "results": {
-    "C24": "Verified on an isolated synthetic instance. Restore requires operator material; missing/wrong material is refused before target writes; the restored provider starts sealed and fails closed until unsealed; revoked grants survive; crash boundaries expose only complete prior or new state; lost ACK replays idempotently; quota fails closed with bounded retries; no plaintext canary appears in metadata, backup, provider snapshot or sealed bytes. Live OpenBao/Keycloak restore and clean-host restore remain C30 work."
+    "C25": "Separately stored audit checkpoints verified with explicit TrustPolicy, Ed25519 cryptographic signatures, and explicit VerificationStatus codes (including UNAVAILABLE). Proved that local hash chain alone is not immutable (UNANCHORED_CHAIN). Tested and verified all 10 negative failure cases: single-byte mutations in events, log root, and signature; sink unavailability; untrusted signer; stale/forked revision replays; timestamp expiration; and zero plaintext canary leakage."
   },
-  "next_recommended_task": "C25: feat(checkpoints): verify separately stored audit checkpoints (F19)"
+  "next_recommended_task": "C26: test(security): exercise privilege revocation and secret leakage (F20)"
 }

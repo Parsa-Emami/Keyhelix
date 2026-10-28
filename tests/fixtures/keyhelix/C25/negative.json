@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C25 negative cases; injected invalid states, no real secrets or credentials.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "single-byte-event-modified",
+      "description": "Modifying a single byte in an audit event payload invalidates log root verification",
+      "expected_status": "TAMPERED_LOG",
+      "expected_trusted": false
+    },
+    {
+      "case": "single-byte-log-root-modified",
+      "description": "Modifying a single byte in the checkpoint log root invalidates the cryptographic signature",
+      "expected_status": "INVALID_SIGNATURE",
+      "expected_trusted": false
+    },
+    {
+      "case": "single-byte-signature-modified",
+      "description": "Modifying a single byte in the base64 signature causes cryptographic signature verification to fail",
+      "expected_status": "INVALID_SIGNATURE",
+      "expected_trusted": false
+    },
+    {
+      "case": "checkpoint-store-unavailable",
+      "description": "When the separate checkpoint sink is offline or missing, status must be explicitly UNAVAILABLE",
+      "expected_status": "UNAVAILABLE",
+      "expected_trusted": false
+    },
+    {
+      "case": "untrusted-signer",
+      "description": "A checkpoint signed by an unauthorized key not in TrustPolicy must be rejected as UNTRUSTED_SIGNER",
+      "expected_status": "UNTRUSTED_SIGNER",
+      "expected_trusted": false
+    },
+    {
+      "case": "stale-revision-replay",
+      "description": "An older sequence cannot replace the current accepted authority (monotonically forward)",
+      "expected_status": "STALE_REVISION",
+      "expected_trusted": false
+    },
+    {
+      "case": "forked-revision-replay",
+      "description": "A replayed revision with the same sequence number as current authority must be rejected",
+      "expected_status": "REPLAY_REJECTED",
+      "expected_trusted": false
+    },
+    {
+      "case": "expired-checkpoint",
+      "description": "A checkpoint whose timestamp exceeds TrustPolicy.MaxAge must be rejected as EXPIRED",
+      "expected_status": "EXPIRED",
+      "expected_trusted": false
+    },
+    {
+      "case": "hash-chain-alone",
+      "description": "A local hash chain alone is not immutable and cannot produce TRUSTED status without an authorized checkpoint",
+      "expected_status": "UNANCHORED_CHAIN",
+      "expected_trusted": false
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "description": "Checkpoints, audit events and verification payloads must never contain plaintext canary bytes",
+      "expected_canary_count": 0,
+      "expected_trusted": false
+    }
+  ]
+}

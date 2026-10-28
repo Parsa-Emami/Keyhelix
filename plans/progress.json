@@ -222,10 +222,12 @@
     },
     {
       "id": "C25",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C25.json"
+      ],
+      "source_identity": "sha256:85d9dc161f076ef28e9e1c993031618e3fae8b08ce6fd8cfa2cb3343a60d4511",
+      "notes": "Separately stored audit checkpoint verification implemented and verified with synthetic Ed25519 fixtures; explicit TrustPolicy, explicit VerificationStatus including UNAVAILABLE, and monotonic sequence authority tracking enforced (Requirement F19)."
     },
     {
       "id": "C26",

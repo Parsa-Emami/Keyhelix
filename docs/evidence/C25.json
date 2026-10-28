@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C25",
+  "date": "2026-10-28",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Signature trust policy and unavailable checkpoint status are explicit; hash chain alone is not immutable (Requirement F19).",
+  "commit_id": "C25",
+  "base_commit": "04b1edb4dac0a6462d924408d7c09c55b855c6a5",
+  "git_commit_created": false,
+  "source_identity": "sha256:85d9dc161f076ef28e9e1c993031618e3fae8b08ce6fd8cfa2cb3343a60d4511",
+  "source_identity_method": "SHA-256 over sorted C25-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "internal/audit/checkpoints.go": "0c0127e997fe66b7a80989d01c0f23da8906484c7b9d94d99e4b249a994eb0b3",
+    "tests/checkpoint_test.go": "08cbfd6159594b5604979edead98b09cc0df564b12750fa3725f29a7947d582f",
+    "tests/fixtures/keyhelix/C25/expected-output.json": "1d9bb76cc889586c0f3a7f4cb6db854739334c75ea3aaa7060e3c4f256445c4d",
+    "tests/fixtures/keyhelix/C25/negative.json": "19fc44172339263c6b6b8b30d81ac23a01dc0196c57907b39209258296dd0f8d",
+    "tests/fixtures/keyhelix/C25/positive.json": "240aa75c7de7bb9b1f2a5a40f49916a95def7415ab7e93cf4e823945f93e9c80"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64 at /usr/local/go/bin/go",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863932416,
+      "memory_available_bytes": 25067081728,
+      "filesystem_available_bytes": 125598941184
+    },
+    "providers": "Self-contained Ed25519 signing authorities, memory and directory-backed separate checkpoint sinks, and real CloudEvents 1.0 audit event pipelines. Provider-owned secret bytes boundary verified via security.AssertClean.",
+    "toolchain_note": "Every Go command executed using PATH=/usr/local/go/bin:$PATH and verified with Go 1.26.2.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://www.keycloak.org/documentation",
+      "https://openid.net/specs/openid-connect-core-1_0.html",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C25/expected-output.json": "1d9bb76cc889586c0f3a7f4cb6db854739334c75ea3aaa7060e3c4f256445c4d",
+    "tests/fixtures/keyhelix/C25/negative.json": "19fc44172339263c6b6b8b30d81ac23a01dc0196c57907b39209258296dd0f8d",
+    "tests/fixtures/keyhelix/C25/positive.json": "240aa75c7de7bb9b1f2a5a40f49916a95def7415ab7e93cf4e823945f93e9c80"
+  },
+  "fixture_provenance_license": "All fixture files are repository-authored synthetic audit metadata and Ed25519 keys with no real secret, key or credential material, licensed under Apache-2.0.",
+  "implementation_summary": [
+    "internal/audit/checkpoints.go: Implements AuditCheckpoint domain models, Ed25519 cryptographic signing, deterministic canonical signing payload encoding, and cumulative SHA-256 log root generation.",
+    "internal/audit/checkpoints.go: Defines explicit TrustPolicy (TrustedSigners map, AllowedAlgorithms, MaxAge, ClockTolerance, MinSequence) and explicit VerificationStatus enum (TRUSTED, UNAVAILABLE, UNTRUSTED_SIGNER, INVALID_SIGNATURE, TAMPERED_LOG, STALE_REVISION, REPLAY_REJECTED, EXPIRED, MALFORMED, UNANCHORED_CHAIN).",
+    "internal/audit/checkpoints.go: Implements separate sink storage abstraction (CheckpointStore, InMemoryCheckpointStore, DirectoryCheckpointStore, FailingCheckpointStore) and Verifier authority tracking preventing stale/replayed revision authority rollover.",
+    "internal/audit/checkpoints.go: Implements NewCheckpointSignedEvent emitting CloudEvents 1.0 audit.checkpoint_signed.v1 events matching AsyncAPI contracts.",
+    "tests/checkpoint_test.go: Comprehensive integration and acceptance test verifying Requirement F19, positive multi-checkpoint chaining progression, all 10 required negative failure cases, atomic directory sink drill, concurrent execution under race detector, and zero plaintext canary leakage."
+  ],
+  "commands": [
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 -v -run '^TestC25' ./tests/",
+      "exit_code": 0,
+      "result": "All C25 test functions and subtests passed (TestC25SeparatelyStoredAuditCheckpointsF19, TestC25NegativeCases 10 subtests, TestC25FileStoreDrill, TestC25ConcurrencyRace); ok github.com/parsa-emami/keyhelix/tests 0.018s"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 -race -run '^TestC25' ./tests/",
+      "exit_code": 0,
+      "result": "ok github.com/parsa-emami/keyhelix/tests 1.109s under the race detector"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go vet ./... && PATH=/usr/local/go/bin:$PATH go test -count=1 ./...",
+      "exit_code": 0,
+      "result": "go vet produced zero diagnostics; every package reported ok (cmd/keyhelix, internal/audit, internal/auth, internal/contracts, internal/grants, internal/provider, internal/rotation, internal/secrets, internal/security, internal/storage, internal/vaults, tests); tests package completed in 17.373s"
+    },
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "PLAN VALIDATION PASSED — 40 intents, coverage and progress checked; no application runtime tests performed"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "VALIDATION PASSED; Checked 245 JSON files and repository contract invariants."
+    }
+  ],
+  "results": {
+    "requirement": "F19",
+    "acceptance": "Signature trust policy and unavailable checkpoint status are explicit; hash chain alone is not immutable.",
+    "status": "passed",
+    "signature_trust_policy_explicit": true,
+    "unavailable_status_explicit": true,
+    "hash_chain_alone_not_immutable": true,
+    "one_modified_byte_rejected": true,
+    "stale_or_replayed_revision_rejected": true,
+    "provider_owns_secret_bytes": true,
+    "negative_cases_verified": [
+      "single-byte-event-modified",
+      "single-byte-log-root-modified",
+      "single-byte-signature-modified",
+      "checkpoint-store-unavailable",
+      "untrusted-signer",
+      "stale-revision-replay",
+      "forked-revision-replay",
+      "expired-checkpoint",
+      "hash-chain-alone",
+      "provider-owns-secret-bytes"
+    ]
+  },
+  "verification_details": {
+    "trust_policy": "Explicit TrustPolicy enforces authorized Ed25519 public keys, allowed algorithm whitelist, timestamp age/skew bounds, and minimum accepted sequence.",
+    "explicit_statuses": "VerificationResult yields explicit typed statuses including TRUSTED, UNAVAILABLE, UNTRUSTED_SIGNER, INVALID_SIGNATURE, TAMPERED_LOG, STALE_REVISION, REPLAY_REJECTED, EXPIRED, and UNANCHORED_CHAIN.",
+    "hash_chain_alone_not_immutable": "VerifyUnanchored explicitly refuses TRUSTED status (returns UNANCHORED_CHAIN) for any unanchored event stream.",
+    "one_modified_byte": "One modified byte in event payload produces TAMPERED_LOG; one modified byte in checkpoint log root or signature produces INVALID_SIGNATURE.",
+    "stale_and_replayed_revisions": "Sequence monotonicity is strictly enforced; sequence <= accepted authority is rejected as STALE_REVISION or REPLAY_REJECTED and cannot overwrite the accepted authority.",
+    "separate_sink": "DirectoryCheckpointStore implements atomic persistence via write-and-rename and separate directory storage; FailingCheckpointStore proves UNAVAILABLE handling during sink failures.",
+    "canary_absence": "Exhaustive scans across test checkpoints, CloudEvents, and verification results demonstrate zero occurrences of the plaintext canary."
+  },
+  "observed_limitations": [
+    "No live remote OIDC identity provider was contacted; test fixtures use synthetic Ed25519 signing identities.",
+    "Clean-host core workflow, full restore, and external provider deployment remain C30 work.",
+    "Web frontend and Playwright UI tests were not run as no web or TypeScript files changed."
+  ],
+  "rollback_or_recovery_observation": "Reverting the isolated source change removes the checkpoint verifier, test files, and fixtures with no data schema corruption. When repairing in production, maintain the highest valid checkpoint sequence and advance forward with an authorized signer.",
+  "core_ready": false
+}

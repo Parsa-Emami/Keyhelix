@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C25 audit checkpoint fixtures; contains no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "trusted_signer": {
+    "signer_id": "keyhelix-audit-signer-01",
+    "algorithm": "ed25519",
+    "public_key_hex": "eba89f51c681b6a8c4eb167113ab9dff3e154ebcebabd8c0e9e7dea6b04c3823",
+    "private_key_hex": "3cfce4da47c72b94dd1a2925b968cfe4ebcb2dbba484f36b1db51cfacab1c88eeba89f51c681b6a8c4eb167113ab9dff3e154ebcebabd8c0e9e7dea6b04c3823"
+  },
+  "untrusted_signer": {
+    "signer_id": "rogue-audit-signer-99",
+    "algorithm": "ed25519",
+    "public_key_hex": "38667c97c62b95962dbc5bf3b4ce059077082e3ea34ee06d1294e92e28148c9f",
+    "private_key_hex": "190e757502ccdb21c14f53523549fc33fd9fd6feb8c4d258498794d64ca35e4d38667c97c62b95962dbc5bf3b4ce059077082e3ea34ee06d1294e92e28148c9f"
+  },
+  "trust_policy": {
+    "trusted_signers": [
+      "keyhelix-audit-signer-01"
+    ],
+    "allowed_algorithms": [
+      "ed25519"
+    ],
+    "max_age_seconds": 86400,
+    "clock_tolerance_seconds": 300,
+    "min_sequence": 1
+  },
+  "sample_events": [
+    {
+      "specversion": "1.0",
+      "id": "evt-c25-0000000000000001",
+      "source": "/keyhelix/engine",
+      "type": "secret.version_created.v1",
+      "time": "2026-10-28T10:00:00.000000000Z",
+      "subject": "vault-prod/app/prod/database-url",
+      "datacontenttype": "application/json",
+      "data": {
+        "actor": "alice@keyhelix.local",
+        "vault_id": "vault-prod",
+        "secret_path": "app/prod/database-url",
+        "version": 1,
+        "classification": "restricted",
+        "action": "secret:write",
+        "outcome": "success"
+      }
+    },
+    {
+      "specversion": "1.0",
+      "id": "evt-c25-0000000000000002",
+      "source": "/keyhelix/engine",
+      "type": "secret.revealed.v1",
+      "time": "2026-10-28T10:01:00.000000000Z",
+      "subject": "vault-prod/app/prod/database-url",
+      "datacontenttype": "application/json",
+      "data": {
+        "actor": "alice@keyhelix.local",
+        "vault_id": "vault-prod",
+        "secret_path": "app/prod/database-url",
+        "version": 1,
+        "classification": "restricted",
+        "action": "secret:reveal",
+        "outcome": "success"
+      }
+    },
+    {
+      "specversion": "1.0",
+      "id": "evt-c25-0000000000000003",
+      "source": "/keyhelix/engine",
+      "type": "grant.created.v1",
+      "time": "2026-10-28T10:02:00.000000000Z",
+      "subject": "vault-prod/grants/grnt-c25-001",
+      "datacontenttype": "application/json",
+      "data": {
+        "actor": "alice@keyhelix.local",
+        "vault_id": "vault-prod",
+        "action": "grant:create",
+        "outcome": "success"
+      }
+    }
+  ],
+  "batch2_events": [
+    {
+      "specversion": "1.0",
+      "id": "evt-c25-0000000000000004",
+      "source": "/keyhelix/engine",
+      "type": "grant.revoked.v1",
+      "time": "2026-10-28T10:05:00.000000000Z",
+      "subject": "vault-prod/grants/grnt-c25-001",
+      "datacontenttype": "application/json",
+      "data": {
+        "actor": "alice@keyhelix.local",
+        "vault_id": "vault-prod",
+        "action": "grant:revoke",
+        "outcome": "success"
+      }
+    }
+  ],
+  "plaintext_canary": "sentinel-canary-c25-checkpoints-f19-8a3f"
+}
