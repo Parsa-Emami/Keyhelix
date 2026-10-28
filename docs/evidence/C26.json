@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C26",
+  "date": "2026-10-28",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Security matrix passes with synthetic secrets before any personal production credentials enter provider (Requirement F20).",
+  "commit_id": "C26",
+  "base_commit": "b10f6f43bb436fe1426fd926c59908017bfe1290",
+  "git_commit_created": false,
+  "source_identity": "sha256:55ba19e47bb581a94daaea1b233995e4bde23756ce2f3e74f63067a76651a0a3",
+  "source_identity_method": "SHA-256 over sorted C26-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "docs/evidence/security-review-template.md": "9830a2b2b3d45d4233b4fcf66af970d0c646f754c35800e9097b4ccc897b523a",
+    "tests/fixtures/keyhelix/C26/expected-output.json": "e18ba6cf0a14a4c94ad7881ff3e00f278e6d43e62b00a154dca71e94244c0387",
+    "tests/fixtures/keyhelix/C26/negative.json": "4ca9904ceae045cad921107123f214031d896eea25cfbaecaf650ac249b5700e",
+    "tests/fixtures/keyhelix/C26/positive.json": "b58302aab6cd56dc7c5803b51b47a88d01a8b6c4c55ac9adbe1f284404cdd48c",
+    "tests/security_matrix_test.go": "0ac77457fd99379ea7fc9c96f2733b55dd9a65f10048adaec4c90a02e78a6bdd"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64 at /usr/local/go/bin/go",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863932416,
+      "memory_available_bytes": 25274040320,
+      "filesystem_available_bytes": 125559521280
+    },
+    "providers": "Synthetic security matrix verified against in-process OpenBao mock adapter and real storage, auth, session, step-up, grants, and audit engine collaborators. All tests execute exclusively with synthetic sentinel secrets before any personal production credentials enter the provider.",
+    "toolchain_note": "Every Go command executed using PATH=/usr/local/go/bin:$PATH and verified with Go 1.26.2.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://www.keycloak.org/documentation",
+      "https://openid.net/specs/openid-connect-core-1_0.html",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C26/expected-output.json": "e18ba6cf0a14a4c94ad7881ff3e00f278e6d43e62b00a154dca71e94244c0387",
+    "tests/fixtures/keyhelix/C26/negative.json": "4ca9904ceae045cad921107123f214031d896eea25cfbaecaf650ac249b5700e",
+    "tests/fixtures/keyhelix/C26/positive.json": "b58302aab6cd56dc7c5803b51b47a88d01a8b6c4c55ac9adbe1f284404cdd48c"
+  },
+  "fixture_provenance_license": "All fixture files are repository-authored synthetic security matrix configurations and sentinel secret values with no real secret, key or credential material, licensed under Apache-2.0.",
+  "implementation_summary": [
+    "docs/evidence/security-review-template.md: Comprehensive pre-production security review and verification checklist establishing matrix evaluation dimensions, core invariants, and operator sign-off procedure before personal production credentials enter the provider.",
+    "tests/security_matrix_test.go: TestC26SecurityMatrixF20 exercises the multi-dimensional security matrix across admin write, member grant creation, authorized reveal with step-up, immediate synchronous privilege revocation, mandatory step-up gates, cross-tenant isolation, and exhaustive zero-leakage assertions.",
+    "tests/security_matrix_test.go: TestC26DurabilityAndRestart proves that grant revocation and storage sanitization survive engine close and reopening (storage.Open) with zero plaintext persistence.",
+    "tests/security_matrix_test.go: TestC26NegativeCases verifies explicit typed error codes for missing step-up, revoked access, cross-tenant violations, expired sessions, provider outage fail-closed behavior, malformed inputs, and forged role headers.",
+    "tests/security_matrix_test.go: TestC26ConcurrencyRace verifies concurrent thread-safety and race-free execution under -race."
+  ],
+  "commands": [
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 -v -run '^TestC26' ./tests/",
+      "exit_code": 0,
+      "result": "All C26 test functions and subtests passed (TestC26SecurityMatrixF20, TestC26DurabilityAndRestart, TestC26NegativeCases 8 subtests, TestC26ConcurrencyRace); ok github.com/parsa-emami/keyhelix/tests 0.308s"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 -race -run '^TestC26' ./tests/",
+      "exit_code": 0,
+      "result": "ok github.com/parsa-emami/keyhelix/tests 1.273s under the race detector"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go vet ./... && PATH=/usr/local/go/bin:$PATH go test -count=1 ./...",
+      "exit_code": 0,
+      "result": "go vet produced zero diagnostics; every package reported ok (cmd/keyhelix, internal/audit, internal/auth, internal/contracts, internal/grants, internal/provider, internal/rotation, internal/secrets, internal/security, internal/storage, internal/vaults, tests); tests package completed in 17.512s"
+    },
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "python3 scripts/plan.py validate",
+      "exit_code": 0,
+      "result": "PLAN VALIDATION PASSED — 40 intents, coverage and progress checked; no application runtime tests performed"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "result": "VALIDATION PASSED; Checked 249 JSON files and repository contract invariants."
+    }
+  ],
+  "results": {
+    "requirement": "F20",
+    "acceptance": "Security matrix passes with synthetic secrets before any personal production credentials enter provider.",
+    "status": "passed",
+    "matrix_rows_verified": [
+      "admin-write-and-reveal-with-stepup",
+      "member-authorized-reveal-with-grant",
+      "immediate-privilege-revocation-enforced",
+      "missing-step-up-token-rejected",
+      "cross-tenant-isolation-enforced",
+      "expired-session-rejected",
+      "provider-offline-fails-closed",
+      "restart-durability-preserves-revocation",
+      "zero-plaintext-canary-leakage"
+    ],
+    "zero_plaintext_canaries_detected": true,
+    "provider_owns_secret_bytes": true,
+    "plaintext_canary_occurrences": 0,
+    "negative_cases_verified": [
+      "missing-step-up-token",
+      "immediate-revocation-enforced",
+      "cross-tenant-secret-access",
+      "expired-session-access",
+      "provider-offline-fails-closed",
+      "malformed-grant-input",
+      "forged-identity-headers",
+      "plaintext-leakage-assertion"
+    ]
+  },
+  "verification_details": {
+    "security_matrix": "Full matrix executed with synthetic secrets: admin write and reveal with step-up verified, active member reveal verified, immediate synchronous privilege revocation verified on next call, missing step-up rejected, out-of-scope cross-tenant access denied, and expired sessions rejected.",
+    "privilege_revocation": "Admin revocation of member grant synchronously invalidates active step-up tokens and causes next sensitive request to fail immediately.",
+    "secret_leakage": "Exhaustive scans via security.AssertDirectoryClean across metadata storage, manifests, and blobs report 0 sentinel canary leaks. Audit events verified clean via security.AssertClean.",
+    "durability_and_restart": "Storage engine closed and reloaded via storage.Open; revoked grant remains revoked in reloaded metadata and storage tree remains clean.",
+    "provider_offline": "When provider adapter is offline/unreachable, operations fail closed with explicit typed error rather than placeholder success."
+  },
+  "observed_limitations": [
+    "No live remote OIDC or production Keycloak/OpenBao instances were contacted; tests run against repository in-process provider fixture.",
+    "Clean-host deployment and core workflow proof remain C30 work.",
+    "Web UI and browser tests were not run as no web or frontend files changed."
+  ],
+  "rollback_or_recovery_observation": "Reverting the isolated test and template files removes the C26 deliverables with zero schema impact. In production, maintain the highest valid manifest version and verified provider access controls.",
+  "core_ready": false
+}

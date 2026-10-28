@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "requirement": "F20",
+  "acceptance": "Security matrix passes with synthetic secrets before any personal production credentials enter provider.",
+  "status": "passed",
+  "matrix_rows_verified": [
+    "admin-write-and-reveal-with-stepup",
+    "member-authorized-reveal-with-grant",
+    "immediate-privilege-revocation-enforced",
+    "missing-step-up-token-rejected",
+    "cross-tenant-isolation-enforced",
+    "expired-session-rejected",
+    "provider-offline-fails-closed",
+    "restart-durability-preserves-revocation",
+    "zero-plaintext-canary-leakage"
+  ],
+  "zero_plaintext_canaries_detected": true,
+  "provider_owns_secret_bytes": true,
+  "plaintext_canary_occurrences": 0,
+  "guard_codes": {
+    "step_up_required": "STEP_UP_REQUIRED",
+    "grant_revoked": "GRANT_REVOKED",
+    "unauthorized": "UNAUTHORIZED",
+    "provider_unavailable": "PROVIDER_UNAVAILABLE",
+    "invalid_input": "INVALID_INPUT",
+    "no_store_headers": "NO_STORE_HEADERS"
+  }
+}

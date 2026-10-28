@@ -231,10 +231,12 @@
     },
     {
       "id": "C26",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C26.json"
+      ],
+      "source_identity": "sha256:55ba19e47bb581a94daaea1b233995e4bde23756ce2f3e74f63067a76651a0a3",
+      "notes": "Security matrix passed with synthetic secrets before any personal production credentials enter provider; immediate privilege revocation, mandatory step-up, zero plaintext leakage across all sinks, and restart durability verified (Requirement F20)."
     },
     {
       "id": "C27",

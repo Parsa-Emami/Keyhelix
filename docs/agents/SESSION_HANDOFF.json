@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-28",
-  "base_commit": "04b1edb4dac0a6462d924408d7c09c55b855c6a5",
-  "scope": "Separately stored audit checkpoint verification with explicit trust policy and unavailable status; hash chain alone not immutable (C25 / F19)",
+  "base_commit": "b10f6f43bb436fe1426fd926c59908017bfe1290",
+  "scope": "Synthetic secret security matrix verification with immediate privilege revocation, mandatory step-up, and zero plaintext leakage across all sinks (C26 / F20)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -28,23 +28,24 @@
     "C22",
     "C23",
     "C24",
-    "C25"
+    "C25",
+    "C26"
   ],
   "git_commit_created": false,
   "changed_paths": [
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C25.json",
-    "internal/audit/checkpoints.go",
+    "docs/evidence/C26.json",
+    "docs/evidence/security-review-template.md",
     "plans/progress.json",
-    "tests/checkpoint_test.go",
-    "tests/fixtures/keyhelix/C25/expected-output.json",
-    "tests/fixtures/keyhelix/C25/negative.json",
-    "tests/fixtures/keyhelix/C25/positive.json"
+    "tests/fixtures/keyhelix/C26/expected-output.json",
+    "tests/fixtures/keyhelix/C26/negative.json",
+    "tests/fixtures/keyhelix/C26/positive.json",
+    "tests/security_matrix_test.go"
   ],
   "ci_defect_fixes": [],
   "commands": [
-    "PATH=/usr/local/go/bin:$PATH go test -count=1 -v -run '^TestC25' ./tests/",
-    "PATH=/usr/local/go/bin:$PATH go test -count=1 -race -run '^TestC25' ./tests/",
+    "PATH=/usr/local/go/bin:$PATH go test -count=1 -v -run '^TestC26' ./tests/",
+    "PATH=/usr/local/go/bin:$PATH go test -count=1 -race -run '^TestC26' ./tests/",
     "PATH=/usr/local/go/bin:$PATH go vet ./...",
     "PATH=/usr/local/go/bin:$PATH go test -count=1 ./...",
     "npm run validate:plan",
@@ -52,7 +53,7 @@
     "python3 scripts/validate_repo.py"
   ],
   "results": {
-    "C25": "Separately stored audit checkpoints verified with explicit TrustPolicy, Ed25519 cryptographic signatures, and explicit VerificationStatus codes (including UNAVAILABLE). Proved that local hash chain alone is not immutable (UNANCHORED_CHAIN). Tested and verified all 10 negative failure cases: single-byte mutations in events, log root, and signature; sink unavailability; untrusted signer; stale/forked revision replays; timestamp expiration; and zero plaintext canary leakage."
+    "C26": "Security matrix passed with synthetic secrets before any personal production credentials enter provider. Admin write/reveal with step-up verified, active member reveal verified, immediate synchronous privilege revocation verified on next request with step-up invalidation, cross-tenant isolation and expired session rejection verified, provider outage fail-closed behavior verified, storage engine restart durability verified, and zero plaintext canary leakage verified across all persistence sinks."
   },
-  "next_recommended_task": "C26: test(security): exercise privilege revocation and secret leakage (F20)"
+  "next_recommended_task": "C27: test(security): prove project abuse and authorization boundaries (N27)"
 }

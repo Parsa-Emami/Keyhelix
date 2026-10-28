@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C26 negative cases; injected failures and access violations, no real credentials.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "missing-step-up-token",
+      "description": "Sensitive reveal operation without step-up authentication challenge must return STEP_UP_REQUIRED",
+      "expected_code": "STEP_UP_REQUIRED"
+    },
+    {
+      "case": "immediate-revocation-enforced",
+      "description": "Revoked member access must fail immediately on the next request without waiting for cache/session expiry",
+      "expected_code": "GRANT_REVOKED"
+    },
+    {
+      "case": "cross-tenant-secret-access",
+      "description": "Cross-tenant or out-of-scope identity must be rejected with UNAUTHORIZED",
+      "expected_code": "UNAUTHORIZED"
+    },
+    {
+      "case": "expired-session-access",
+      "description": "Expired session identity must be refused with UNAUTHORIZED",
+      "expected_code": "UNAUTHORIZED"
+    },
+    {
+      "case": "provider-offline-fails-closed",
+      "description": "When provider is unreachable or returns 503, operations must fail closed with explicit typed error",
+      "expected_code": "PROVIDER_UNAVAILABLE"
+    },
+    {
+      "case": "malformed-grant-input",
+      "description": "Creating a grant with missing or invalid parameters must return INVALID_INPUT",
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "forged-identity-headers",
+      "description": "Request with forged or mismatched role headers must be refused",
+      "expected_code": "UNAUTHORIZED"
+    },
+    {
+      "case": "plaintext-leakage-assertion",
+      "description": "Synthetic secret canary values must never appear in metadata, logs, disk files, or headers",
+      "expected_canary_occurrences": 0
+    }
+  ]
+}
