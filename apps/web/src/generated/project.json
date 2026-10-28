@@ -273,7 +273,7 @@
       "id": "C22",
       "title": "feat(ui): expose grants and rotation outcomes",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Partial and failed provider operations are visible and cannot look like success."
       ],
