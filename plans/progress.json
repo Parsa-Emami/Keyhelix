@@ -195,10 +195,12 @@
     },
     {
       "id": "C22",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C22.json"
+      ],
+      "source_identity": "sha256:8c3cbcc5661e6644f5ca93d3caee6cc2ae095f07a18ee55822ff1a7414161416",
+      "notes": "Access governance and rotation console rendered; partial and failed provider operations are visible and cannot look like success (Requirement F16)."
     },
     {
       "id": "C23",

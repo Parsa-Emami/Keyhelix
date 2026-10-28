@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C22 grants and rotation outcomes fixture; contains no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "vault_id": "vault-prod",
+  "grants": [
+    {
+      "grant_id": "grnt-c22-001",
+      "subject": "usr_c22_alice",
+      "email": "alice@keyhelix.local",
+      "vault_role": "vault-admin",
+      "allowed_scopes": ["secret:read", "secret:write", "production/services/*"],
+      "created_at": "2026-10-28T08:00:00Z",
+      "expires_at": "2026-10-29T08:00:00Z",
+      "status": "ACTIVE"
+    },
+    {
+      "grant_id": "grnt-c22-002",
+      "subject": "usr_c22_bob",
+      "email": "bob@keyhelix.local",
+      "vault_role": "vault-member",
+      "allowed_scopes": ["secret:read", "production/services/payment/*"],
+      "created_at": "2026-10-27T10:00:00Z",
+      "expires_at": "2026-10-28T10:00:00Z",
+      "status": "REVOKED",
+      "revoked_at": "2026-10-28T09:30:00Z"
+    }
+  ],
+  "rotations": [
+    {
+      "job_id": "rot-c22-complete-01",
+      "vault_id": "vault-prod",
+      "target_kek_id": "kek-v1-openbao",
+      "target_kek_version": "v2",
+      "state": "COMPLETE",
+      "total_secrets": 3,
+      "rewrapped_secrets": 3,
+      "checkpoint_secret": "production/services/auth/jwt-signing-key",
+      "started_at": "2026-10-28T08:30:00Z",
+      "completed_at": "2026-10-28T08:32:00Z",
+      "prior_kek_retirable": true
+    }
+  ]
+}

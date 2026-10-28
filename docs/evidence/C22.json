@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C22",
+  "date": "2026-10-28",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Partial and failed provider operations are visible and cannot look like success (Requirement F16).",
+  "commit_id": "C22",
+  "base_commit": "0e6e2cf96ee1252fb4fea1bde359f0f18d75202d",
+  "git_commit_created": false,
+  "source_identity": "sha256:8c3cbcc5661e6644f5ca93d3caee6cc2ae095f07a18ee55822ff1a7414161416",
+  "source_identity_method": "SHA-256 over sorted C22-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "apps/web/src/main.tsx": "587491013c7273a32590f91fa465704d8fafbfcdd0dd612f161445a5faede99e",
+    "apps/web/src/pages/Access.tsx": "8c03f6ac9abf3c1105e96fdd124bfc30f6747d0a2f4dd41ec09bb9dc1e1dfcaf",
+    "apps/web/tests/access.spec.ts": "e0b70678ed2035b120d2b05faa594d2f2ef62d7908d34280d5baf4a1f6a8128f",
+    "tests/fixtures/keyhelix/C22/expected-output.json": "09c8cbafa0fd54f3cfdfddd3c486465845126204d9231af9259d9d9668764709",
+    "tests/fixtures/keyhelix/C22/negative.json": "07c2967f32d78d3e80474be95ec57629b61e36f43a210766dda91c49019ed059",
+    "tests/fixtures/keyhelix/C22/positive.json": "556f79751025dc9a087c7548c107e133af35d47c5c56e67ae6fe03a06a3f224b"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 GNU/Linux (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863936512,
+      "memory_available_bytes": 22941544448,
+      "filesystem_available_bytes": 125672288256
+    },
+    "providers": "No external service was used. The web console was exercised in a headless browser via Playwright testing against local HTTP endpoints; provider operations were verified with synthetic fixtures.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://www.keycloak.org/documentation",
+      "https://openid.net/specs/openid-connect-core-1_0.html",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C22/expected-output.json": "09c8cbafa0fd54f3cfdfddd3c486465845126204d9231af9259d9d9668764709",
+    "tests/fixtures/keyhelix/C22/negative.json": "07c2967f32d78d3e80474be95ec57629b61e36f43a210766dda91c49019ed059",
+    "tests/fixtures/keyhelix/C22/positive.json": "556f79751025dc9a087c7548c107e133af35d47c5c56e67ae6fe03a06a3f224b"
+  },
+  "fixture_provenance_license": "All three fixture files are repository-authored synthetic data with no real secret, key or credential material, licensed under Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test ./...",
+      "exit_code": 0,
+      "result": "ok github.com/parsa-emami/keyhelix/tests 12.135s"
+    },
+    {
+      "command": "npm run test:browser",
+      "exit_code": 0,
+      "result": "18 passed (5.3s)"
+    }
+  ],
+  "results": {
+    "requirement": "F16",
+    "acceptance": "Partial and failed provider operations are visible and cannot look like success.",
+    "status": "passed",
+    "partial_operations_visible": true,
+    "failed_operations_visible": true,
+    "never_looks_like_success": true,
+    "prior_kek_retirement_guard_visible": true,
+    "negative_cases_verified": [
+      "partial-rotation-paused-at-checkpoint",
+      "provider-outage-during-grants-fetch",
+      "unauthorized-revocation-rejection",
+      "provider-owns-secret-bytes"
+    ]
+  }
+}

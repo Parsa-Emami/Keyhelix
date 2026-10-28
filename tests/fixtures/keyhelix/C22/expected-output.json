@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "requirement": "F16",
+  "acceptance": "Partial and failed provider operations are visible and cannot look like success.",
+  "status": "passed",
+  "partial_operations_visible": true,
+  "failed_operations_visible": true,
+  "never_looks_like_success": true,
+  "prior_kek_retirement_guard_visible": true,
+  "guard_codes": {
+    "provider_unavailable": "PROVIDER_UNAVAILABLE",
+    "step_up_required": "STEP_UP_REQUIRED",
+    "rotation_incomplete": "ROTATION_INCOMPLETE"
+  },
+  "provider_owns_secret_bytes": true
+}

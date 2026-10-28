@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-28",
-  "base_commit": "0831389913aabff10d86c8153b5b365ff6dd7b78",
-  "scope": "Transient reveal interaction; plaintext clears on close and logout, cache and service worker exclude reveal routes (C21 / F15)",
+  "base_commit": "0e6e2cf96ee1252fb4fea1bde359f0f18d75202d",
+  "scope": "Access governance and rotation console; partial and failed provider operations are visible and cannot look like success (C22 / F16)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -24,19 +24,20 @@
     "C18",
     "C19",
     "C20",
-    "C21"
+    "C21",
+    "C22"
   ],
   "git_commit_created": false,
   "changed_paths": [
-    "apps/web/src/pages/Reveal.tsx",
-    "apps/web/src/pages/Vaults.tsx",
-    "apps/web/tests/reveal.spec.ts",
+    "apps/web/src/main.tsx",
+    "apps/web/src/pages/Access.tsx",
+    "apps/web/tests/access.spec.ts",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C21.json",
+    "docs/evidence/C22.json",
     "plans/progress.json",
-    "tests/fixtures/keyhelix/C21/expected-output.json",
-    "tests/fixtures/keyhelix/C21/negative.json",
-    "tests/fixtures/keyhelix/C21/positive.json"
+    "tests/fixtures/keyhelix/C22/expected-output.json",
+    "tests/fixtures/keyhelix/C22/negative.json",
+    "tests/fixtures/keyhelix/C22/positive.json"
   ],
   "ci_defect_fixes": [],
   "commands": [
@@ -47,7 +48,7 @@
     "python3 scripts/plan.py validate"
   ],
   "results": {
-    "C21": "Verified; transient reveal modal clears plaintext on close, escape, logout and timeout. Cache-Control no-store enforced. All Playwright and Go tests passing."
+    "C22": "Verified; Access and rotation console displays partial and failed operations visibly. Partial operations show checkpoint alerts, forbid premature KEK retirement, and never look like success. All Playwright and Go tests passing."
   },
-  "next_recommended_task": "C22: feat(errors): render partial and failed provider operations visibly (F16)"
+  "next_recommended_task": "C23: feat(resilience): enforce strict reveal without cached fallback during outage (F17)"
 }

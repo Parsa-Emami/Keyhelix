@@ -261,7 +261,7 @@
       "id": "C21",
       "title": "feat(ui): implement transient reveal interaction",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Plaintext clears from rendered state on close and logout; cache/service worker excludes reveal routes."
       ],

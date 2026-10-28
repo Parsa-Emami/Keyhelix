@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "case": "partial-rotation-paused-at-checkpoint",
+      "description": "Rotation paused mid-execution must visibly render PARTIAL status and must not look like success",
+      "job": {
+        "job_id": "rot-c22-partial-02",
+        "vault_id": "vault-prod",
+        "target_kek_id": "kek-v1-openbao",
+        "target_kek_version": "v2",
+        "state": "REWRAPPING",
+        "total_secrets": 4,
+        "rewrapped_secrets": 2,
+        "checkpoint_secret": "production/services/payment/webhook-secret",
+        "started_at": "2026-10-28T09:00:00Z",
+        "last_error": "provider_paused: rotation interrupted after 2 items; prior versions preserved",
+        "prior_kek_retirable": false
+      },
+      "expected_badge": "PARTIAL",
+      "expected_warning": "Partial rotation: 2 of 4 secrets rewrapped. Prior KEK cannot be retired."
+    },
+    {
+      "case": "provider-outage-during-grants-fetch",
+      "description": "Provider failure during access query displays explicit failure alert and zero fake grants",
+      "error_code": "PROVIDER_UNAVAILABLE",
+      "status": 503,
+      "expected_message": "Access provider unavailable: Operations fail closed."
+    },
+    {
+      "case": "unauthorized-revocation-rejection",
+      "description": "Unprivileged caller attempting to revoke or alter rotation is rejected",
+      "error_code": "STEP_UP_REQUIRED",
+      "status": 401,
+      "expected_message": "Step-up authentication required for access management."
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "description": "Access console displays metadata only; secret payloads are never fetched or rendered",
+      "sentinel": "sentinel-canary-c22-grants-secret-88d4",
+      "expected_storage_occurrence_count": 0
+    }
+  ]
+}
