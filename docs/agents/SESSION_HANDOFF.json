@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-28",
-  "base_commit": "0e6e2cf96ee1252fb4fea1bde359f0f18d75202d",
-  "scope": "Access governance and rotation console; partial and failed provider operations are visible and cannot look like success (C22 / F16)",
+  "base_commit": "9fccf40950744fbd5cbd811b1ea514487c308417",
+  "scope": "Provider health surveillance and outage resilience; no plaintext fallback, strict audited reveal policy (C23 / F17)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -25,30 +25,29 @@
     "C19",
     "C20",
     "C21",
-    "C22"
+    "C22",
+    "C23"
   ],
   "git_commit_created": false,
   "changed_paths": [
-    "apps/web/src/main.tsx",
-    "apps/web/src/pages/Access.tsx",
-    "apps/web/tests/access.spec.ts",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C22.json",
+    "docs/evidence/C23.json",
+    "internal/health/provider.go",
     "plans/progress.json",
-    "tests/fixtures/keyhelix/C22/expected-output.json",
-    "tests/fixtures/keyhelix/C22/negative.json",
-    "tests/fixtures/keyhelix/C22/positive.json"
+    "tests/fixtures/keyhelix/C23/expected-output.json",
+    "tests/fixtures/keyhelix/C23/negative.json",
+    "tests/fixtures/keyhelix/C23/positive.json",
+    "tests/outage_test.go"
   ],
   "ci_defect_fixes": [],
   "commands": [
     "npm run validate:plan",
     "npm run test:browser",
-    "npm run build",
     "go test ./...",
     "python3 scripts/plan.py validate"
   ],
   "results": {
-    "C22": "Verified; Access and rotation console displays partial and failed operations visibly. Partial operations show checkpoint alerts, forbid premature KEK retirement, and never look like success. All Playwright and Go tests passing."
+    "C23": "Verified; provider health surveillance and fail closed on provider or audit failures implemented. Zero plaintext fallback during outage, sealed provider guard, and strict audited reveal policy passing all Go tests."
   },
-  "next_recommended_task": "C23: feat(resilience): enforce strict reveal without cached fallback during outage (F17)"
+  "next_recommended_task": "C24: feat(recovery): verify isolated disaster recovery and audit verification (F18)"
 }

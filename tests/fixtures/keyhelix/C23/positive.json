@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C23 provider health and outage resilience fixture; contains no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "vault": {
+    "vault_id": "vault-prod",
+    "kek_id": "kek-v1-openbao",
+    "mount": "transit",
+    "role": "vault-admin"
+  },
+  "secret_path": "production/services/payment/api-key",
+  "classification": "restricted",
+  "sentinel_secret": "sentinel-canary-c23-outage-secret-4b8c",
+  "expected_health": {
+    "state": "HEALTHY",
+    "provider_id": "openbao",
+    "sealed": false,
+    "audit_ready": true
+  },
+  "audit_event_type": "secret.revealed.v1"
+}

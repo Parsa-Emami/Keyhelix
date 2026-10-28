@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "requirement": "F17",
+  "acceptance": "No plaintext fallback exists during outage; strict audited reveal policy is enforced.",
+  "status": "passed",
+  "no_plaintext_fallback": true,
+  "provider_outage_fails_closed": true,
+  "provider_sealed_fails_closed": true,
+  "strict_audited_reveal_enforced": true,
+  "restart_outage_resilient": true,
+  "guard_codes": {
+    "provider_unavailable": "PROVIDER_UNAVAILABLE",
+    "provider_sealed": "PROVIDER_SEALED",
+    "audit_pipeline_failure": "AUDIT_PIPELINE_FAILURE",
+    "no_plaintext_fallback": "NO_PLAINTEXT_FALLBACK"
+  },
+  "provider_owns_secret_bytes": true
+}

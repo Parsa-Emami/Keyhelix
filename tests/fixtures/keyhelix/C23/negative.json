@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "case": "provider-offline-fails-closed",
+      "description": "Key provider network outage or crash fails closed with PROVIDER_UNAVAILABLE; zero cached plaintext returned",
+      "expected_code": "PROVIDER_UNAVAILABLE",
+      "expected_status": 503
+    },
+    {
+      "case": "provider-sealed-fails-closed",
+      "description": "Provider in sealed state returns explicit PROVIDER_SEALED and blocks decryption",
+      "expected_code": "PROVIDER_SEALED",
+      "expected_status": 503
+    },
+    {
+      "case": "audit-pipeline-failure-blocks-reveal",
+      "description": "Failure in attributable audit event recording aborts reveal and wipes transient plaintext",
+      "expected_code": "AUDIT_PIPELINE_FAILURE"
+    },
+    {
+      "case": "no-cached-plaintext-after-restart",
+      "description": "Engine and storage restart during ongoing provider outage retains fail closed with zero cached plaintext fallback",
+      "expected_code": "PROVIDER_UNAVAILABLE"
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "description": "Plaintext secret bytes are owned by provider and never enter health surveillance metadata or log traces",
+      "sentinel": "sentinel-canary-c23-outage-secret-4b8c",
+      "expected_storage_occurrence_count": 0
+    }
+  ]
+}

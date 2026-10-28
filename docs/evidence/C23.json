@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C23",
+  "date": "2026-10-28",
+  "passed": true,
+  "planning_template": false,
+  "scope": "No plaintext fallback exists during outage; strict audited reveal policy is enforced (Requirement F17).",
+  "commit_id": "C23",
+  "base_commit": "9fccf40950744fbd5cbd811b1ea514487c308417",
+  "git_commit_created": false,
+  "source_identity": "sha256:1bcda235f049cf0e74a5383d01301514c93b611eb2306fadf529f43448d73b6e",
+  "source_identity_method": "SHA-256 over sorted C23-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "internal/health/provider.go": "d50322c8cc68cdf877e751fd52137eb4dc54a69f19d8c902d3d36d16ebbd967d",
+    "tests/fixtures/keyhelix/C23/expected-output.json": "79bb2423cfd28e5e0c63ac8ec5f69b61ce1b7736622ccdebf9a4797069eb1f77",
+    "tests/fixtures/keyhelix/C23/negative.json": "942ef3a4d7f57cef3341766df35fad78d444128e54b2e9e9fcc372ddcafdc25e",
+    "tests/fixtures/keyhelix/C23/positive.json": "1e9ce2867dbc99f4fa2efecf2a14d626f6251a036499aab7d2cee2f95705016f",
+    "tests/outage_test.go": "61a5ddd09bd7d85944e1f0107c2076625f087d0e2c04028da3e079298550e8fd"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 GNU/Linux (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863936512,
+      "memory_available_bytes": 22941544448,
+      "filesystem_available_bytes": 125672288256
+    },
+    "providers": "No external service was used. Outage and fail-closed surveillance was verified via in-process simulated providers and storage adapters in Go integration tests.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://www.keycloak.org/documentation",
+      "https://openid.net/specs/openid-connect-core-1_0.html",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixture_hashes_sha256": {
+    "tests/fixtures/keyhelix/C23/expected-output.json": "79bb2423cfd28e5e0c63ac8ec5f69b61ce1b7736622ccdebf9a4797069eb1f77",
+    "tests/fixtures/keyhelix/C23/negative.json": "942ef3a4d7f57cef3341766df35fad78d444128e54b2e9e9fcc372ddcafdc25e",
+    "tests/fixtures/keyhelix/C23/positive.json": "1e9ce2867dbc99f4fa2efecf2a14d626f6251a036499aab7d2cee2f95705016f"
+  },
+  "fixture_provenance_license": "All three fixture files are repository-authored synthetic data with no real secret, key or credential material, licensed under Apache-2.0.",
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "result": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test ./...",
+      "exit_code": 0,
+      "result": "ok github.com/parsa-emami/keyhelix/tests 11.771s"
+    }
+  ],
+  "results": {
+    "requirement": "F17",
+    "acceptance": "No plaintext fallback exists during outage; strict audited reveal policy is enforced.",
+    "status": "passed",
+    "no_plaintext_fallback": true,
+    "provider_outage_fails_closed": true,
+    "provider_sealed_fails_closed": true,
+    "strict_audited_reveal_enforced": true,
+    "restart_outage_resilient": true,
+    "negative_cases_verified": [
+      "provider-offline-fails-closed",
+      "provider-sealed-fails-closed",
+      "audit-pipeline-failure-blocks-reveal",
+      "no-cached-plaintext-after-restart",
+      "provider-owns-secret-bytes"
+    ]
+  }
+}

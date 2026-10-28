@@ -204,10 +204,12 @@
     },
     {
       "id": "C23",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C23.json"
+      ],
+      "source_identity": "sha256:1bcda235f049cf0e74a5383d01301514c93b611eb2306fadf529f43448d73b6e",
+      "notes": "Provider health surveillance and outage resilience implemented; no plaintext fallback exists during outage, strict audited reveal policy enforced (Requirement F17)."
     },
     {
       "id": "C24",
