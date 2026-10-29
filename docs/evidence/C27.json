@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C27",
+  "date": "2026-10-29",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Execute this project's negative UAT, XSS/import and object/provider authorization tests for every enabled surface. Fix critical/high findings or block the affected supported profile (Requirement N27).",
+  "commit_id": "C27",
+  "base_commit": "391659999a9be96e2b6fca23141788ec86526478",
+  "git_commit_created": false,
+  "source_identity": "sha256:89b9b5580d089017f7a8c6a923cc070097a24da01ce3f0045508f2d393027028",
+  "source_identity_method": "SHA-256 over sorted C27-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "docs/security/THREAT_MODEL.md": "6e29e3617090606b9be55db917ce6994e739c09878fee25e7133b463a35e8fe2",
+    "tests/abuse_test.go": "0170c3bc150b7b3b4c6699144b84fb34532686d302f679bda89d051d46ada4bf",
+    "tests/browser/security.spec.ts": "5fad94dfe5f737d8126b44b4bffdd4ebc9887fc0be5805be84f4e1d6e6957952",
+    "tests/fixtures/keyhelix/C27/expected-output.json": "782211a937368fd21b6936bb545cbd23a423aa1ae8867427fae491b21da76d18",
+    "tests/fixtures/keyhelix/C27/negative.json": "2c400c9d52fad7476194a3d1ff940b86f5647a5a85e544208ad207b82d6bf4ba",
+    "tests/fixtures/keyhelix/C27/positive.json": "a4a4dd19c7071ac904ed4647d7186c894352d7de52691270f7eb4da71962015a",
+    "tests/release/security-matrix.md": "4396453285df80b9dc5f28a671b1f1dacc2d3ed607255780140f522900b1f2cd"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64 at /usr/local/go/bin/go",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "memory_total_bytes": 32863940608,
+      "memory_available_bytes": 27640606720,
+      "filesystem_available_bytes": 102262476800
+    },
+    "providers": "Verified against in-process OpenBao mock adapter and local storage, session, step-up, and audit engine collaborators. All tests execute exclusively with synthetic sentinel secrets and verified synthetic payloads before any personal production credentials enter the provider.",
+    "toolchain_note": "Every Go command executed using PATH=/usr/local/go/bin:$PATH and verified with Go 1.26.2. Playwright browser suite runs via npx playwright test against local Vite dev server.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://www.keycloak.org/documentation",
+      "https://openid.net/specs/openid-connect-core-1_0.html",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixtures": {
+    "path": "tests/fixtures/keyhelix/C27/",
+    "positive": "tests/fixtures/keyhelix/C27/positive.json",
+    "negative": "tests/fixtures/keyhelix/C27/negative.json",
+    "expected_output": "tests/fixtures/keyhelix/C27/expected-output.json",
+    "provenance": "repository-authored synthetic test fixtures and attack vectors; contains zero production secrets or credentials",
+    "license": "Apache-2.0"
+  },
+  "commands": [
+    {
+      "command": "npm run test:browser",
+      "exit_code": 0,
+      "summary": "29 passed across 5 workers in 5.3s (11 new C27 browser security tests verifying prototype pollution, JSON depth/complexity bombs, oversized payloads, XSS text escaping, zero telemetry, cross-tenant isolation, step-up bypass rejection, revoked access rejection, and provider outage fail-closed handling)"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 -v -run '^TestC27' ./tests/",
+      "exit_code": 0,
+      "summary": "Engine abuse boundary tests passed in 0.094s (TestC27PathTraversalRejection, TestC27IdentityAndSessionAbuse, TestC27CiphertextTamperingAndAuthTagCorruption, TestC27ProviderOutageFailClosed, TestC27ZeroPlaintextLeakageUnderAbuse, TestC27NegativeCasesFixtureMatch)"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 -race -run '^TestC27' ./tests/",
+      "exit_code": 0,
+      "summary": "TestC27 suite verified under the Go -race detector with zero race conditions (1.110s)"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go vet ./...",
+      "exit_code": 0,
+      "summary": "Zero diagnostics reported across all engine packages"
+    },
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "summary": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "summary": "Checked 252 JSON files and repository contract invariants; VALIDATION PASSED"
+    }
+  ],
+  "acceptance_verification": {
+    "negative_uat_executed": true,
+    "xss_import_abuse_tested": true,
+    "object_provider_authorization_tested": true,
+    "critical_or_high_findings": 0,
+    "supported_profile_blocked": false,
+    "surfaces_verified": [
+      "workspace_import_sanitization",
+      "prototype_pollution_guard",
+      "document_complexity_dos_limit",
+      "cross_tenant_isolation",
+      "step_up_mandatory_gate",
+      "immediate_revocation_enforced",
+      "path_traversal_rejection",
+      "provider_outage_fail_closed",
+      "ciphertext_integrity_enforced",
+      "zero_plaintext_leakage"
+    ],
+    "invariants_verified": {
+      "provider_owns_secret_bytes": true,
+      "zero_xss_execution": true,
+      "zero_prototype_mutation": true,
+      "zero_plaintext_telemetry": true,
+      "immediate_privilege_revocation": true
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "requirement": "N27",
+  "acceptance": "Execute this project's negative UAT, XSS/import and object/provider authorization tests for every enabled surface. Fix critical/high findings or block the affected supported profile.",
+  "status": "passed",
+  "surfaces_verified": [
+    "workspace_import_sanitization",
+    "prototype_pollution_guard",
+    "document_complexity_dos_limit",
+    "cross_tenant_isolation",
+    "step_up_mandatory_gate",
+    "immediate_revocation_enforced",
+    "path_traversal_rejection",
+    "provider_outage_fail_closed",
+    "ciphertext_integrity_enforced",
+    "zero_plaintext_leakage"
+  ],
+  "invariants_verified": {
+    "provider_owns_secret_bytes": true,
+    "zero_xss_execution": true,
+    "zero_prototype_mutation": true,
+    "zero_plaintext_telemetry": true,
+    "immediate_privilege_revocation": true
+  },
+  "guard_codes": {
+    "unsafe_document_key": "UNSAFE_DOCUMENT_KEY",
+    "document_too_complex": "DOCUMENT_TOO_COMPLEX",
+    "file_exceeds_limit": "FILE_EXCEEDS_LIMIT",
+    "step_up_required": "STEP_UP_REQUIRED",
+    "grant_revoked": "GRANT_REVOKED",
+    "unauthorized": "UNAUTHORIZED",
+    "provider_unavailable": "PROVIDER_UNAVAILABLE",
+    "invalid_input": "INVALID_INPUT",
+    "ciphertext_auth_failed": "CIPHERTEXT_AUTH_FAILED"
+  }
+}

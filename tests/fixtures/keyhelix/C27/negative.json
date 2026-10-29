@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C27 negative and abuse test cases; contains no real secrets or credentials.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "prototype-pollution",
+      "surface": "workspace-preview",
+      "description": "JSON payload containing __proto__, constructor, or prototype keys must be rejected without mutating Object prototype",
+      "payload": "{\"__proto__\":{\"polluted\":true},\"validKey\":\"val\"}",
+      "expected_error": "Unsafe document key.",
+      "expected_code": "UNSAFE_DOCUMENT_KEY"
+    },
+    {
+      "case": "depth-bomb",
+      "surface": "workspace-preview",
+      "description": "Deeply nested JSON object exceeding 32 levels must be aborted before stack overflow",
+      "max_depth_allowed": 32,
+      "expected_error": "Document is too complex to preview.",
+      "expected_code": "DOCUMENT_TOO_COMPLEX"
+    },
+    {
+      "case": "complexity-bomb",
+      "surface": "workspace-preview",
+      "description": "JSON document with excessive keys (>20000 items) must be rejected to prevent denial of service",
+      "max_items_allowed": 20000,
+      "expected_error": "Document is too complex to preview.",
+      "expected_code": "DOCUMENT_TOO_COMPLEX"
+    },
+    {
+      "case": "oversized-payload",
+      "surface": "workspace-preview",
+      "description": "File exceeding maximum preview byte limit (64 KiB) must be rejected before parsing",
+      "max_bytes": 65536,
+      "expected_error": "File exceeds the preview limit.",
+      "expected_code": "FILE_EXCEEDS_LIMIT"
+    },
+    {
+      "case": "xss-injection-keys",
+      "surface": "workspace-preview",
+      "description": "Field names containing HTML tags and script execution vectors must be safely text-escaped in the DOM",
+      "payload": "{\"<script>window.__xss_field=true</script>\":\"val\",\"<img src=x onerror=window.__xss_img=true>\":\"val\"}",
+      "expected_xss_executed": false
+    },
+    {
+      "case": "xss-injection-filename",
+      "surface": "workspace-preview",
+      "description": "Uploaded file names containing script tags must be safely rendered as text without DOM execution",
+      "filename": "<script>window.__xss_name=true</script>.json",
+      "expected_xss_executed": false
+    },
+    {
+      "case": "cross-tenant-vault",
+      "surface": "vaults-console",
+      "description": "Requesting metadata for an unauthorized or foreign vault must fail closed with 403 Access Denied",
+      "vault_id": "vault-isolated-finance",
+      "expected_http_status": 403,
+      "expected_error": "Access denied to vault metadata.",
+      "expected_code": "UNAUTHORIZED"
+    },
+    {
+      "case": "missing-stepup-token",
+      "surface": "transient-reveal",
+      "description": "Attempting transient secret reveal without step-up token must be rejected",
+      "expected_error": "Step-up token is required for transient reveal.",
+      "expected_code": "STEP_UP_REQUIRED"
+    },
+    {
+      "case": "revoked-grant-reveal",
+      "surface": "transient-reveal",
+      "description": "Revoked member attempting secret reveal must be denied immediately",
+      "expected_http_status": 403,
+      "expected_code": "GRANT_REVOKED"
+    },
+    {
+      "case": "path-traversal-secret-path",
+      "surface": "engine-secrets",
+      "description": "Secret path with directory traversal sequences (../, //) must be rejected before storage lookup",
+      "invalid_paths": [
+        "../../etc/passwd",
+        "app/prod/../../../secret",
+        "app//prod/token",
+        "/absolute/path"
+      ],
+      "expected_code": "INVALID_INPUT"
+    },
+    {
+      "case": "forged-headers",
+      "surface": "transient-reveal",
+      "description": "Requests with forged identity or step-up headers must be rejected",
+      "expected_code": "UNAUTHORIZED"
+    },
+    {
+      "case": "provider-outage-fail-closed",
+      "surface": "transient-reveal",
+      "description": "When upstream KMS / OpenBao is unreachable or returns 503, operations must fail closed with explicit error and zero plaintext leaked",
+      "expected_http_status": 503,
+      "expected_code": "PROVIDER_UNAVAILABLE"
+    },
+    {
+      "case": "corrupted-ciphertext",
+      "surface": "engine-secrets",
+      "description": "Corrupted envelope ciphertext or invalid GCM authentication tag must fail closed with authentication error; zero partial bytes returned",
+      "expected_code": "CIPHERTEXT_AUTH_FAILED"
+    }
+  ]
+}

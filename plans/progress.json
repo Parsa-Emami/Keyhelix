@@ -240,10 +240,12 @@
     },
     {
       "id": "C27",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C27.json"
+      ],
+      "source_identity": "sha256:89b9b5580d089017f7a8c6a923cc070097a24da01ce3f0045508f2d393027028",
+      "notes": "Verified project abuse and authorization boundaries across browser and engine surfaces (Requirement N27). Prototype pollution, JSON complexity/depth limits, XSS sanitization, zero telemetry, cross-tenant isolation, step-up bypass rejection, revoked grant denial, path traversal rejection, tampered ciphertext AEAD rejection, and provider outage fail-closed handling all passed with zero critical or high findings."
     },
     {
       "id": "C28",

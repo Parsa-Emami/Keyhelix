@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C27 positive security fixtures; contains no real secrets, credentials or keys.",
+  "license": "Apache-2.0",
+  "preview": {
+    "filename": "safe-document.json",
+    "content": "{\"service\":\"keyhelix\",\"environment\":\"production\",\"tier\":1}",
+    "expected_fields": [
+      "service",
+      "environment",
+      "tier"
+    ],
+    "expected_bytes": 58
+  },
+  "vault": {
+    "vault_id": "vault-prod",
+    "kek_id": "kek-v1-openbao",
+    "mount": "transit",
+    "role": "vault-admin"
+  },
+  "admin_identity": {
+    "subject": "usr_c27_alice",
+    "email": "alice@keyhelix.local",
+    "vault_role": "vault-admin",
+    "allowed_owners": [
+      "alice@keyhelix.local"
+    ],
+    "allowed_scopes": [
+      "secret:read",
+      "secret:write",
+      "app/prod/*",
+      "admin"
+    ]
+  },
+  "member_identity": {
+    "subject": "usr_c27_bob",
+    "email": "bob@keyhelix.local",
+    "vault_role": "vault-member",
+    "allowed_owners": [
+      "alice@keyhelix.local",
+      "bob@keyhelix.local"
+    ],
+    "allowed_scopes": [
+      "secret:read",
+      "app/prod/*"
+    ]
+  },
+  "secret": {
+    "secret_path": "app/prod/service-credentials",
+    "classification": "restricted",
+    "sentinel_secret": "sentinel-canary-c27-valid-7e1a"
+  },
+  "grant": {
+    "grant_id": "grnt-c27-bob-001",
+    "permissions": [
+      "secret:read"
+    ],
+    "ttl_seconds": 3600
+  },
+  "step_up": {
+    "token": "su_c27_synthetic_stepup_token_valid_42b",
+    "ttl_seconds": 120
+  },
+  "expected_headers": {
+    "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff"
+  }
+}
