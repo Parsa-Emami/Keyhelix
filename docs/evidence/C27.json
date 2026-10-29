@@ -80,7 +80,10 @@
       "summary": "Checked 252 JSON files and repository contract invariants; VALIDATION PASSED"
     }
   ],
-  "acceptance_verification": {
+  "results": {
+    "requirement": "N27",
+    "acceptance": "Execute this project's negative UAT, XSS/import and object/provider authorization tests for every enabled surface. Fix critical/high findings or block the affected supported profile.",
+    "status": "passed",
     "negative_uat_executed": true,
     "xss_import_abuse_tested": true,
     "object_provider_authorization_tested": true,
