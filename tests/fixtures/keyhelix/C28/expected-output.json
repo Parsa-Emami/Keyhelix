@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "requirement": "N28",
+  "acceptance": "Record hardware, OS, source and fixture identities, latency/CPU/RSS/disk, cancellation and saturation for the target and an over-limit workload. Publish only observed limits and reduce unsupported targets.",
+  "status": "passed",
+  "workload_measured": {
+    "target": {
+      "concurrency": 5,
+      "payload_max_kib": 64,
+      "metadata_max_bytes": 8192,
+      "operations": [
+        "authenticate_user",
+        "validate_metadata",
+        "write_versioned_secret",
+        "request_step_up",
+        "reveal_secret",
+        "record_audit_event"
+      ]
+    },
+    "overload": {
+      "oversized_payload_rejected": true,
+      "oversized_metadata_rejected": true,
+      "rapid_cancellation_handled": true,
+      "concurrency_saturation_handled": true,
+      "provider_outage_fail_closed": true
+    }
+  },
+  "invariants_verified": {
+    "provider_owns_secret_bytes": true,
+    "bounded_memory_under_overload": true,
+    "clean_cancellation_no_leaks": true,
+    "fail_closed_under_saturation": true
+  },
+  "guard_codes": {
+    "input_too_large": "INPUT_TOO_LARGE",
+    "invalid_json": "INVALID_JSON",
+    "cancelled": "CANCELLED",
+    "timeout": "TIMEOUT",
+    "provider_unavailable": "PROVIDER_UNAVAILABLE",
+    "stale_version": "STALE_VERSION"
+  }
+}

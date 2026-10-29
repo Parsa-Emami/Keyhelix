@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C28",
+  "title": "Target and Overload Workload Measurement",
+  "status": "active",
+  "input": "repository-authored synthetic licensed fixtures",
+  "target_capacity": {
+    "users": 5,
+    "secret_payload_max_kib": 64,
+    "reveal_step_up_seconds": 120,
+    "session_ttl_minutes": 15
+  },
+  "steps": [
+    {
+      "id": "target-authenticate",
+      "action": "Authenticate synthetic user alice@keyhelix.local",
+      "expected_result": "Scoped session established with role and permissions"
+    },
+    {
+      "id": "target-validate",
+      "action": "Validate secret metadata envelope under contracts schema",
+      "expected_result": "Schema valid, input digest computed, execution under timeout limit"
+    },
+    {
+      "id": "target-write",
+      "action": "Write versioned secret payload with CAS expected_version",
+      "expected_result": "Fresh DEK generated, envelope written to store, plaintext transiently sealed in provider"
+    },
+    {
+      "id": "target-step-up",
+      "action": "Obtain fresh step-up challenge token for reveal operation",
+      "expected_result": "Scoped step-up token issued with short TTL (120s)"
+    },
+    {
+      "id": "target-reveal",
+      "action": "Perform authorized secret reveal with step-up verification",
+      "expected_result": "Provider decrypts DEK, returns transient plaintext with no-store headers"
+    },
+    {
+      "id": "target-audit",
+      "action": "Record tamper-evident audit checkpoint",
+      "expected_result": "Chained checkpoint persisted to disk"
+    },
+    {
+      "id": "overload-payload-rejection",
+      "action": "Submit oversized payload exceeding limit",
+      "expected_result": "Payload rejected with INPUT_TOO_LARGE, zero allocation leak"
+    },
+    {
+      "id": "overload-cancellation",
+      "action": "Dispatch request with pre-cancelled or timed-out context",
+      "expected_result": "Operation halts immediately with CANCELLED/TIMEOUT code"
+    },
+    {
+      "id": "overload-saturation",
+      "action": "Saturate engine with concurrent requests exceeding user limit",
+      "expected_result": "Engine processes bounded requests with backpressure, RSS remains strictly bounded"
+    }
+  ],
+  "expected_invariants": [
+    "Provider owns secret bytes",
+    "Bounded memory and RSS under overload",
+    "Clean cancellation with zero leaked goroutines or promises",
+    "Fail closed under saturation and provider outage"
+  ],
+  "negative_cases": [
+    {
+      "id": "oversized-secret",
+      "action": "Attempt to write secret larger than engine limit",
+      "expected_failure": "INPUT_TOO_LARGE"
+    },
+    {
+      "id": "oversized-metadata",
+      "action": "Attempt to submit metadata larger than 8192 bytes",
+      "expected_failure": "INPUT_TOO_LARGE"
+    },
+    {
+      "id": "context-cancelled",
+      "action": "Client aborts connection during in-flight operation",
+      "expected_failure": "CANCELLED"
+    },
+    {
+      "id": "provider-outage-overload",
+      "action": "Attempt reveal while provider is unreachable during peak load",
+      "expected_failure": "PROVIDER_UNAVAILABLE"
+    }
+  ],
+  "fixtures": [
+    "tests/fixtures/keyhelix/C28/positive.json",
+    "tests/fixtures/keyhelix/C28/negative.json",
+    "tests/fixtures/keyhelix/C28/expected-output.json"
+  ],
+  "execution": {
+    "engine": "Go engine runtime and CLI validator",
+    "passed": true
+  }
+}

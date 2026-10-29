@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C28",
+  "date": "2026-10-29",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Record hardware, OS, source and fixture identities, latency/CPU/RSS/disk, cancellation and saturation for the target and an over-limit workload. Publish only observed limits and reduce unsupported targets (Requirement N28).",
+  "commit_id": "C28",
+  "base_commit": "391659999a9be96e2b6fca23141788ec86526478",
+  "git_commit_created": false,
+  "source_identity": "sha256:3232cac9316fb5b3795fb1f7e059a3025fd743bc73fe8b86cee3f367317d3c74",
+  "source_identity_method": "SHA-256 over sorted C28-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "docs/evidence/performance.json": "029a90f7c8db9bf2963d4e1bce05fd2bf54df8d8decd68eda6442c5229975a2d",
+    "ops/runtime-requirements.json": "fae904b134fdcf61d58fc53af24087cf0ef13e9b1a4945213459bb92345965f2",
+    "scripts/benchmark-local.mjs": "33d86458da752c2bae56a15fda0a3b272c6e0eb0f50736958a4e23465e198c35",
+    "tests/fixtures/keyhelix/C28/expected-output.json": "6370f4c796e3458af276f19e53bd9a43b4e6479549b219245d5a5b759ba532ca",
+    "tests/fixtures/keyhelix/C28/negative.json": "b31a6a0a456f066f14af275e739a447893d828092d4a65aa2ee6cee0d24d5599",
+    "tests/fixtures/keyhelix/C28/positive.json": "aad95595213fd40e9999bc74c9dc7687af41b6747176ae975351431ec315c569",
+    "tests/perf_test.go": "286ad662482a28ca5eeb6862bdf7dc1a9bb328101bfff7ff6bd3894005702e50",
+    "tests/scenarios/target-workload.json": "42d176c71814f0b993b98f6d1099a003c131922c5c1854b29f8bf9717935e749"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64 at /usr/local/go/bin/go",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "cpu_model": "AMD Ryzen 7 6800H with Radeon Graphics",
+      "memory_total_bytes": 32863940608,
+      "memory_available_bytes": 26746175488,
+      "filesystem_available_bytes": 102262476800
+    },
+    "providers": "Verified against in-process OpenBao mock adapter and local storage, session, step-up, and audit engine collaborators. All tests execute exclusively with synthetic sentinel secrets and verified synthetic payloads before any personal production credentials enter the provider.",
+    "toolchain_note": "Every Go command executed using PATH=/usr/local/go/bin:$PATH and verified with Go 1.26.2. Local workload benchmark executed via node scripts/benchmark-local.mjs.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://www.keycloak.org/documentation",
+      "https://openid.net/specs/openid-connect-core-1_0.html",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixtures": {
+    "path": "tests/fixtures/keyhelix/C28/",
+    "positive": "tests/fixtures/keyhelix/C28/positive.json",
+    "negative": "tests/fixtures/keyhelix/C28/negative.json",
+    "expected_output": "tests/fixtures/keyhelix/C28/expected-output.json",
+    "scenario": "tests/scenarios/target-workload.json",
+    "provenance": "repository-authored synthetic test fixtures and performance benchmarks; contains zero production secrets or credentials",
+    "license": "Apache-2.0"
+  },
+  "commands": [
+    {
+      "command": "node scripts/benchmark-local.mjs",
+      "exit_code": 0,
+      "summary": "Measured target workload (50 ops, 5 concurrent workers, p50: 6.1ms, p95: 14.16ms, p99: 18.64ms), overload rejection (10/10 oversized payloads rejected with INPUT_TOO_LARGE), clean cancellation (5/5 handled without leaks), peak RSS: 52 MiB, written to docs/evidence/performance.json"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 -v -run '^TestC28' ./tests/",
+      "exit_code": 0,
+      "summary": "Passed all C28 engine performance and overload suites in 0.822s (TestC28TargetWorkloadMetrics, TestC28OverloadSaturationAndRejection, TestC28WorkloadCancellation, TestC28DurabilityUnderWorkloadAndRestart, TestC28NegativeCasesFixtureMatch)"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 -race -run '^TestC28' ./tests/",
+      "exit_code": 0,
+      "summary": "Verified C28 suite under Go race detector with zero race warnings in 1.878s"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 ./...",
+      "exit_code": 0,
+      "summary": "Passed all engine packages and full test suite in 18.183s"
+    },
+    {
+      "command": "npm run test:browser",
+      "exit_code": 0,
+      "summary": "29 passed across 5 workers in 5.4s; zero browser regressions"
+    },
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "summary": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "summary": "Checked 258 JSON files and repository contract invariants; VALIDATION PASSED"
+    }
+  ],
+  "results": {
+    "requirement": "N28",
+    "acceptance": "Record hardware, OS, source and fixture identities, latency/CPU/RSS/disk, cancellation and saturation for the target and an over-limit workload. Publish only observed limits and reduce unsupported targets.",
+    "status": "passed",
+    "hardware_recorded": true,
+    "os_recorded": true,
+    "latency_measured": {
+      "target_p50_ms": 6.1,
+      "target_p95_ms": 14.16,
+      "target_p99_ms": 18.64
+    },
+    "cpu_measured": {
+      "user_microseconds": 51052,
+      "system_microseconds": 49107
+    },
+    "rss_measured": {
+      "initial_bytes": 49930240,
+      "peak_bytes": 54308864,
+      "peak_mb": 52
+    },
+    "disk_measured": {
+      "allocated_bytes": 65536,
+      "bounded_growth_mb": 20
+    },
+    "cancellation_handled_cleanly": true,
+    "saturation_backpressure_enforced": true,
+    "observed_limits": {
+      "concurrency_saturation_threshold": 5,
+      "max_payload_size_bytes": 65536,
+      "max_metadata_input_bytes": 8192,
+      "memory_peak_rss_mb": 52,
+      "disk_bounded_mb": 20,
+      "cancellation_leak_rate_percent": 0
+    },
+    "invariants_verified": {
+      "provider_owns_secret_bytes": true,
+      "bounded_memory_under_overload": true,
+      "clean_cancellation_no_leaks": true,
+      "fail_closed_under_saturation": true
+    }
+  }
+}

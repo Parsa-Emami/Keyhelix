@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C28 negative workload fixtures; contains no real secrets, credentials or keys.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "payload_exceeds_limit",
+      "surface": "secret_write",
+      "description": "Payload exceeding engine capacity (MaxSecretBytes = 1 MiB) is rejected before processing",
+      "payload_bytes": 1048577,
+      "expected_code": "INPUT_TOO_LARGE"
+    },
+    {
+      "case": "metadata_exceeds_limit",
+      "surface": "metadata_contract",
+      "description": "Secret metadata exceeding MaxInputBytes (8192 bytes) is rejected with INPUT_TOO_LARGE",
+      "payload_bytes": 8193,
+      "expected_code": "INPUT_TOO_LARGE"
+    },
+    {
+      "case": "context_cancelled",
+      "surface": "engine_runtime",
+      "description": "Request context cancelled before completion returns CANCELLED without resource leaks",
+      "expected_code": "CANCELLED"
+    },
+    {
+      "case": "context_timeout",
+      "surface": "engine_runtime",
+      "description": "Request context deadline expiration returns TIMEOUT cleanly",
+      "expected_code": "TIMEOUT"
+    },
+    {
+      "case": "provider_unavailable",
+      "surface": "provider_adapter",
+      "description": "Provider outage during workload fails closed with PROVIDER_UNAVAILABLE",
+      "expected_code": "PROVIDER_UNAVAILABLE"
+    },
+    {
+      "case": "malformed_metadata_json",
+      "surface": "metadata_contract",
+      "description": "Malformed non-JSON input is rejected with INVALID_JSON",
+      "raw": "{invalid-json-content: true",
+      "expected_code": "INVALID_JSON"
+    },
+    {
+      "case": "stale_cas_version",
+      "surface": "secret_write",
+      "description": "Concurrent write collision with outdated expected_version fails with STALE_VERSION",
+      "expected_code": "STALE_VERSION"
+    }
+  ]
+}

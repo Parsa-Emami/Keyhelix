@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "task": "C28",
+  "requirement": "N28",
+  "date": "2026-10-29",
+  "passed": true,
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x64",
+    "logical_cpus": 16,
+    "cpu_model": "AMD Ryzen 7 6800H with Radeon Graphics",
+    "memory_total_bytes": 32863940608,
+    "memory_free_bytes": 26746175488,
+    "node_version": "v24.19.0",
+    "go_version": "go version go1.26.2 linux/amd64"
+  },
+  "target_workload": {
+    "total_operations": 50,
+    "successful_operations": 50,
+    "concurrency_level": 5,
+    "latency_ms": {
+      "min": 3.91,
+      "max": 18.64,
+      "avg": 6.91,
+      "p50": 6.1,
+      "p90": 9.99,
+      "p95": 14.16,
+      "p99": 18.64
+    },
+    "ops_per_second": 294.54
+  },
+  "overload_workload": {
+    "oversized_operations": 10,
+    "oversized_rejected_cleanly": 10,
+    "cancellation_events": 5,
+    "cancellation_handled_cleanly": 5,
+    "latency_ms": {
+      "min": 3.62,
+      "max": 5.45,
+      "avg": 4.44,
+      "p50": 4.43,
+      "p90": 5.45,
+      "p95": 5.45,
+      "p99": 5.45
+    },
+    "saturation_backpressure_enforced": true
+  },
+  "resources_observed": {
+    "initial_rss_bytes": 49930240,
+    "peak_rss_bytes": 54308864,
+    "rss_delta_bytes": 4378624,
+    "cpu_user_microseconds": 51052,
+    "cpu_system_microseconds": 49107,
+    "disk_allocated_bytes": 65536
+  },
+  "observed_limits": {
+    "concurrency_saturation_threshold": 5,
+    "max_payload_size_bytes": 65536,
+    "max_metadata_input_bytes": 8192,
+    "memory_peak_rss_mb": 52,
+    "disk_bounded_mb": 20,
+    "cancellation_leak_rate_percent": 0
+  },
+  "invariants_verified": {
+    "provider_owns_secret_bytes": true,
+    "bounded_memory_under_overload": true,
+    "clean_cancellation_no_leaks": true,
+    "fail_closed_under_saturation": true
+  }
+}

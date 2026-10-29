@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C28 positive workload fixtures; contains no real secrets, credentials or keys.",
+  "license": "Apache-2.0",
+  "target_capacity": {
+    "users": 5,
+    "secret_payload_max_kib": 64,
+    "metadata_max_bytes": 8192,
+    "reveal_step_up_seconds": 120,
+    "session_ttl_minutes": 15
+  },
+  "vault": {
+    "vault_id": "vault-perf",
+    "kek_id": "kek-v1-perf",
+    "mount": "transit",
+    "role": "vault-admin"
+  },
+  "simulated_users": [
+    {
+      "subject": "usr_c28_alice",
+      "email": "alice@keyhelix.local",
+      "role": "vault-admin",
+      "scopes": ["secret:read", "secret:write", "app/prod/*", "admin"]
+    },
+    {
+      "subject": "usr_c28_bob",
+      "email": "bob@keyhelix.local",
+      "role": "vault-member",
+      "scopes": ["secret:read", "app/prod/*"]
+    },
+    {
+      "subject": "usr_c28_charlie",
+      "email": "charlie@keyhelix.local",
+      "role": "vault-member",
+      "scopes": ["secret:read", "app/prod/*"]
+    },
+    {
+      "subject": "usr_c28_dave",
+      "email": "dave@keyhelix.local",
+      "role": "vault-member",
+      "scopes": ["secret:read", "app/prod/*"]
+    },
+    {
+      "subject": "usr_c28_eve",
+      "email": "eve@keyhelix.local",
+      "role": "vault-member",
+      "scopes": ["secret:read", "app/prod/*"]
+    }
+  ],
+  "sample_secret": {
+    "secret_path": "app/prod/database-url",
+    "classification": "restricted",
+    "sentinel_secret": "sentinel-canary-c28-valid-8f2b",
+    "payload_bytes": 1024
+  },
+  "workload_operations": [
+    "authenticate_user",
+    "validate_metadata",
+    "write_versioned_secret",
+    "request_step_up",
+    "reveal_secret",
+    "record_audit_event"
+  ],
+  "expected_bounds": {
+    "latency_p95_ms": 50,
+    "rss_peak_mb": 256,
+    "disk_max_growth_mb": 100
+  }
+}

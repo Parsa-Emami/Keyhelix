@@ -249,10 +249,12 @@
     },
     {
       "id": "C28",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C28.json"
+      ],
+      "source_identity": "sha256:3232cac9316fb5b3795fb1f7e059a3025fd743bc73fe8b86cee3f367317d3c74",
+      "notes": "Verified bounded target and overload workloads on local profile (Requirement N28). Benchmarked target 5-user workload (p50: 6.1ms, p95: 14.16ms, p99: 18.64ms), confirmed overload rejection on oversized payloads and metadata with zero resource leaks, clean cancellation handling, engine restart durability, and verified provider-owned secret byte invariant under race detector."
     },
     {
       "id": "C29",
