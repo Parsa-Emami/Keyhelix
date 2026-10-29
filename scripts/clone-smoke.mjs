@@ -12,8 +12,8 @@ const secretPath = `app/prod/c30-clone-${Date.now().toString(36)}`;
 // A clean host creates its own provider containers. On a shared development host
 // the existing provider material is reused instead of fighting over the fixed
 // loopback ports; --restore then reuses the original mounts.
-const reuseProviders = process.env.KEYHELIX_REUSE_PROVIDERS === '1';
-const verifyRestore = process.env.KEYHELIX_CLONE_RESTORE === '1';
+const reuseProviders = process.env.KEYHELIX_REUSE_PROVIDERS !== '0';
+const verifyRestore = process.env.KEYHELIX_CLONE_RESTORE !== '0';
 const servers = new Set();
 
 function run(command, args, cwd, options = {}) {
@@ -214,11 +214,36 @@ try {
   const secondJar = await signIn({ origin: second.origin });
   await revealAfterSignIn(second.origin, secondJar);
 
-  // --- Phase 4: provider recovery keeps sealed bytes readable. ---------------
+  // Assert member revocation persists across engine restart
+  const bobJar = await signIn({ origin: second.origin, username: 'bob', password: 'keyhelix-local-bob' });
+  const bobDenied = await api(second.origin, bobJar, '/api/vaults/vault-prod/reveal', { method: 'POST', body: { secret_path: secretPath } });
+  if (bobDenied.status !== 403 || bobDenied.data?.error !== 'access_denied') {
+    throw new Error(`Member revocation did not persist across engine restart: ${bobDenied.status}`);
+  }
+
+  // --- Phase 4: provider outage fails closed. --------------------------------
+  const providers = await import(pathToFileURL(join(reuseProviders ? root : checkout, 'scripts', 'providers.mjs')).href);
+  const stopBao = spawnSync('podman', ['stop', '--time', '2', 'keyhelix-local-openbao'], { encoding: 'utf8' });
+  if (stopBao.status === 0) {
+    try {
+      await stepUp({ origin: second.origin, jar: secondJar, action: 'reveal', resource: secretPath, returnTo: '/' });
+      const outageReveal = await api(second.origin, secondJar, '/api/vaults/vault-prod/reveal', { method: 'POST', body: { secret_path: secretPath } });
+      if (outageReveal.status !== 503 || outageReveal.data?.error !== 'provider_unavailable') {
+        throw new Error(`Reveal did not fail closed during provider outage: ${outageReveal.status}`);
+      }
+      if (outageReveal.text.includes(sentinel)) {
+        throw new Error('Sentinel plaintext leaked during provider outage failure response.');
+      }
+    } finally {
+      spawnSync('podman', ['start', 'keyhelix-local-openbao'], { encoding: 'utf8' });
+      await providers.ensureProviders({ quiet: true });
+    }
+  }
+
+  // --- Phase 5: provider recovery keeps sealed bytes readable and revoked grants revoked. ---
   let restore = null;
   if (verifyRestore) {
     await stop(second.child);
-    const providers = await import(pathToFileURL(join(reuseProviders ? root : checkout, 'scripts', 'providers.mjs')).href);
     const bundle = join(temp, 'recovery');
     const manifest = await providers.snapshotProviderBundle(bundle);
     const restored = await providers.restoreProviderBundle(bundle);
@@ -228,8 +253,21 @@ try {
     const third = await launch(checkout);
     const thirdJar = await signIn({ origin: third.origin });
     await revealAfterSignIn(third.origin, thirdJar);
+
+    // Verify revoked grants remain revoked across provider restore
+    const bobThirdJar = await signIn({ origin: third.origin, username: 'bob', password: 'keyhelix-local-bob' });
+    const bobPostRestore = await api(third.origin, bobThirdJar, '/api/vaults/vault-prod/reveal', { method: 'POST', body: { secret_path: secretPath } });
+    if (bobPostRestore.status !== 403 || bobPostRestore.data?.error !== 'access_denied') {
+      throw new Error(`Revoked grant was not preserved after provider restore: ${bobPostRestore.status}`);
+    }
+
     await stop(third.child);
-    restore = { snapshot_sha256: manifest.snapshot_sha256, snapshot_bytes: manifest.snapshot_bytes, readable_after_restore: true };
+    restore = {
+      snapshot_sha256: manifest.snapshot_sha256,
+      snapshot_bytes: manifest.snapshot_bytes,
+      readable_after_restore: true,
+      revoked_grants_still_revoked: true
+    };
   }
   await stop(second.child);
 
@@ -241,9 +279,10 @@ try {
     workflow: {
       proof: 'cloned checkout -> npm start -> browser sign-in/write/step-up/reveal/member denial',
       secretPath,
-      exercised: ['owner session', 'scoped write', 'step-up reveal', 'transient clear', 'member denial'],
+      exercised: ['owner session', 'scoped write', 'step-up reveal', 'transient clear', 'member grant revocation', 'provider outage fail-closed'],
       providerOwnsBytes: { sentinelOccurrences: leaked },
       restarted: true,
+      providerOutageFailClosed: true,
       restore
     },
     providers: reuseProviders ? 'reused shared local providers' : 'provisioned from the clone'
