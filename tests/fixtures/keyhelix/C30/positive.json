@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C30 clone-to-value fixture; contains no real secret, key or credential material. Identities and passwords match ops/local/keycloak-realm.json.",
+  "license": "Apache-2.0",
+  "workflow": "reference-workflow",
+  "vault": {
+    "vault_id": "vault-prod",
+    "kek_id": "keyhelix-kek",
+    "kek_mount": "transit",
+    "payload_mount": "secret"
+  },
+  "identities": {
+    "owner": {
+      "username": "alice",
+      "email": "alice@keyhelix.local",
+      "realm_role": "vault-admin"
+    },
+    "member": {
+      "username": "bob",
+      "email": "bob@keyhelix.local",
+      "realm_role": "vault-member"
+    }
+  },
+  "secret": {
+    "secret_path_prefix": "app/prod/clone-to-value-",
+    "classification": "restricted",
+    "plaintext_sentinel": "c30-synthetic-plaintext-sentinel-9f3a",
+    "expected_first_version": 1
+  },
+  "steps": [
+    {
+      "id": "auth-owner",
+      "actor": "alice",
+      "expected_result": "PKCE authorization code flow with state and nonce completes; scoped local session cookie is issued"
+    },
+    {
+      "id": "scoped-write",
+      "actor": "alice",
+      "expected_result": "Secret metadata version 1 is written with a fresh DEK and nonce sealed by OpenBao transit; no plaintext is persisted"
+    },
+    {
+      "id": "step-up-reveal",
+      "actor": "alice",
+      "expected_result": "Fresh reauthentication (auth_time within 300s) issues a step-up grant; OpenBao transit unwraps the DEK and plaintext is returned transiently"
+    },
+    {
+      "id": "revoke-user",
+      "actor": "alice",
+      "expected_result": "Grant revocation is durable; the member identity can no longer list or reveal the owner's secret"
+    },
+    {
+      "id": "provider-outage",
+      "actor": "alice",
+      "expected_result": "Key provider outage produces an explicit failure with zero plaintext returned from any cache"
+    },
+    {
+      "id": "restore-isolated",
+      "actor": "operator",
+      "expected_result": "OpenBao raft snapshot restore keeps sealed envelopes readable and revoked grants revoked"
+    }
+  ],
+  "negative_cases": [
+    "unauthorized-bypass",
+    "provider-disconnected",
+    "corrupted-auth-tag"
+  ]
+}

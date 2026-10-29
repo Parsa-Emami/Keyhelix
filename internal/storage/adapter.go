@@ -123,6 +123,19 @@ type ReadRequest struct {
 	Name  string
 }
 
+// ListRequest selects committed metadata records by scope and optional owner.
+// An empty Owner lists every owner in the scope; Scope is always required.
+type ListRequest struct {
+	Owner string
+	Scope string
+}
+
+// Lister is the optional enumeration capability used by the engine to rebuild
+// owner-scoped indexes (vault summaries and grants) after restart.
+type Lister interface {
+	List(ctx context.Context, request ListRequest) ([]Record, error)
+}
+
 // Record is a committed metadata record with hash-checked bytes.
 type Record struct {
 	Owner           string    `json:"owner"`
@@ -221,7 +234,10 @@ var (
 	digestPattern = regexp.MustCompile(`^[0-9a-f]{64}$`)
 )
 
-var _ Port = (*Store)(nil)
+var (
+	_ Port   = (*Store)(nil)
+	_ Lister = (*Store)(nil)
+)
 
 // Open creates or recovers the store at root, acquires the exclusive writer
 // lock and reconciles uncommitted staging bytes and orphan blobs.
@@ -778,6 +794,62 @@ func (s *Store) Read(ctx context.Context, request ReadRequest) (Record, error) {
 		CreatedAt:       record.CreatedAt,
 		UpdatedAt:       record.UpdatedAt,
 	}, nil
+}
+
+// List returns committed records in one scope after checking their stored bytes.
+// Callers must still enforce owner authorization; this port only enumerates.
+func (s *Store) List(ctx context.Context, request ListRequest) ([]Record, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if err := contextFailure(ctx); err != nil {
+		return nil, err
+	}
+	if !scopePattern.MatchString(request.Scope) {
+		return nil, invalid("scope")
+	}
+	if request.Owner != "" && !ownerPattern.MatchString(request.Owner) {
+		return nil, invalid("owner")
+	}
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if s.closed {
+		return nil, &Error{Code: CodeClosed}
+	}
+	names := make([]string, 0, len(s.records))
+	for key, record := range s.records {
+		if record.Scope != request.Scope {
+			continue
+		}
+		if request.Owner != "" && record.Owner != request.Owner {
+			continue
+		}
+		names = append(names, key)
+	}
+	sort.Strings(names)
+	records := make([]Record, 0, len(names))
+	for _, key := range names {
+		if err := contextFailure(ctx); err != nil {
+			return nil, err
+		}
+		record := s.records[key]
+		data, err := readVerifiedBlob(s.root, record.MetadataDigest, record.MetadataBytes)
+		if err != nil {
+			return nil, err
+		}
+		records = append(records, Record{
+			Owner:           record.Owner,
+			Scope:           record.Scope,
+			Name:            record.Name,
+			EntityVersion:   record.EntityVersion,
+			ManifestVersion: s.manifestVersion,
+			MetadataDigest:  record.MetadataDigest,
+			Metadata:        data,
+			CreatedAt:       record.CreatedAt,
+			UpdatedAt:       record.UpdatedAt,
+		})
+	}
+	return records, nil
 }
 
 // Close releases the exclusive writer lock. It is safe to call repeatedly.

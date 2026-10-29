@@ -114,7 +114,10 @@ test('real launcher exposes engine health, readiness, and unified diagnostics wi
   assert.equal(diagJson.components.web.status, 'ok');
   assert.equal(diagJson.components.engine.status, 'ready');
   assert.equal(diagJson.components.storage.status, 'ready');
-  assert.equal(diagJson.components.provider.status, 'ready');
+  // This launch runs the foundation engine (no --config), so no key or identity
+  // provider partition is composed; diagnostics must not claim one is ready.
+  assert.equal(diagJson.components.provider.status, 'unknown');
+  assert.equal(diagJson.components.identity_provider.status, 'unknown');
 
   // 5. Direct readEngineReadiness utility call
   const directReadiness = await readEngineReadiness(running.engineAddress);

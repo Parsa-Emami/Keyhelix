@@ -1,0 +1,14 @@
+disable_mlock = true
+ui = false
+api_addr = "__API_ADDR__"
+cluster_addr = "__CLUSTER_ADDR__"
+
+storage "raft" {
+  path    = "/openbao/data"
+  node_id = "__NODE_ID__"
+}
+
+listener "tcp" {
+  address     = "0.0.0.0:8200"
+  tls_disable = true
+}

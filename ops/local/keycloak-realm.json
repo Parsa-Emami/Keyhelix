@@ -1,0 +1,114 @@
+{
+  "realm": "keyhelix",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "roles": {
+    "realm": [
+      { "name": "vault-admin" },
+      { "name": "vault-member" }
+    ]
+  },
+  "users": [
+    {
+      "username": "alice",
+      "enabled": true,
+      "email": "alice@keyhelix.local",
+      "firstName": "Alice",
+      "lastName": "Synthetic",
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "keyhelix-local-alice", "temporary": false }],
+      "realmRoles": ["vault-admin"],
+      "attributes": {
+        "vault_role": ["vault-admin"],
+        "allowed_owners": ["alice@keyhelix.local"],
+        "allowed_scopes": ["vault:read", "secret:read", "secret:write", "policy:write", "vault-admin"]
+      }
+    },
+    {
+      "username": "bob",
+      "enabled": true,
+      "email": "bob@keyhelix.local",
+      "firstName": "Bob",
+      "lastName": "Synthetic",
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "keyhelix-local-bob", "temporary": false }],
+      "realmRoles": ["vault-member"],
+      "attributes": {
+        "vault_role": ["vault-member"],
+        "allowed_owners": ["alice@keyhelix.local"],
+        "allowed_scopes": ["vault:read", "secret:read"]
+      }
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "keyhelix-web",
+      "name": "KeyHelix Web",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "redirectUris": [
+        "http://localhost:4173/api/v1/auth/callback",
+        "http://localhost:4301/api/v1/auth/callback"
+      ],
+      "webOrigins": [],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:4173/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "vault_role",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "vault_role",
+            "claim.name": "vault_role",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "allowed_owners",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "allowed_owners",
+            "claim.name": "allowed_owners",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "allowed_scopes",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "allowed_scopes",
+            "claim.name": "allowed_scopes",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -39,8 +39,8 @@ export const supportedNode = version => {
 
 export function setup(args = [], run = spawnSync, version = process.version) {
   if (!supportedNode(version)) throw new Error('Use Node 24.19 or a newer Node 24 release.');
-  if (args.some(arg => !['--check', '--skip-install'].includes(arg))) {
-    throw new Error('Supported setup options: --check, --skip-install');
+  if (args.some(arg => !['--check', '--skip-install', '--skip-providers'].includes(arg))) {
+    throw new Error('Supported setup options: --check, --skip-install, --skip-providers');
   }
   const steps = args.includes('--skip-install')
     ? [['run', 'build']]
@@ -57,9 +57,25 @@ export function setup(args = [], run = spawnSync, version = process.version) {
     executed: !args.includes('--check'),
     prerequisites: [`Go ${goVersion}`, `rootless Podman ${podmanVersion}`],
     steps,
-    capability: 'local-runtime',
+    capability: args.includes('--skip-providers') ? 'build-only' : 'local-runtime',
+    providersReady: false,
     engineReady: false
   };
+}
+
+// Provider containers start separately so setup keeps its synchronous, fail-fast
+// contract while the long-running services stay opt-out.
+export async function startSetupProviders() {
+  const { ensureProviders } = await import('./providers.mjs');
+  const providers = await ensureProviders({ quiet: true });
+  console.log(JSON.stringify({
+    providers: 'ready',
+    openbao: providers.openbao.address,
+    keycloak: providers.oidc.issuer,
+    open: 'npm start',
+    signIn: 'Synthetic local users are documented in ops/local/keycloak-realm.json.'
+  }, null, 2));
+  return providers;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
@@ -76,20 +92,29 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       if (engine.error || engine.status !== 0) throw new Error('Engine binary unavailable. Run npm run setup.');
       const runtime = validateHealth(JSON.parse(engine.stdout));
       const state = JSON.parse(await readFile(new URL('../plans/project-state.json', import.meta.url), 'utf8'));
+      const { providerStatus } = await import('./providers.mjs');
+      const providers = await providerStatus();
       console.log(JSON.stringify({
         nodeSupported: supportedNode(process.version),
         webAssetsBuilt: built,
         tools,
         runtime,
+        providers,
         readiness: state.readiness,
         engineReady: state.core_ready,
         start: 'npm start',
         next: 'npm run plan -- next'
       }, null, 2));
-      if (!built || !supportedNode(process.version)) process.exitCode = 1;
+      if (!built || !supportedNode(process.version) || !providers.openbao.ready || !providers.keycloak.ready) process.exitCode = 1;
     } else {
+      const args = process.argv.slice(3);
+      const result = setup(args);
+      if (result.executed && !args.includes('--skip-providers')) {
+        await startSetupProviders();
+        result.providersReady = true;
+      }
       console.log(JSON.stringify({
-        ...setup(process.argv.slice(3)),
+        ...result,
         start: 'npm start',
         note: 'Full product usability requires the C30 workflow; complete OSS v1 requires C40.'
       }, null, 2));

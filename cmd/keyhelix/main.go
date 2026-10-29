@@ -13,9 +13,11 @@ import (
 	"os/signal"
 	"runtime"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
+	"github.com/parsa-emami/keyhelix/internal/app"
 	"github.com/parsa-emami/keyhelix/internal/contracts"
 )
 
@@ -42,7 +44,38 @@ func readiness() map[string]any {
 	}
 }
 
-func serve(ctx context.Context, address string, ready io.Writer) error {
+func foundationHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("Content-Type", "application/json")
+		if r.URL.Path != "/healthz" && r.URL.Path != "/readyz" {
+			if strings.HasPrefix(r.URL.Path, "/api/") {
+				w.WriteHeader(http.StatusServiceUnavailable)
+				io.WriteString(w, `{"error":"engine_not_configured"}`)
+				return
+			}
+			w.WriteHeader(http.StatusNotFound)
+			io.WriteString(w, `{"error":"not_found"}`)
+			return
+		}
+		if r.Method != http.MethodGet && r.Method != http.MethodHead {
+			w.Header().Set("Allow", "GET, HEAD")
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			io.WriteString(w, `{"error":"method_not_allowed"}`)
+			return
+		}
+		if r.Method == http.MethodGet {
+			if r.URL.Path == "/readyz" {
+				json.NewEncoder(w).Encode(readiness())
+			} else {
+				json.NewEncoder(w).Encode(health())
+			}
+		}
+	})
+}
+
+func serve(ctx context.Context, address string, ready io.Writer, runtime *app.Runtime) error {
 	host, port, err := net.SplitHostPort(address)
 	number, portErr := strconv.Atoi(port)
 	if err != nil || portErr != nil || number < 0 || number > 65535 || (host != "127.0.0.1" && host != "::1") {
@@ -59,29 +92,11 @@ func serve(ctx context.Context, address string, ready io.Writer) error {
 		WriteTimeout:      2 * time.Second,
 		IdleTimeout:       5 * time.Second,
 		MaxHeaderBytes:    16384,
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Cache-Control", "no-store")
-			w.Header().Set("X-Content-Type-Options", "nosniff")
-			w.Header().Set("Content-Type", "application/json")
-			if r.URL.Path != "/healthz" && r.URL.Path != "/readyz" {
-				w.WriteHeader(http.StatusNotFound)
-				io.WriteString(w, `{"error":"not_found"}`)
-				return
-			}
-			if r.Method != http.MethodGet && r.Method != http.MethodHead {
-				w.Header().Set("Allow", "GET, HEAD")
-				w.WriteHeader(http.StatusMethodNotAllowed)
-				io.WriteString(w, `{"error":"method_not_allowed"}`)
-				return
-			}
-			if r.Method == http.MethodGet {
-				if r.URL.Path == "/readyz" {
-					json.NewEncoder(w).Encode(readiness())
-				} else {
-					json.NewEncoder(w).Encode(health())
-				}
-			}
-		}),
+	}
+	if runtime != nil {
+		server.Handler = app.NewServer(runtime)
+	} else {
+		server.Handler = foundationHandler()
 	}
 	if err := json.NewEncoder(ready).Encode(map[string]any{
 		"service": "keyhelix-engine",
@@ -115,6 +130,7 @@ func serve(ctx context.Context, address string, ready io.Writer) error {
 
 func main() {
 	address := flag.String("listen", "127.0.0.1:0", "loopback listen address")
+	configPath := flag.String("config", os.Getenv("KEYHELIX_RUNTIME_FILE"), "local runtime configuration file")
 	showVersion := flag.Bool("version", false, "print runtime version and exit")
 	validateSecret := flag.Bool("validate-secret", false, "validate secret metadata from stdin")
 	flag.Parse()
@@ -138,11 +154,21 @@ func main() {
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	go func() {
-		io.Copy(io.Discard, os.Stdin)
-		stop()
-	}()
-	if err := serve(ctx, *address, os.Stdout); err != nil {
+	var runtime *app.Runtime
+	if *configPath != "" {
+		config, err := app.LoadConfig(*configPath)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		runtime, err = app.New(ctx, config)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		defer runtime.Close()
+	}
+	if err := serve(ctx, *address, os.Stdout, runtime); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

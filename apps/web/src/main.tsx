@@ -7,7 +7,9 @@ import { Vaults } from './pages/Vaults';
 import { Access } from './pages/Access';
 import './styles.css';
 
-type Runtime = { projectId: string; apiBasePath: string; engineEnabled: false; maxPreviewBytes: number };
+type Runtime = { projectId: string; apiBasePath: string; engineEnabled: boolean; maxPreviewBytes: number };
+type SessionUser = { email?: string; subject: string; vault_role?: string };
+type SessionState = { authenticated: boolean; user?: SessionUser; step_up?: { action: string; resource: string; expires_at: string } | null };
 type Route = 'workspace' | 'vaults' | 'access' | 'roadmap';
 function route(): Route {
   if (location.hash === '#roadmap') return 'roadmap';
@@ -23,6 +25,8 @@ function App({ config }: { config: Runtime }) {
   const [preview, setPreview] = useState<{ name: string; bytes: number; fields: string[] } | null>(null);
   const [error, setError] = useState('');
   const [engine, setEngine] = useState('Checking engine runtime…');
+  const [coreReady, setCoreReady] = useState(false);
+  const [session, setSession] = useState<SessionState>({ authenticated: false });
   const busy = useRef(false);
   const generation = useRef(0);
   useEffect(() => {
@@ -40,15 +44,36 @@ function App({ config }: { config: Runtime }) {
         });
         if (!response.ok) throw new Error('Engine unavailable');
         const health = validateHealth(await response.json());
-        if (!controller.signal.aborted) setEngine(`Engine runtime ${health.version} is running (${health.toolchain}).`);
+        if (!controller.signal.aborted) {
+          setEngine(`Engine runtime ${health.version} is running (${health.toolchain}).`);
+          setCoreReady(health.coreReady);
+        }
       } catch {
-        if (!controller.signal.aborted) setEngine('Engine runtime unavailable.');
+        if (!controller.signal.aborted) {
+          setEngine('Engine runtime unavailable.');
+          setCoreReady(false);
+        }
       }
     }
     void check();
     const timer = setInterval(() => { void check(); }, 5000);
     return () => { controller.abort(); clearInterval(timer); };
   }, []);
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/v1/auth/session', { cache: 'no-store', credentials: 'same-origin' })
+      .then(response => response.json())
+      .then((value: SessionState) => { if (!cancelled) setSession(value); })
+      .catch(() => { if (!cancelled) setSession({ authenticated: false }); });
+    return () => { cancelled = true; };
+  }, [page]);
+  async function signOut() {
+    try {
+      await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    } finally {
+      location.reload();
+    }
+  }
   async function importFile(file: File | undefined) {
     if (!file || busy.current) return;
     const current = ++generation.current;
@@ -65,13 +90,13 @@ function App({ config }: { config: Runtime }) {
   const tasks = project.tasks.filter(task => (stage === 'all' || task.stage === stage) && `${task.id} ${task.title}`.toLowerCase().includes(query.toLowerCase()));
   return <div className="app" style={{ '--accent': project.accent } as React.CSSProperties}>
     <a className="skip" href="#content">Skip to content</a>
-    <header><a className="brand" href="#workspace"><span className="mark" aria-hidden="true">{project.name.slice(0, 1)}</span>{project.name}</a><nav aria-label="Main"><a href="#workspace" aria-current={page === 'workspace' ? 'page' : undefined}>Workspace</a><a href="#vaults" aria-current={page === 'vaults' ? 'page' : undefined}>Vaults</a><a href="#access" aria-current={page === 'access' ? 'page' : undefined}>Access & Rotations</a><a href="#roadmap" aria-current={page === 'roadmap' ? 'page' : undefined}>Roadmap</a></nav><span className="badge">Foundation · 0.0.1</span></header>
+    <header><a className="brand" href="#workspace"><span className="mark" aria-hidden="true">{project.name.slice(0, 1)}</span>{project.name}</a><nav aria-label="Main"><a href="#workspace" aria-current={page === 'workspace' ? 'page' : undefined}>Workspace</a><a href="#vaults" aria-current={page === 'vaults' ? 'page' : undefined}>Vaults</a><a href="#access" aria-current={page === 'access' ? 'page' : undefined}>Access & Rotations</a><a href="#roadmap" aria-current={page === 'roadmap' ? 'page' : undefined}>Roadmap</a></nav><div className="session-badge">{session.authenticated ? <><span className="badge" data-testid="signed-in-user">{session.user?.email}</span><button type="button" className="badge" onClick={() => void signOut()} data-testid="sign-out">Sign out</button></> : <a className="badge" href="/api/v1/auth/login?return_to=/">Sign in</a>}</div></header>
     <main id="content" tabIndex={-1}>
       <div className="eyebrow">{project.mode.replaceAll('-', ' ')} · browser workspace</div>
       <h1>{page === 'workspace' ? project.title : page === 'vaults' ? 'Authorized secret metadata console.' : page === 'access' ? 'Provider operations and access control.' : 'A clear path to release.'}</h1>
       <p className="intro">{page === 'workspace' ? project.description : page === 'vaults' ? 'Explore encrypted secret metadata without fetching or persisting plaintext values (Requirement F14).' : page === 'access' ? 'Audit provider access grants and track resumable rotation states. Partial failures are explicitly visible (Requirement F16).' : 'Track the product plan separately from the web foundation. Each task includes an acceptance target.'}</p>
       {page === 'workspace' ? <>
-        <section className="notice" aria-label="Availability" aria-live="polite"><span className="dot"/>{engine} Domain processing is unavailable; this release does not produce security results.</section>
+        <section className="notice" aria-label="Availability" aria-live="polite"><span className="dot"/>{engine} {coreReady ? 'Domain processing is enabled for this local workspace.' : 'Domain processing is unavailable; this release does not produce security results.'}</section>
         <div className="grid"><section className="panel"><div className="eyebrow">Local file preview</div><h2>Inspect a document</h2><p>Choose a JSON file to inspect its top-level fields. The file stays in memory in this tab and is not uploaded or saved.</p><label className="file-button">Choose JSON file<input aria-label="Choose JSON file" type="file" accept=".json,application/json" onChange={event => { void importFile(event.target.files?.[0]); event.target.value = ''; }}/></label><p className="muted">Maximum {Math.round(config.maxPreviewBytes / 1024)} KiB · JSON structure only</p>
           {error && <p role="alert" className="error">{error}</p>}
           {preview && <div className="preview" role="status"><h3>{preview.name}</h3><p>{preview.bytes} bytes · {preview.fields.length} top-level fields</p><ul>{preview.fields.slice(0, 30).map(field => <li key={field}><code>{field}</code></li>)}</ul><p className="muted">JSON structure checked. Domain validation requires the engine.</p><button onClick={() => { generation.current++; setPreview(null); }}>Clear preview</button></div>}

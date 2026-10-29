@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C30 expected-output fixture; describes required observable results, not measured evidence.",
+  "license": "Apache-2.0",
+  "requirement": "N30",
+  "acceptance": "On a clean supported Linux host, git clone -> npm run setup -> npm start completes the full reference workflow, negative cases, restart and restore.",
+  "steps": {
+    "auth-owner": { "session_cookie": "keyhelix_session", "httpOnly": true, "sameSite": "Lax", "secure": true },
+    "scoped-write": { "status": 201, "version": 1, "plaintext_persisted": false },
+    "step-up-reveal": { "status": 200, "plaintext_matches_sentinel": true, "cache_control": "no-store", "ttl_seconds": 30 },
+    "revoke-user": { "status": 200, "revoked": true },
+    "provider-outage": { "status": 503, "plaintext": null },
+    "restore-isolated": { "status": 200, "reveal_after_restore": true, "revoked_grant_after_restore": "still_revoked" }
+  },
+  "readiness": {
+    "status": "ready",
+    "storage": "ready",
+    "provider.state": "ready",
+    "identity_provider.state": "ready"
+  },
+  "guards": {
+    "step_up_required": 401,
+    "access_denied": 403,
+    "forbidden_origin": 403,
+    "authentication_failed": 422,
+    "provider_unavailable": 503,
+    "invalid_input": 400
+  },
+  "clean_host_commands": [
+    "git clone https://github.com/Parsa-Emami/Keyhelix.git",
+    "cd Keyhelix",
+    "npm run setup",
+    "npm start"
+  ],
+  "evidence": "docs/evidence/C30.json"
+}

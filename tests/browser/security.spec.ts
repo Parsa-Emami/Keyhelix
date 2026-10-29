@@ -186,13 +186,16 @@ test.describe('C27: Security Abuse and Authorization Boundaries (Requirement N27
     await expect(page.locator('.secrets-list > li')).toHaveCount(0);
   });
 
-  test('SEC-10: Step-up token bypass attempt is rejected', async ({ page }) => {
+  test('SEC-10: Step-up bypass attempt is rejected', async ({ page }) => {
     await page.route('**/api/vaults/vault-prod/metadata', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(metadataFixture),
       });
+    });
+    await page.route('**/api/v1/auth/session', async route => {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ authenticated: false, step_up: null }) });
     });
 
     await page.goto('/#vaults');
@@ -204,24 +207,7 @@ test.describe('C27: Security Abuse and Authorization Boundaries (Requirement N27
     await revealBtn.click();
 
     await expect(page.getByTestId('reveal-dialog')).toBeVisible();
-
-    // Clear step-up token
-    const tokenInput = page.getByTestId('stepup-token-input');
-    await tokenInput.fill('');
-
-    // Mock reveal endpoint: empty token should result in 401
-    await page.route(`**/api/vaults/vault-prod/secrets/${encodeURIComponent(targetSecret)}/reveal`, async route => {
-      await route.fulfill({
-        status: 401,
-        contentType: 'application/json',
-        body: JSON.stringify({ error: 'STEP_UP_REQUIRED' }),
-      });
-    });
-
-    await page.getByTestId('request-reveal-btn').click();
-
-    // Verify rejection and no plaintext container
-    await expect(page.getByRole('alert')).toContainText('Step-up authentication required or token expired.');
+    await expect(page.getByTestId('request-reveal-btn')).toHaveText('Re-authenticate & Reveal');
     await expect(page.getByTestId('plaintext-display')).toHaveCount(0);
   });
 
@@ -235,20 +221,23 @@ test.describe('C27: Security Abuse and Authorization Boundaries (Requirement N27
     });
 
     const targetSecret = 'production/services/payment/api-key';
-    await page.route(`**/api/vaults/vault-prod/secrets/${encodeURIComponent(targetSecret)}/reveal`, async route => {
+    await page.route('**/api/v1/auth/session', route => route.fulfill({
+      status: 200, contentType: 'application/json',
+      body: JSON.stringify({ authenticated: true, step_up: { action: 'reveal_secret', resource: targetSecret, expires_at: new Date(Date.now() + 60000).toISOString() } })
+    }));
+    await page.route('**/api/vaults/vault-prod/reveal', async route => {
       await route.fulfill({
         status: 403,
         contentType: 'application/json',
-        body: JSON.stringify({ error: 'GRANT_REVOKED' }),
+        body: JSON.stringify({ error: 'access_denied' }),
       });
     });
 
     await page.goto('/#vaults');
     await page.getByTestId(`reveal-btn-${targetSecret}`).click();
-    await page.getByTestId('request-reveal-btn').click();
 
     // Verify access denial and zero plaintext
-    await expect(page.getByRole('alert')).toContainText('Access denied: Unauthorized owner or scope mismatch.');
+    await expect(page.getByRole('alert')).toContainText('Access denied: no active grant authorizes this secret.');
     await expect(page.getByTestId('plaintext-display')).toHaveCount(0);
   });
 
@@ -262,20 +251,23 @@ test.describe('C27: Security Abuse and Authorization Boundaries (Requirement N27
     });
 
     const targetSecret = 'production/services/payment/api-key';
-    await page.route(`**/api/vaults/vault-prod/secrets/${encodeURIComponent(targetSecret)}/reveal`, async route => {
+    await page.route('**/api/v1/auth/session', route => route.fulfill({
+      status: 200, contentType: 'application/json',
+      body: JSON.stringify({ authenticated: true, step_up: { action: 'reveal_secret', resource: targetSecret, expires_at: new Date(Date.now() + 60000).toISOString() } })
+    }));
+    await page.route('**/api/vaults/vault-prod/reveal', async route => {
       await route.fulfill({
         status: 503,
         contentType: 'application/json',
-        body: JSON.stringify({ error: 'PROVIDER_UNAVAILABLE' }),
+        body: JSON.stringify({ error: 'provider_unavailable' }),
       });
     });
 
     await page.goto('/#vaults');
     await page.getByTestId(`reveal-btn-${targetSecret}`).click();
-    await page.getByTestId('request-reveal-btn').click();
 
     // Verify provider outage message
-    await expect(page.getByRole('alert')).toContainText('Provider unavailable: Fails closed to protect secret.');
+    await expect(page.getByRole('alert')).toContainText('Provider unavailable');
     await expect(page.getByTestId('plaintext-display')).toHaveCount(0);
   });
 });

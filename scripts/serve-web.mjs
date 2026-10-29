@@ -76,7 +76,7 @@ export function readEngineReadiness(address, signal) {
       agent: false,
       signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(2000)]) : AbortSignal.timeout(2000)
     }, response => {
-      if (response.statusCode !== 200) {
+      if (response.statusCode !== 200 && response.statusCode !== 503) {
         response.destroy();
         reject(new Error('Engine unavailable.'));
         return;
@@ -90,7 +90,7 @@ export function readEngineReadiness(address, signal) {
       response.on('end', () => {
         try {
           const parsed = JSON.parse(body);
-          if (parsed.status !== 'ready' || parsed.scope !== 'engine-runtime') {
+          if (parsed.scope !== 'engine-runtime' || !['ready', 'not_ready'].includes(parsed.status)) {
             throw new Error('Invalid engine readiness response.');
           }
           accept(parsed);
@@ -101,6 +101,49 @@ export function readEngineReadiness(address, signal) {
     });
     request.on('error', reject);
   });
+}
+
+export function proxyToEngine(engineAddress, req, res) {
+  if (!/^127\.0\.0\.1:[1-9]\d{0,4}$/.test(engineAddress)) {
+    res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ error: 'engine_unavailable' }));
+    return;
+  }
+  const headers = {};
+  for (const name of ['accept', 'content-type', 'cookie', 'origin', 'x-keyhelix-stepup', 'user-agent', 'cache-control', 'pragma']) {
+    if (req.headers[name] !== undefined) headers[name] = req.headers[name];
+  }
+  const upstream = http.request({
+    host: '127.0.0.1',
+    port: Number(engineAddress.split(':')[1]),
+    method: req.method,
+    path: req.url,
+    headers,
+    timeout: 15000
+  }, response => {
+    const outgoing = {};
+    for (const [name, value] of Object.entries(response.headers)) {
+      if (['connection', 'keep-alive', 'transfer-encoding', 'upgrade', 'content-length'].includes(name)) continue;
+      outgoing[name] = value;
+    }
+    res.writeHead(response.statusCode ?? 502, outgoing);
+    response.pipe(res);
+  });
+  upstream.on('timeout', () => upstream.destroy(new Error('engine timeout')));
+  upstream.on('error', () => {
+    if (res.headersSent) {
+      res.destroy();
+      return;
+    }
+    res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ error: 'engine_unavailable' }));
+  });
+  let received = 0;
+  req.on('data', chunk => {
+    received += chunk.length;
+    if (received > 1114112) upstream.destroy(new Error('request too large'));
+  });
+  req.pipe(upstream);
 }
 
 export function createWebServer({ root, config, projectId, engineAddress }) {
@@ -121,7 +164,8 @@ export function createWebServer({ root, config, projectId, engineAddress }) {
       res.writeHead(status, { 'Content-Type': type, 'Content-Length': Buffer.byteLength(body) });
       res.end(req.method === 'HEAD' ? undefined : body);
     };
-    if (!['GET', 'HEAD'].includes(req.method ?? '')) {
+    const apiRequest = (req.url ?? '/').startsWith('/api/') || (req.url ?? '/') === '/api';
+    if (!apiRequest && !['GET', 'HEAD'].includes(req.method ?? '')) {
       res.setHeader('Allow', 'GET, HEAD');
       send(405, '{"error":"method_not_allowed"}');
       return;
@@ -134,6 +178,13 @@ export function createWebServer({ root, config, projectId, engineAddress }) {
       send(400, '{"error":"invalid_path"}');
       return;
     }
+    if (['/api/engine/health', '/api/engine/readiness', '/api/diagnostics', '/runtime-config.json'].includes(path)) {
+      if (!['GET', 'HEAD'].includes(req.method ?? '')) {
+        res.setHeader('Allow', 'GET, HEAD');
+        send(405, '{"error":"method_not_allowed"}');
+        return;
+      }
+    }
     if (path === '/healthz') {
       send(200, '{"status":"ok","scope":"web-shell"}');
       return;
@@ -141,9 +192,23 @@ export function createWebServer({ root, config, projectId, engineAddress }) {
     if (path === '/readyz') {
       try {
         await stat(resolve(publicRoot, 'index.html'));
-        send(200, '{"status":"ready","scope":"web-shell","engineReady":false}');
+        let engineReady = false;
+        if (engineAddress) {
+          try {
+            // Domain admission requires both a healthy engine and a composed core;
+            // a foundation engine answers /readyz but cannot process secrets.
+            const [readiness, health] = await Promise.all([
+              readEngineReadiness(engineAddress, AbortSignal.timeout(2000)),
+              readEngineHealth(engineAddress, AbortSignal.timeout(2000))
+            ]);
+            engineReady = readiness.status === 'ready' && health.coreReady;
+          } catch {
+            engineReady = false;
+          }
+        }
+        send(engineAddress && !engineReady ? 503 : 200, JSON.stringify({ status: engineAddress ? (engineReady ? 'ready' : 'not_ready') : 'ready', scope: 'web-shell', engineReady }));
       } catch {
-        send(503, '{"status":"not_ready","scope":"web-shell"}');
+        send(503, '{"status":"not_ready","scope":"web-shell","engineReady":false}');
       }
       return;
     }
@@ -176,14 +241,10 @@ export function createWebServer({ root, config, projectId, engineAddress }) {
       if (engineAddress) {
         try {
           engineInfo = await readEngineReadiness(engineAddress);
-          engineOk = true;
+          engineOk = engineInfo.status === 'ready';
         } catch {
-          try {
-            engineInfo = await readEngineHealth(engineAddress);
-            engineOk = true;
-          } catch {
-            engineInfo = { status: 'unavailable', error: 'engine_unavailable' };
-          }
+          engineInfo = { status: 'unavailable', error: 'engine_unavailable' };
+          engineOk = false;
         }
       } else {
         engineInfo = { status: 'disabled', scope: 'engine-runtime' };
@@ -199,8 +260,9 @@ export function createWebServer({ root, config, projectId, engineAddress }) {
         components: {
           web: webStatus,
           engine: engineInfo,
-          storage: { status: engineOk ? 'ready' : 'unknown' },
-          provider: { status: engineOk ? 'ready' : 'unknown' }
+          storage: { status: engineInfo?.storage === 'ready' ? 'ready' : engineOk ? 'unknown' : 'unavailable' },
+          provider: { status: engineInfo?.provider?.state === 'ready' ? 'ready' : engineOk ? 'unknown' : 'unavailable' },
+          identity_provider: { status: engineInfo?.identity_provider?.state === 'ready' ? 'ready' : engineOk ? 'unknown' : 'unavailable' }
         }
       };
 
@@ -208,7 +270,11 @@ export function createWebServer({ root, config, projectId, engineAddress }) {
       return;
     }
     if (path === '/api' || path.startsWith('/api/')) {
-      send(503, '{"error":"engine_not_integrated"}');
+      if (engineAddress) {
+        proxyToEngine(engineAddress, req, res);
+      } else {
+        send(503, '{"error":"engine_not_integrated"}');
+      }
       return;
     }
     if (path === '/runtime-config.json') {
@@ -257,7 +323,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   const server = createWebServer({ root: options.root, config, projectId: product.slug });
   server.maxRequestsPerSocket = 1000;
   server.on('error', error => { console.error(error.message); process.exitCode = 1; });
-  server.listen(+options.port, options.host, () => console.log(JSON.stringify({ service: product.slug + '-web', host: options.host, port: +options.port, engineReady: false })));
+  server.listen(+options.port, options.host, () => console.log(JSON.stringify({ service: product.slug + '-web', host: options.host, port: +options.port, engineReady: Boolean(options.engine) })));
   for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, () => {
     server.close(() => process.exit(0));
     setTimeout(() => { server.closeAllConnections(); process.exit(1); }, 10000).unref();

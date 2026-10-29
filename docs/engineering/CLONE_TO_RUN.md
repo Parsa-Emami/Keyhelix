@@ -2,7 +2,7 @@
 
 ## Runnable today
 
-Install Git and Node 24.19+ within Node 24 (npm bundled), then:
+Install Git, Node 24.19+ within Node 24, Go 1.27.2 and rootless Podman 4.9.3 on Linux x86_64, then:
 
 ```sh
 git clone https://github.com/Parsa-Emami/Keyhelix.git
@@ -11,17 +11,17 @@ npm run setup
 npm start
 ```
 
-Open http://127.0.0.1:4173. Setup installs the committed web lockfile with lifecycle scripts disabled, stops on errors and builds the workspace. No Python, Go, Rust, PHP, database, cloud account or domain is needed for the current web shell. It previews JSON structure locally and browses the roadmap; it does not implement the full domain product.
+Open http://localhost:4173 and sign in as `alice` (vault-admin) or `bob` (vault-member). Both are synthetic local identities defined in `ops/local/keycloak-realm.json`; the browser is redirected to the local Keycloak realm for the OIDC code flow, and reveal requires a fresh step-up reauthentication.
 
-`npm run setup -- --check` shows preparation without changes. `--skip-install` builds using already installed dependencies. `npm run doctor` reports actual web/core state. `npm run release:check` deliberately exits 2 until full evidence is ready. Ctrl+C stops the current web process. Ports can be selected with `npm start -- --port 4301` when running multiple projects.
+Setup installs the committed web lockfile with lifecycle scripts disabled, builds the web shell and engine, then starts the pinned local OpenBao and Keycloak containers, initializes transit/KV and the scoped workload token, and writes `.local-data/runtime.json`. `npm start` launches the Go engine with that runtime file and supervises both processes; readiness requires storage, the key provider and the identity provider. Ctrl+C stops both.
 
-## Full-product contract to implement
+No paid or cloud account, sibling clone or owned public domain is needed. Provider images are pulled by digest only when absent; `.local-data/` holds recovery material and must stay private and uncommitted. Ports can be selected with `npm start -- --port 4301`, but the registered OIDC redirect origin is `http://localhost:4173`.
 
-The same clone/setup/start sequence must prepare and supervise the actual Go engine and required self-hosted open-source resources by C30. No second undocumented terminal, paid account, sibling clone or owned public domain. C03 implements local lifecycle/health and C31 supplies verified convenience artifacts plus a documented source-build alternative. Downloads may be needed to prepare resources; user payloads are not sent to a compulsory proprietary service. No global runtime install, system trust change or user data deletion occurs implicitly.
+`npm run setup -- --check` shows preparation without changes. `--skip-install` builds using already installed dependencies. `--skip-providers` prepares build artifacts only. `npm run doctor` reports actual web/core state and provider readiness. `npm run release:check` deliberately exits 2 until full evidence is ready.
 
-Local resources: self-hosted OpenBao, self-hosted Keycloak/OIDC. Hardware target: 4 vCPU / 8192 MiB RAM / 20480 MiB free disk plus real dataset/provider/backup space. These are unmeasured targets until C28. Full engine support initially targets Linux x86_64; other hosts require their own actual C30/C33 evidence. Rootless workloads need Linux or a tested Linux/WSL2 host.
+## Provider ownership
 
-`local-demo` uses synthetic fixtures and isolated development providers; `local-private` requires real identity/permission, provider durability, revocation and restore evidence before sensitive use. A development provider mode never becomes a production vault/gateway by relabeling it.
+OpenBao owns the sealed secret bytes: the engine stores a wrapped DEK and nonce through the transit and KV mounts and persists only metadata and an integrity digest. Keycloak issues identity and step-up proofs. Readiness and `/api/diagnostics` report web, engine, storage, key provider and identity provider separately; failures are explicit and never cached into success.
 
 ## Checks
 
@@ -33,4 +33,17 @@ npm run test:clone
 npm run doctor
 ```
 
-The current test:clone performs a real local Git clone of the staged/committed source, runs setup and verifies web readiness and disabled engine admission. C30 must extend it to the full tests/scenarios/clone-to-value.json workflow and real engine readiness. Current shell checks cannot certify domain functionality. See each C task for future engine commands and prerequisites. Optional hosting/package operations remain in WEB_RUNBOOK.md.
+`npm run test:clone` now proves two things separately:
+
+1. A real transport clone of the staged/committed source, `npm run setup`, and web-only startup with disabled domain admission (`engineReady: false`).
+2. The full reference workflow through `tests/browser/clone-to-value.spec.ts`: real readiness, owner sign-in, scoped write, fresh step-up reveal, transient clear, member denial, app restart persistence, a plaintext-at-rest scan of the engine and provider data, and OpenBao backup/restore with a reveal afterwards.
+
+On a shared development host that already owns the fixed provider ports and has uncommitted work, use:
+
+```sh
+KEYHELIX_CLONE_WORKTREE=1 KEYHELIX_REUSE_PROVIDERS=1 KEYHELIX_CLONE_RESTORE=1 npm run test:clone
+```
+
+`KEYHELIX_CLONE_WORKTREE=1` snapshots the working tree instead of the index; `KEYHELIX_REUSE_PROVIDERS=1` seeds the clone with the existing provider recovery material; `KEYHELIX_CLONE_RESTORE=1` adds the backup/restore leg. Those flags are development conveniences and are recorded as deviations in `docs/evidence/C30.json`; a clean supported host must still produce the unflagged run before C30 is verified.
+
+`local-demo` uses synthetic fixtures and isolated development providers; `local-private` requires real identity/permission, provider durability, revocation and restore evidence before sensitive use. A development provider mode never becomes a production vault/gateway by relabeling it. C30 remains unverified until a clean-host run records the complete clone-to-value evidence.

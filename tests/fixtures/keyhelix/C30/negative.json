@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C30 negative fixture; no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "unauthorized-bypass",
+      "description": "Reveal attempted without a fresh step-up grant",
+      "expected_status": 401,
+      "expected_code": "step_up_required",
+      "expected_plaintext": null
+    },
+    {
+      "case": "provider-disconnected",
+      "description": "Reveal attempted while the key provider is stopped",
+      "expected_status": 503,
+      "expected_code": "provider_unavailable",
+      "expected_plaintext": null
+    },
+    {
+      "case": "corrupted-auth-tag",
+      "description": "Provider decrypts an envelope whose authentication tag was corrupted",
+      "expected_status": 422,
+      "expected_code": "authentication_failed",
+      "expected_plaintext": null
+    },
+    {
+      "case": "foreign-origin-mutation",
+      "description": "A write or reveal submitted from a foreign Origin header",
+      "expected_status": 403,
+      "expected_code": "forbidden_origin",
+      "expected_plaintext": null
+    },
+    {
+      "case": "member-without-grant",
+      "description": "A signed-in member identity with no grant lists or reveals the owner's secret",
+      "expected_status": 403,
+      "expected_code": "access_denied",
+      "expected_plaintext": null
+    },
+    {
+      "case": "missing-prerequisites",
+      "description": "npm run setup on a host without the pinned Go/Podman toolchain",
+      "expected_status": null,
+      "expected_code": "setup_failed",
+      "expected_plaintext": null
+    },
+    {
+      "case": "malformed-runtime-configuration",
+      "description": "npm start with a runtime file that is not the supported local profile",
+      "expected_status": null,
+      "expected_code": "runtime_configuration_rejected",
+      "expected_plaintext": null
+    }
+  ],
+  "prohibited_plaintext_storage": {
+    "sentinel": "c30-synthetic-plaintext-sentinel-9f3a",
+    "expected_occurrences_in_metadata_and_provider_kv": 0
+  }
+}

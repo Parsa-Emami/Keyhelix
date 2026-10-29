@@ -270,7 +270,7 @@
       "status": "planned",
       "evidence": [],
       "source_identity": null,
-      "notes": ""
+      "notes": "Implemented and exercised on the shared development host from a working-tree clone with reused local providers; see docs/evidence/C30.json. Setup, composed readiness, owner sign-in, scoped write, step-up reveal, transient clear, member denial, restart persistence, zero sentinel plaintext at rest and OpenBao backup/restore all passed, but the clean-host run and grant-revocation durability across restore are outstanding, so no certified evidence identity is claimed and this task is not verified."
     },
     {
       "id": "C31",

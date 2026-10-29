@@ -285,7 +285,7 @@
       "id": "C23",
       "title": "feat(health): fail closed on provider or audit failures",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "No plaintext fallback exists during outage; strict audited reveal policy is enforced."
       ],
@@ -297,7 +297,7 @@
       "id": "C24",
       "title": "feat(recovery): document provider root custody and backups",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Restore requires operator-held recovery material and is tested on isolated instance."
       ],
@@ -309,7 +309,7 @@
       "id": "C25",
       "title": "feat(checkpoints): verify separately stored audit checkpoints",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Signature trust policy and unavailable checkpoint status are explicit; hash chain alone is not immutable."
       ],
@@ -321,7 +321,7 @@
       "id": "C26",
       "title": "test(security): exercise privilege revocation and secret leakage",
       "stage": "domain",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Security matrix passes with synthetic secrets before any personal production credentials enter provider."
       ],
@@ -333,7 +333,7 @@
       "id": "C27",
       "title": "test(security): prove project abuse and authorization boundaries",
       "stage": "private-release",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Execute this project's negative UAT, XSS/import and object/provider authorization tests for every enabled surface. Fix critical/high findings or block the affected supported profile."
       ],
@@ -345,7 +345,7 @@
       "id": "C28",
       "title": "perf(local): measure bounded target and overload workloads",
       "stage": "private-release",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Record hardware, OS, source and fixture identities, latency/CPU/RSS/disk, cancellation and saturation for the target and an over-limit workload. Publish only observed limits and reduce unsupported targets."
       ],
@@ -357,7 +357,7 @@
       "id": "C29",
       "title": "feat(operations): expose real engine readiness and redacted diagnostics",
       "stage": "private-release",
-      "status": "planned",
+      "status": "verified",
       "acceptance": [
         "Separate web health from engine, authoritative storage and required provider readiness. Failures are visible; logs are bounded and exclude synthetic secret/credential sentinels."
       ],

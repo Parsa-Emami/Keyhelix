@@ -1,15 +1,25 @@
 {
   "project": "KeyHelix",
-  "reviewed_commit": "b68108d4a87a0e5f165ea881b0971e3f4bff6b4d",
-  "readiness": "WEB_FOUNDATION",
+  "reviewed_commit": "b70e9cf670296b6d0e3b81e8f9041b5686c3496a",
+  "readiness": "LOCAL_RUNTIME_IMPLEMENTED",
   "core_ready": false,
   "implemented": [
     "responsive web shell",
     "roadmap browser",
-    "local bounded JSON structure preview"
+    "local bounded JSON structure preview",
+    "Go engine runtime composed with durable metadata storage",
+    "OpenBao-owned secret bytes through a scoped provider adapter",
+    "Keycloak OIDC sign-in, sessions and fresh step-up reveal",
+    "grant authorization, rotation states and revocation",
+    "readiness, composite diagnostics and redacted logs",
+    "real end-to-end reference workflow, restart and provider restore from a cloned checkout"
   ],
-  "engine": "not implemented",
-  "next_task": "C01",
+  "engine": "implemented locally and exercised against real local providers; clean-host acceptance is not yet certified",
+  "next_task": "C30",
   "next_command": "npm run plan -- next",
-  "full_product_endpoint": "C30 locally usable; C40 full published OSS v1"
+  "full_product_endpoint": "C30 locally usable; C40 full published OSS v1",
+  "open_blockers": [
+    "C30 requires a clean supported Linux host run (clone from a committed source, own providers) before it can be marked verified.",
+    "Grant-revocation durability across provider restore is asserted by C22 tests but not yet by the C30 clone workflow."
+  ]
 }

@@ -37,11 +37,13 @@ export function Access({ vaultId = 'vault-prod' }: AccessProps) {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [resumingJobId, setResumingJobId] = useState<string | null>(null);
+  const [revokingId, setRevokingId] = useState<string | null>(null);
+  const [needsSignIn, setNeedsSignIn] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function fetchData() {
+    async function fetchData(attempted = false) {
       setLoading(true);
       setError('');
       try {
@@ -60,18 +62,28 @@ export function Access({ vaultId = 'vault-prod' }: AccessProps) {
           if (grantsRes.status === 503 || rotationsRes.status === 503) {
             throw new Error('Access provider unavailable: Operations fail closed.');
           }
-          if (grantsRes.status === 401 || rotationsRes.status === 401) {
-            throw new Error('Step-up authentication required for access management.');
+          if (grantsRes.status === 401) {
+            setNeedsSignIn(true);
+            throw new Error('Sign in as the vault administrator to inspect grants.');
           }
+          if (grantsRes.status === 403) throw new Error('Only the vault administrator can inspect grants.');
           throw new Error('Failed to load access and rotation metadata.');
         }
+        setNeedsSignIn(false);
 
         const grantsData = await grantsRes.json();
         const rotationsData = await rotationsRes.json();
 
         if (!cancelled) {
-          setGrants(Array.isArray(grantsData) ? grantsData : (grantsData.grants || []));
+          const list: Grant[] = Array.isArray(grantsData) ? grantsData : (grantsData.grants || []);
+          setGrants(list);
           setRotations(Array.isArray(rotationsData) ? rotationsData : (rotationsData.rotations || []));
+          const pendingRevoke = sessionStorage.getItem('keyhelix.pendingRevoke');
+          if (pendingRevoke && !attempted) {
+            sessionStorage.removeItem('keyhelix.pendingRevoke');
+            const target = list.find(grant => grant.grant_id === pendingRevoke);
+            if (target && target.status !== 'REVOKED') void revoke(pendingRevoke);
+          }
         }
       } catch (err: unknown) {
         if (!cancelled) {
@@ -89,6 +101,32 @@ export function Access({ vaultId = 'vault-prod' }: AccessProps) {
       cancelled = true;
     };
   }, [vaultId]);
+
+  async function revoke(grantId: string) {
+    setRevokingId(grantId);
+    setError('');
+    try {
+      const response = await fetch(`/api/vaults/${encodeURIComponent(vaultId)}/grants/${encodeURIComponent(grantId)}/revoke`, {
+        method: 'POST',
+        cache: 'no-store',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({})
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.status === 401 && data.authorize_url) {
+        sessionStorage.setItem('keyhelix.pendingRevoke', grantId);
+        location.href = data.authorize_url;
+        return;
+      }
+      if (!response.ok) throw new Error(data.message || 'The grant could not be revoked.');
+      setGrants(previous => previous.map(grant => grant.grant_id === grantId ? { ...grant, status: 'REVOKED', revoked_at: new Date().toISOString() } : grant));
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'The grant could not be revoked.');
+    } finally {
+      setRevokingId(null);
+    }
+  }
 
   const handleResumeRotation = async (jobId: string) => {
     setResumingJobId(jobId);
@@ -121,6 +159,14 @@ export function Access({ vaultId = 'vault-prod' }: AccessProps) {
       <p className="intro">
         Audit member authorizations and key version rotations. In compliance with Requirement F16, partial and failed provider operations are visible and cannot look like success.
       </p>
+
+      {needsSignIn && (
+        <section className="notice" role="status">
+          <span className="dot" />
+          <span>Sign in as the vault administrator to manage grants. </span>
+          <a className="text-link" href="/api/v1/auth/login?return_to=/%23access">Sign in</a>
+        </section>
+      )}
 
       {error && (
         <section className="notice" role="alert" aria-live="assertive" data-testid="provider-error-alert">
@@ -279,6 +325,18 @@ export function Access({ vaultId = 'vault-prod' }: AccessProps) {
                     Scopes: {grant.allowed_scopes.map(s => <code key={s} style={{ marginRight: '6px', wordBreak: 'break-all' }}>{s}</code>)} · Expires: {new Date(grant.expires_at).toLocaleString()}
                     {grant.revoked_at && ` · Revoked at: ${new Date(grant.revoked_at).toLocaleString()}`}
                   </p>
+                  {!isRevoked && (
+                    <button
+                      type="button"
+                      className="file-button"
+                      onClick={() => void revoke(grant.grant_id)}
+                      disabled={revokingId === grant.grant_id}
+                      data-testid={`revoke-grant-${grant.grant_id}`}
+                      style={{ marginTop: '8px' }}
+                    >
+                      {revokingId === grant.grant_id ? 'Revoking…' : 'Revoke grant (step-up)'}
+                    </button>
+                  )}
                 </li>
               );
             })}

@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C30",
+  "date": "2026-10-29",
+  "passed": true,
+  "planning_template": false,
+  "clean_host_proven": false,
+  "scope": "Prove the reference workflow from a cloned checkout: git clone -> npm run setup -> npm start, owner sign-in, scoped write, fresh step-up reveal, transient clear, member denial, restart persistence, plaintext-at-rest scan and provider backup/restore (Requirement N30).",
+  "commit_id": "C30",
+  "base_commit": "b70e9cf670296b6d0e3b81e8f9041b5686c3496a",
+  "git_commit_created": false,
+  "source_identity": "sha256:d2e9a1f46a90c70f5c3126efd69c1d924432d3a90afb3a2f003ef5b819940900",
+  "source_identity_method": "SHA-256 over sorted C30-owned path bytes, NUL separators and each file SHA-256; excludes docs/evidence and plans/ handoff files to avoid recursive self-reference",
+  "source_identity_files": {
+    "scripts/clone-smoke.mjs": "7a11d03140a3c538da29387bb07d0d829c4c396c35e51c345206c80149cfbadc",
+    "tests/browser/clone-to-value.spec.ts": "bcc2307af599580b670a16c12129d40d3e7aa0d4e5ac6f4af6fbe9af6c785b9e",
+    "tests/fixtures/keyhelix/C30/positive.json": "a90639db03389f1c122e45b07c81d9616f04d1493303a462ca921d97b2c30644",
+    "tests/fixtures/keyhelix/C30/negative.json": "b13f82c61ec30f50adca5702e85b5ba521c7472b4d83265a8090d272c70c84a3",
+    "tests/fixtures/keyhelix/C30/expected-output.json": "2f6386cd021837b39ea1380900a75438969721b720343703abfabee91270a165",
+    "tests/scenarios/clone-to-value.json": "09865d8cffa01a51c555cab7616b8a131f350cf43ac415cc47cbb133b10ae5e8"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (toolchain lock pins npm 11.9.0; the executing npm reports 11.17.0)",
+    "go": "Go 1.27.2 (toolchain lock) at /usr/local/go/bin/go",
+    "podman": "podman version 4.9.3, rootless",
+    "providers": [
+      {
+        "id": "openbao",
+        "image": "quay.io/openbao/openbao:2.7.2",
+        "digest": "sha256:5046911075e137e154ce49ab051502f4ec7cf367d484ae4a4dce665d9b90561f",
+        "license": "MPL-2.0",
+        "observed_version": "2.7.2",
+        "observed_state": "initialized, unsealed, ready"
+      },
+      {
+        "id": "keycloak",
+        "image": "quay.io/keycloak/keycloak:26.8.1",
+        "digest": "sha256:a78d6b79572168cb25886b80a8b5b8d4ed4390743e3eecb810538683e209dd6b",
+        "license": "Apache-2.0",
+        "observed_realm": "http://127.0.0.1:8080/realms/keyhelix",
+        "observed_state": "ready"
+      }
+    ],
+    "host_note": "Shared development host: the clone reused the already-provisioned local provider containers instead of provisioning fresh ones, and the clone source came from a working-tree snapshot because the C30 change is not committed. Both deviations are recorded as limitations."
+  },
+  "fixtures": {
+    "path": "tests/fixtures/keyhelix/C30/",
+    "positive": "tests/fixtures/keyhelix/C30/positive.json",
+    "negative": "tests/fixtures/keyhelix/C30/negative.json",
+    "expected_output": "tests/fixtures/keyhelix/C30/expected-output.json",
+    "provenance": "repository-authored synthetic workflow, identities and secret sentinel; matches ops/local/keycloak-realm.json and contains no real credential material",
+    "license": "Apache-2.0"
+  },
+  "browser_spec": {
+    "path": "tests/browser/clone-to-value.spec.ts",
+    "origin": "http://localhost:4173 (registered OIDC redirect origin)",
+    "asserted": [
+      "web /readyz 200 with engineReady true",
+      "engine readiness storage=ready, provider.state=ready, identity_provider.state=ready",
+      "owner PKCE sign-in through the Keycloak form",
+      "HTTP 201 write at version 1 with no plaintext in the rendered page",
+      "reveal without step-up -> 401 step_up_required and no plaintext element",
+      "fresh step-up reauthentication -> 200 reveal, Cache-Control no-store, plaintext equals the fixture sentinel",
+      "dialog close clears the DOM plaintext",
+      "reopened reveal demands a new step-up and shows no cached plaintext",
+      "member listing is owner-scoped (0 of 0) and a direct member reveal -> 403 access_denied"
+    ]
+  },
+  "commands": [
+    {
+      "command": "go build ./... && go vet ./... && go test ./...",
+      "exit_code": 0,
+      "summary": "Build and vet clean; all Go packages pass, including tests/ in 18.4s."
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "summary": "generate-web-data, tsc, vite build (267.19 kB JS) and Go engine build succeeded."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "23 web/contract tests passed, including launcher, readiness, configuration and fixture-provenance suites."
+    },
+    {
+      "command": "npm run test:browser",
+      "exit_code": 0,
+      "summary": "30 Playwright tests passed, including the new C30 real-provider workflow spec."
+    },
+    {
+      "command": "KEYHELIX_CLONE_WORKTREE=1 KEYHELIX_REUSE_PROVIDERS=1 KEYHELIX_CLONE_RESTORE=1 npm run test:clone",
+      "exit_code": 0,
+      "summary": "Cloned the working-tree snapshot, ran npm run setup, proved web-only startup separately, ran the C30 browser spec in the clone, proved composed readiness, restarted the app and re-revealed the secret, found 0 sentinel occurrences under .local-data/engine and .local-data/providers, then snapshotted/restored OpenBao and re-revealed after restore."
+    }
+  ],
+  "observed": {
+    "clone_tree": "working-tree snapshot (index clone requires the task to be committed)",
+    "setup": "npm ci (34 packages) + build inside the clone",
+    "web_only": {
+      "readyz": { "status": "ready", "scope": "web-shell", "engineReady": false },
+      "unimplemented_api": 503
+    },
+    "workflow": {
+      "secret_path": "app/prod/c30-clone-mvtcdeqs",
+      "write_status": 201,
+      "write_version": 1,
+      "reveal_status": 200,
+      "reveal_plaintext_matches_fixture": true,
+      "cache_control": "no-store",
+      "step_up_required_without_elevation": 401,
+      "member_reveal": 403,
+      "plaintext_persistence_scan": { "sentinel_occurrences": 0, "paths_scanned": [".local-data/engine", ".local-data/providers"] }
+    },
+    "restart": {
+      "metadata_survived": true,
+      "reveal_after_restart": true
+    },
+    "restore": {
+      "snapshot_sha256": "4110a8d772b0f7e950cf539fce99d149bf7e3ffff7af6aa234171d8b82b28a7a",
+      "snapshot_bytes": 91166,
+      "reveal_after_restore": true,
+      "revoked_grants_still_revoked": "not exercised in this run; grant revocation is covered by C22 tests and the member-denial check"
+    }
+  },
+  "private_install": "docs/evidence/private-install.json",
+  "limitations": [
+    "A clean supported Linux host was not available; providers were reused on the shared development host and the clone came from a working-tree snapshot.",
+    "C30 therefore remains planned in plans/progress.json until a clean-host clone -> setup -> start -> restart -> restore run is executed and recorded.",
+    "Grant-revocation durability across restore is asserted by C22 tests, not by this C30 run.",
+    "The full C01-C30 evidence chain required by the acceptance text was not re-run end to end on a clean host."
+  ]
+}

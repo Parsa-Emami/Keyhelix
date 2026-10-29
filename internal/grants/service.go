@@ -12,6 +12,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -131,6 +132,55 @@ func NewService(store storage.Port, recorder *audit.Recorder) *Service {
 		recorder: recorder,
 		grants:   make(map[string]*Grant),
 	}
+}
+
+// Restore rebuilds the in-memory grant index from committed metadata records.
+// It runs once at engine startup before any request is served.
+func (s *Service) Restore(ctx context.Context) (int, error) {
+	lister, ok := s.store.(storage.Lister)
+	if !ok || s.store == nil {
+		return 0, nil
+	}
+	records, err := lister.List(ctx, storage.ListRequest{Scope: "grants"})
+	if err != nil {
+		return 0, err
+	}
+	restored := 0
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for _, record := range records {
+		var grant Grant
+		if err := json.Unmarshal(record.Metadata, &grant); err != nil {
+			return restored, &contracts.ValidationError{Code: contracts.InvalidInput, Field: "grant_metadata"}
+		}
+		if grant.ID == "" || grant.ID != record.Name {
+			return restored, &contracts.ValidationError{Code: contracts.InvalidInput, Field: "grant_id"}
+		}
+		s.grants[grant.ID] = &grant
+		restored++
+	}
+	return restored, nil
+}
+
+// List returns the grants for one vault, newest first. It includes revoked
+// grants so the operator can audit the final state after revocation.
+func (s *Service) List(vaultID string) []*Grant {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	list := make([]*Grant, 0, len(s.grants))
+	for _, grant := range s.grants {
+		if vaultID == "" || grant.VaultID == vaultID {
+			copy := *grant
+			list = append(list, &copy)
+		}
+	}
+	sort.Slice(list, func(i, j int) bool {
+		if list[i].CreatedAt.Equal(list[j].CreatedAt) {
+			return list[i].ID > list[j].ID
+		}
+		return list[i].CreatedAt.After(list[j].CreatedAt)
+	})
+	return list
 }
 
 // CreateGrant requires step-up authentication and establishes a least privilege member grant.

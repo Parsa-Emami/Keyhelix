@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "profile": {
+    "os": "linux",
+    "architecture": "amd64",
+    "rootless": true,
+    "loopback_only": true
+  },
+  "providers": [
+    {
+      "id": "openbao",
+      "role": "key-provider",
+      "version": "2.7.2",
+      "image": "quay.io/openbao/openbao",
+      "digest": "sha256:5046911075e137e154ce49ab051502f4ec7cf367d484ae4a4dce665d9b90561f",
+      "license": "MPL-2.0",
+      "source_url": "https://github.com/openbao/openbao/releases/tag/v2.7.2",
+      "license_url": "https://github.com/openbao/openbao/blob/v2.7.2/LICENSE",
+      "docs_url": "https://openbao.org/docs/",
+      "container_port": 8200
+    },
+    {
+      "id": "keycloak",
+      "role": "identity-provider",
+      "version": "26.8.1",
+      "image": "quay.io/keycloak/keycloak",
+      "digest": "sha256:a78d6b79572168cb25886b80a8b5b8d4ed4390743e3eecb810538683e209dd6b",
+      "license": "Apache-2.0",
+      "source_url": "https://github.com/keycloak/keycloak/releases/tag/26.8.1",
+      "license_url": "https://github.com/keycloak/keycloak/blob/26.8.1/LICENSE.txt",
+      "docs_url": "https://www.keycloak.org/documentation",
+      "container_port": 8080
+    }
+  ]
+}

@@ -64,21 +64,24 @@ func IsErrorCode(err error, code ErrorCode) bool {
 
 // Config configures the OIDC client provider.
 type Config struct {
-	IssuerURL    string        `json:"issuer_url"`
-	ClientID     string        `json:"client_id"`
-	ClientSecret string        `json:"client_secret,omitempty"`
-	RedirectURI  string        `json:"redirect_uri"`
-	HTTPClient   *http.Client  `json:"-"`
-	ClockSkew    time.Duration `json:"clock_skew,omitempty"`
+	IssuerURL             string        `json:"issuer_url"`
+	ClientID              string        `json:"client_id"`
+	ClientSecret          string        `json:"client_secret,omitempty"`
+	RedirectURI           string        `json:"redirect_uri"`
+	AuthorizationEndpoint string        `json:"authorization_endpoint,omitempty"`
+	TokenEndpoint         string        `json:"token_endpoint,omitempty"`
+	JWKSURL               string        `json:"jwks_url,omitempty"`
+	HTTPClient            *http.Client  `json:"-"`
+	ClockSkew             time.Duration `json:"clock_skew,omitempty"`
 }
 
 // AuthRequest tracks ephemeral state for an in-flight authorization request.
 type AuthRequest struct {
-	State        string    `json:"state"`
-	Nonce        string    `json:"nonce"`
-	CodeVerifier string    `json:"code_verifier"`
-	CodeChallenge string   `json:"code_challenge"`
-	CreatedAt    time.Time `json:"created_at"`
+	State         string    `json:"state"`
+	Nonce         string    `json:"nonce"`
+	CodeVerifier  string    `json:"code_verifier"`
+	CodeChallenge string    `json:"code_challenge"`
+	CreatedAt     time.Time `json:"created_at"`
 }
 
 // Identity represents an authenticated, verified OIDC principal.
@@ -92,6 +95,7 @@ type Identity struct {
 	Audience      []string `json:"aud"`
 	ExpiresAt     int64    `json:"exp"`
 	IssuedAt      int64    `json:"iat"`
+	AuthTime      int64    `json:"auth_time,omitempty"`
 	Nonce         string   `json:"nonce"`
 }
 
@@ -103,6 +107,7 @@ type IDTokenClaims struct {
 	Nonce         string   `json:"nonce"`
 	ExpiresAt     int64    `json:"exp"`
 	IssuedAt      int64    `json:"iat"`
+	AuthTime      int64    `json:"auth_time,omitempty"`
 	Email         string   `json:"email,omitempty"`
 	VaultRole     string   `json:"vault_role,omitempty"`
 	AllowedOwners []string `json:"allowed_owners,omitempty"`
@@ -142,7 +147,8 @@ type TokenResponse struct {
 
 // Provider manages OIDC authentication flow and token validation.
 type Provider struct {
-	cfg Config
+	cfg  Config
+	jwks *jwksVerifier
 }
 
 // NewProvider creates a new OIDC Provider adapter with configuration validation.
@@ -176,16 +182,32 @@ func NewProvider(cfg Config) (*Provider, error) {
 		clockSkew = 1 * time.Minute
 	}
 
-	return &Provider{
+	for _, endpoint := range []struct{ value, field string }{{cfg.AuthorizationEndpoint, "authorization endpoint"}, {cfg.TokenEndpoint, "token endpoint"}, {cfg.JWKSURL, "JWKS URL"}} {
+		if endpoint.value == "" {
+			continue
+		}
+		parsed, err := url.Parse(endpoint.value)
+		if err != nil || parsed.Scheme != "http" && parsed.Scheme != "https" || parsed.Host == "" {
+			return nil, &Error{Code: CodeInvalidConfig, Message: fmt.Sprintf("%s must be an absolute http(s) URL", endpoint.field)}
+		}
+	}
+	provider := &Provider{
 		cfg: Config{
-			IssuerURL:    issuer,
-			ClientID:     clientID,
-			ClientSecret: cfg.ClientSecret,
-			RedirectURI:  redirectURI,
-			HTTPClient:   client,
-			ClockSkew:    clockSkew,
+			IssuerURL:             issuer,
+			ClientID:              clientID,
+			ClientSecret:          cfg.ClientSecret,
+			RedirectURI:           redirectURI,
+			AuthorizationEndpoint: strings.TrimSpace(cfg.AuthorizationEndpoint),
+			TokenEndpoint:         strings.TrimSpace(cfg.TokenEndpoint),
+			JWKSURL:               strings.TrimSpace(cfg.JWKSURL),
+			HTTPClient:            client,
+			ClockSkew:             clockSkew,
 		},
-	}, nil
+	}
+	if provider.cfg.JWKSURL != "" {
+		provider.jwks = newJWKSVerifier(provider.cfg.JWKSURL, client)
+	}
+	return provider, nil
 }
 
 // Config returns the active configuration.
@@ -243,8 +265,12 @@ func (p *Provider) BeginAuthFlow() (*AuthRequest, string, error) {
 		CreatedAt:     time.Now().UTC(),
 	}
 
-	authURL := fmt.Sprintf("%s/authorize?response_type=code&client_id=%s&redirect_uri=%s&scope=openid+profile+email&state=%s&nonce=%s&code_challenge=%s&code_challenge_method=S256",
-		p.cfg.IssuerURL,
+	authorizationEndpoint := p.cfg.AuthorizationEndpoint
+	if authorizationEndpoint == "" {
+		authorizationEndpoint = p.cfg.IssuerURL + "/authorize"
+	}
+	authURL := fmt.Sprintf("%s?response_type=code&client_id=%s&redirect_uri=%s&scope=openid+profile+email&state=%s&nonce=%s&code_challenge=%s&code_challenge_method=S256",
+		authorizationEndpoint,
 		url.QueryEscape(p.cfg.ClientID),
 		url.QueryEscape(p.cfg.RedirectURI),
 		url.QueryEscape(state),
@@ -275,7 +301,10 @@ func (p *Provider) ExchangeToken(ctx context.Context, code string, authReq *Auth
 		return nil, &Error{Code: CodeInvalidToken, Message: "empty authorization code"}
 	}
 
-	tokenURL := fmt.Sprintf("%s/token", p.cfg.IssuerURL)
+	tokenURL := p.cfg.TokenEndpoint
+	if tokenURL == "" {
+		tokenURL = p.cfg.IssuerURL + "/token"
+	}
 	form := url.Values{}
 	form.Set("grant_type", "authorization_code")
 	form.Set("code", code)
@@ -334,8 +363,20 @@ func (p *Provider) ExchangeToken(ctx context.Context, code string, authReq *Auth
 
 // ParseAndVerifyIDToken parses and validates a signed/encoded OIDC ID Token against expected issuer, audience, nonce, and expiration.
 func (p *Provider) ParseAndVerifyIDToken(rawToken string, expectedNonce string, now time.Time) (*Identity, error) {
+	return p.ParseAndVerifyIDTokenContext(context.Background(), rawToken, expectedNonce, now)
+}
+
+// ParseAndVerifyIDTokenContext verifies the compact JWS signature against the
+// provider JWKS (when configured) before any claim is trusted, then applies the
+// issuer, audience, expiry and nonce guards.
+func (p *Provider) ParseAndVerifyIDTokenContext(ctx context.Context, rawToken string, expectedNonce string, now time.Time) (*Identity, error) {
 	if rawToken == "" {
 		return nil, &Error{Code: CodeInvalidToken, Message: "empty ID token"}
+	}
+	if p.jwks != nil {
+		if err := p.jwks.VerifySignature(ctx, rawToken); err != nil {
+			return nil, err
+		}
 	}
 
 	parts := strings.Split(rawToken, ".")
@@ -430,6 +471,7 @@ func (p *Provider) ParseAndVerifyIDToken(rawToken string, expectedNonce string, 
 		Audience:      audiences,
 		ExpiresAt:     claims.ExpiresAt,
 		IssuedAt:      claims.IssuedAt,
+		AuthTime:      claims.AuthTime,
 		Nonce:         claims.Nonce,
 	}, nil
 }
@@ -449,7 +491,7 @@ func (p *Provider) ExchangeAndValidate(ctx context.Context, code, state string, 
 		return nil, err
 	}
 
-	return p.ParseAndVerifyIDToken(tokens.IDToken, req.Nonce, time.Now().UTC())
+	return p.ParseAndVerifyIDTokenContext(ctx, tokens.IDToken, req.Nonce, time.Now().UTC())
 }
 
 // AuthorizeAction checks whether an identity is authorized to perform an action on a target resource owner and scope.

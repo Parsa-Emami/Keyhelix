@@ -198,9 +198,14 @@ func (s *Service) WriteSecret(ctx context.Context, req WriteRequest) (*WriteOutc
 	secretIDHasher.Write([]byte(req.VaultID + ":" + cleanPath))
 	secretID := fmt.Sprintf("sec-%s", hex.EncodeToString(secretIDHasher.Sum(nil))[:16])
 
-	classification := req.Classification
-	if strings.TrimSpace(classification) == "" {
-		classification = "CONFIDENTIAL"
+	classification := strings.ToLower(strings.TrimSpace(req.Classification))
+	if classification == "" {
+		classification = "confidential"
+	}
+	switch classification {
+	case "restricted", "confidential", "internal":
+	default:
+		return nil, &contracts.ValidationError{Code: contracts.InvalidInput, Field: "classification"}
 	}
 
 	nextVersion := req.ExpectedVersion + 1

@@ -108,7 +108,7 @@ test.describe('C20: Authorized Metadata Console (Requirement F14)', () => {
     });
 
     await page.goto('/#vaults');
-    await expect(page.getByRole('alert')).toContainText('Vault service unavailable');
+    await expect(page.getByRole('alert')).toContainText('Vault runtime unavailable');
     await expect(page.locator('.secrets-list > li')).toHaveCount(0);
   });
 

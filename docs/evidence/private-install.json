@@ -1,0 +1,503 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "generated_at": "2026-10-29T09:32:54.599Z",
+  "task": "C30",
+  "purpose": "Inventory every dependency and provider installed for the local workflow so the private/local install is reproducible and its licenses are known before release.",
+  "node": {
+    "lockfile": "package-lock.json",
+    "lockfile_sha256": "c9f93d27d4a185e37d87b9e598409cc6df8fb9ffbe17623644af295676e7a0d9",
+    "dependencies": [
+      {
+        "name": "@oxc-project/types",
+        "version": "0.155.0",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@playwright/test",
+        "version": "1.64.1",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@rolldown/binding-android-arm-eabi",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-android-arm64",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-darwin-arm64",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-darwin-x64",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-freebsd-x64",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-linux-arm-gnueabihf",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-linux-arm64-gnu",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-linux-arm64-musl",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-linux-ppc64-gnu",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-linux-s390x-gnu",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-linux-x64-gnu",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-linux-x64-musl",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-openharmony-arm64",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-win32-arm64-msvc",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/binding-win32-x64-msvc",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@rolldown/pluginutils",
+        "version": "1.0.1",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@types/react",
+        "version": "19.3.0",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@types/react-dom",
+        "version": "19.3.0",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "@typescript/typescript-aix-ppc64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-darwin-arm64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-darwin-x64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-freebsd-arm64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-freebsd-x64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-linux-arm",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-linux-arm64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-linux-loong64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-linux-mips64el",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-linux-ppc64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-linux-riscv64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-linux-s390x",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-linux-x64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-netbsd-arm64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-netbsd-x64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-openbsd-arm64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-openbsd-x64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-sunos-x64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-win32-arm64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "@typescript/typescript-win32-x64",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "ajv",
+        "version": "8.20.0",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "ajv-formats",
+        "version": "3.0.1",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "csstype",
+        "version": "3.2.3",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "detect-libc",
+        "version": "2.1.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "fast-deep-equal",
+        "version": "3.1.3",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "fast-uri",
+        "version": "3.1.9",
+        "dev": true,
+        "license": "BSD-3-Clause"
+      },
+      {
+        "name": "fdir",
+        "version": "6.5.0",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "fsevents",
+        "version": "2.3.3",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "json-schema-traverse",
+        "version": "1.0.0",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "lightningcss",
+        "version": "1.33.0",
+        "dev": true,
+        "license": "MPL-2.0"
+      },
+      {
+        "name": "lightningcss-android-arm64",
+        "version": "1.33.0",
+        "dev": true,
+        "license": "MPL-2.0"
+      },
+      {
+        "name": "lightningcss-darwin-arm64",
+        "version": "1.33.0",
+        "dev": true,
+        "license": "MPL-2.0"
+      },
+      {
+        "name": "lightningcss-darwin-x64",
+        "version": "1.33.0",
+        "dev": true,
+        "license": "MPL-2.0"
+      },
+      {
+        "name": "lightningcss-freebsd-x64",
+        "version": "1.33.0",
+        "dev": true,
+        "license": "MPL-2.0"
+      },
+      {
+        "name": "lightningcss-linux-arm-gnueabihf",
+        "version": "1.33.0",
+        "dev": true,
+        "license": "MPL-2.0"
+      },
+      {
+        "name": "lightningcss-linux-arm64-gnu",
+        "version": "1.33.0",
+        "dev": true,
+        "license": "MPL-2.0"
+      },
+      {
+        "name": "lightningcss-linux-arm64-musl",
+        "version": "1.33.0",
+        "dev": true,
+        "license": "MPL-2.0"
+      },
+      {
+        "name": "lightningcss-linux-x64-gnu",
+        "version": "1.33.0",
+        "dev": true,
+        "license": "MPL-2.0"
+      },
+      {
+        "name": "lightningcss-linux-x64-musl",
+        "version": "1.33.0",
+        "dev": true,
+        "license": "MPL-2.0"
+      },
+      {
+        "name": "lightningcss-win32-arm64-msvc",
+        "version": "1.33.0",
+        "dev": true,
+        "license": "MPL-2.0"
+      },
+      {
+        "name": "lightningcss-win32-x64-msvc",
+        "version": "1.33.0",
+        "dev": true,
+        "license": "MPL-2.0"
+      },
+      {
+        "name": "nanoid",
+        "version": "3.3.20",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "picocolors",
+        "version": "1.1.1",
+        "dev": true,
+        "license": "ISC"
+      },
+      {
+        "name": "picomatch",
+        "version": "4.0.7",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "playwright",
+        "version": "1.64.1",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "playwright-core",
+        "version": "1.64.1",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "postcss",
+        "version": "8.5.32",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "react",
+        "version": "19.3.1",
+        "dev": false,
+        "license": "MIT"
+      },
+      {
+        "name": "react-dom",
+        "version": "19.3.1",
+        "dev": false,
+        "license": "MIT"
+      },
+      {
+        "name": "require-from-string",
+        "version": "2.0.2",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "rolldown",
+        "version": "1.2.15",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "scheduler",
+        "version": "0.28.0",
+        "dev": false,
+        "license": "MIT"
+      },
+      {
+        "name": "source-map-js",
+        "version": "1.2.2",
+        "dev": true,
+        "license": "BSD-3-Clause"
+      },
+      {
+        "name": "tinyglobby",
+        "version": "0.2.17",
+        "dev": true,
+        "license": "MIT"
+      },
+      {
+        "name": "typescript",
+        "version": "7.0.2",
+        "dev": true,
+        "license": "Apache-2.0"
+      },
+      {
+        "name": "vite",
+        "version": "8.3.4",
+        "dev": true,
+        "license": "MIT"
+      }
+    ],
+    "license_summary": {
+      "MIT": 36,
+      "Apache-2.0": 25,
+      "BSD-3-Clause": 2,
+      "MPL-2.0": 12,
+      "ISC": 1
+    }
+  },
+  "go": {
+    "go_mod_sha256": "6ffc2af700fe816c1e342e198ac338d1a95c6af488dc8508404c77ba8addf042",
+    "toolchain": "go version go1.26.2 linux/amd64",
+    "external_modules": [],
+    "note": "The engine imports only the Go standard library; go.mod declares no requirements."
+  },
+  "providers": [
+    {
+      "id": "openbao",
+      "image": "quay.io/openbao/openbao",
+      "version": "2.7.2",
+      "digest": "sha256:5046911075e137e154ce49ab051502f4ec7cf367d484ae4a4dce665d9b90561f",
+      "license": "MPL-2.0"
+    },
+    {
+      "id": "keycloak",
+      "image": "quay.io/keycloak/keycloak",
+      "version": "26.8.1",
+      "digest": "sha256:a78d6b79572168cb25886b80a8b5b8d4ed4390743e3eecb810538683e209dd6b",
+      "license": "Apache-2.0"
+    }
+  ],
+  "license_audit": {
+    "unknown_licenses": [],
+    "project_license": "Apache-2.0"
+  },
+  "note": "Generated from the committed lockfiles, go list -m all and the pinned provider manifest. No secrets or credentials are included."
+}
