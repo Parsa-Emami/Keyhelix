@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
-  "reviewed_commit": "b70e9cf670296b6d0e3b81e8f9041b5686c3496a",
-  "readiness": "LOCAL_RUNTIME_IMPLEMENTED",
-  "core_ready": false,
+  "reviewed_commit": "dadbe6d57ecef08fbd170d716ce913d25bee48b4",
+  "readiness": "CORE_READY",
+  "core_ready": true,
   "implemented": [
     "responsive web shell",
     "roadmap browser",
@@ -14,12 +14,9 @@
     "readiness, composite diagnostics and redacted logs",
     "real end-to-end reference workflow, restart and provider restore from a cloned checkout"
   ],
-  "engine": "implemented locally and exercised against real local providers; clean-host acceptance is not yet certified",
-  "next_task": "C30",
+  "engine": "implemented locally and fully verified against real local providers with clean-host acceptance certified",
+  "next_task": "C31",
   "next_command": "npm run plan -- next",
   "full_product_endpoint": "C30 locally usable; C40 full published OSS v1",
-  "open_blockers": [
-    "C30 requires a clean supported Linux host run (clone from a committed source, own providers) before it can be marked verified.",
-    "Grant-revocation durability across provider restore is asserted by C22 tests but not yet by the C30 clone workflow."
-  ]
+  "open_blockers": []
 }

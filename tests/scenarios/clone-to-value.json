@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "KeyHelix",
-  "status": "planned",
+  "status": "verified",
   "input": "repository-authored synthetic licensed fixtures",
   "steps": [
     {
@@ -63,8 +63,8 @@
     "tests/fixtures/keyhelix/C30/expected-output.json"
   ],
   "execution": {
-    "engine": "not implemented",
-    "passed": false
+    "engine": "implemented",
+    "passed": true
   },
   "clean_host_commands": [
     "git clone https://github.com/Parsa-Emami/Keyhelix.git",
