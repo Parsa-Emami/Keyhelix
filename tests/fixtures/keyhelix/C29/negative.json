@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic operational readiness failure fixtures; contains no real secrets, credentials or keys.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "engine_unavailable",
+      "surface": "web_proxy",
+      "description": "When engine process is down, /api/engine/health and /api/engine/readiness return 503 while /healthz stays 200",
+      "expected_status": 503,
+      "expected_code": "engine_unavailable"
+    },
+    {
+      "case": "provider_sealed",
+      "surface": "provider_surveillance",
+      "description": "When OpenBao is sealed, health surveillance detects sealed state and fails operations closed",
+      "expected_state": "SEALED",
+      "expected_code": "PROVIDER_SEALED"
+    },
+    {
+      "case": "provider_offline",
+      "surface": "provider_surveillance",
+      "description": "When OpenBao is unreachable, health surveillance detects outage and fails operations closed",
+      "expected_state": "DOWN",
+      "expected_code": "PROVIDER_UNAVAILABLE"
+    },
+    {
+      "case": "audit_pipeline_unavailable",
+      "surface": "audit_surveillance",
+      "description": "When audit pipeline is unavailable, strict audit policy marks provider degraded and fails closed",
+      "expected_state": "DEGRADED",
+      "expected_code": "AUDIT_PIPELINE_FAILURE"
+    },
+    {
+      "case": "sentinel_secret_leak_attempt",
+      "surface": "diagnostics_logging",
+      "description": "Diagnostic message containing synthetic sentinel canary is sanitized to [REDACTED]",
+      "sample": "Error verifying envelope with sentinel sentinel-canary-c29-leak-check-4a9f",
+      "expected_code": "REDACTED"
+    },
+    {
+      "case": "oversized_diagnostic_entry",
+      "surface": "diagnostics_logging",
+      "description": "Diagnostic log entry exceeding 2048 bytes is safely truncated to bounded size",
+      "sample_bytes": 4096,
+      "expected_code": "TRUNCATED"
+    }
+  ]
+}

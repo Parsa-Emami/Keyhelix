@@ -31,6 +31,17 @@ func health() map[string]any {
 	}
 }
 
+func readiness() map[string]any {
+	return map[string]any{
+		"status":    "ready",
+		"scope":     "engine-runtime",
+		"version":   version,
+		"toolchain": runtime.Version(),
+		"storage":   "ready",
+		"coreReady": false,
+	}
+}
+
 func serve(ctx context.Context, address string, ready io.Writer) error {
 	host, port, err := net.SplitHostPort(address)
 	number, portErr := strconv.Atoi(port)
@@ -52,7 +63,7 @@ func serve(ctx context.Context, address string, ready io.Writer) error {
 			w.Header().Set("Cache-Control", "no-store")
 			w.Header().Set("X-Content-Type-Options", "nosniff")
 			w.Header().Set("Content-Type", "application/json")
-			if r.URL.Path != "/healthz" {
+			if r.URL.Path != "/healthz" && r.URL.Path != "/readyz" {
 				w.WriteHeader(http.StatusNotFound)
 				io.WriteString(w, `{"error":"not_found"}`)
 				return
@@ -64,7 +75,11 @@ func serve(ctx context.Context, address string, ready io.Writer) error {
 				return
 			}
 			if r.Method == http.MethodGet {
-				json.NewEncoder(w).Encode(health())
+				if r.URL.Path == "/readyz" {
+					json.NewEncoder(w).Encode(readiness())
+				} else {
+					json.NewEncoder(w).Encode(health())
+				}
 			}
 		}),
 	}

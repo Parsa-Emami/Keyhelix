@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "requirement": "N29",
+  "acceptance": "Separate web health from engine, authoritative storage and required provider readiness. Failures are visible; logs are bounded and exclude synthetic secret/credential sentinels.",
+  "status": "passed",
+  "surfaces_verified": [
+    "web_health_isolated",
+    "engine_readiness_exposed",
+    "composite_diagnostics_partitioned",
+    "provider_sealed_visible",
+    "provider_outage_visible",
+    "audit_degradation_visible",
+    "sentinel_secret_redacted",
+    "diagnostic_logs_bounded"
+  ],
+  "invariants_verified": {
+    "provider_owns_secret_bytes": true,
+    "web_health_independent_of_engine": true,
+    "failures_explicitly_visible": true,
+    "zero_sentinel_leakage_in_logs": true,
+    "bounded_diagnostic_log_length": true
+  },
+  "guard_codes": {
+    "engine_unavailable": "engine_unavailable",
+    "provider_sealed": "PROVIDER_SEALED",
+    "provider_unavailable": "PROVIDER_UNAVAILABLE",
+    "audit_failure": "AUDIT_PIPELINE_FAILURE"
+  }
+}

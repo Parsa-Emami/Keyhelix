@@ -14,6 +14,27 @@ const types = {
 };
 const csp = "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'";
 
+const SENSITIVE_PATTERNS = [
+  /sentinel-canary-[a-z0-9-_]+/gi,
+  /\bBearer\s+[A-Za-z0-9\-._~+/]+=*/gi,
+  /keyhelix_session=[^;\s]+/gi,
+  /su_[a-z0-9-_]+/gi,
+  /"(?:password|secret|token|apiKey|clientSecret)":\s*"[^"]+"/gi
+];
+
+export function formatRedactedDiagnostics(entry, maxBytes = 2048) {
+  if (entry === null || entry === undefined) return '';
+  let str = typeof entry === 'string' ? entry : JSON.stringify(entry);
+  for (const pattern of SENSITIVE_PATTERNS) {
+    str = str.replace(pattern, '[REDACTED]');
+  }
+  if (Buffer.byteLength(str, 'utf8') > maxBytes) {
+    const buf = Buffer.from(str, 'utf8').subarray(0, maxBytes);
+    return buf.toString('utf8') + '...[TRUNCATED]';
+  }
+  return str;
+}
+
 export function readEngineHealth(address, signal) {
   if (!/^127\.0\.0\.1:[1-9]\d{0,4}$/.test(address) || Number(address.split(':')[1]) > 65535) {
     return Promise.reject(new Error('Invalid loopback engine address.'));
@@ -37,6 +58,42 @@ export function readEngineHealth(address, signal) {
       response.on('end', () => {
         try {
           accept(validateHealth(JSON.parse(body)));
+        } catch (error) {
+          reject(error);
+        }
+      });
+    });
+    request.on('error', reject);
+  });
+}
+
+export function readEngineReadiness(address, signal) {
+  if (!/^127\.0\.0\.1:[1-9]\d{0,4}$/.test(address) || Number(address.split(':')[1]) > 65535) {
+    return Promise.reject(new Error('Invalid loopback engine address.'));
+  }
+  return new Promise((accept, reject) => {
+    const request = http.get(`http://${address}/readyz`, {
+      agent: false,
+      signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(2000)]) : AbortSignal.timeout(2000)
+    }, response => {
+      if (response.statusCode !== 200) {
+        response.destroy();
+        reject(new Error('Engine unavailable.'));
+        return;
+      }
+      let body = '';
+      response.on('data', chunk => {
+        body += chunk.toString('utf8');
+        if (Buffer.byteLength(body) > 4096) response.destroy(new Error('Engine readiness exceeds limit.'));
+      });
+      response.on('error', reject);
+      response.on('end', () => {
+        try {
+          const parsed = JSON.parse(body);
+          if (parsed.status !== 'ready' || parsed.scope !== 'engine-runtime') {
+            throw new Error('Invalid engine readiness response.');
+          }
+          accept(parsed);
         } catch (error) {
           reject(error);
         }
@@ -96,6 +153,58 @@ export function createWebServer({ root, config, projectId, engineAddress }) {
       } catch {
         send(503, '{"error":"engine_unavailable"}');
       }
+      return;
+    }
+    if (path === '/api/engine/readiness' && engineAddress) {
+      try {
+        send(200, JSON.stringify(await readEngineReadiness(engineAddress)));
+      } catch {
+        send(503, '{"error":"engine_unavailable"}');
+      }
+      return;
+    }
+    if (path === '/api/diagnostics') {
+      let webStatus = { status: 'ok', scope: 'web-shell' };
+      try {
+        await stat(resolve(publicRoot, 'index.html'));
+      } catch {
+        webStatus = { status: 'not_ready', scope: 'web-shell' };
+      }
+
+      let engineInfo = null;
+      let engineOk = false;
+      if (engineAddress) {
+        try {
+          engineInfo = await readEngineReadiness(engineAddress);
+          engineOk = true;
+        } catch {
+          try {
+            engineInfo = await readEngineHealth(engineAddress);
+            engineOk = true;
+          } catch {
+            engineInfo = { status: 'unavailable', error: 'engine_unavailable' };
+          }
+        }
+      } else {
+        engineInfo = { status: 'disabled', scope: 'engine-runtime' };
+      }
+
+      const isReady = webStatus.status === 'ok' && (engineAddress ? engineOk : true);
+      const statusCode = isReady ? 200 : 503;
+
+      const report = {
+        status: isReady ? 'ready' : 'not_ready',
+        scope: 'composite-diagnostics',
+        timestamp: new Date().toISOString(),
+        components: {
+          web: webStatus,
+          engine: engineInfo,
+          storage: { status: engineOk ? 'ready' : 'unknown' },
+          provider: { status: engineOk ? 'ready' : 'unknown' }
+        }
+      };
+
+      send(statusCode, JSON.stringify(report));
       return;
     }
     if (path === '/api' || path.startsWith('/api/')) {

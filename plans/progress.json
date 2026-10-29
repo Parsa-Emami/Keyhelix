@@ -258,10 +258,12 @@
     },
     {
       "id": "C29",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C29.json"
+      ],
+      "source_identity": "sha256:ec6c1d2dfd29b2ac86a989f7564eb97971b218c3ab319c344f332f4240271a7e",
+      "notes": "Separated web health from engine, authoritative storage and required provider readiness (Requirement N29). Exposed real engine readiness and composite diagnostics partitioning web, engine, storage, and provider components, proved fail-closed visibility on provider outage/sealed state and audit degradation, and verified bounded diagnostic logs with zero canary sentinel leakage under race detector."
     },
     {
       "id": "C30",

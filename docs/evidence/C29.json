@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C29",
+  "date": "2026-10-29",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Separate web health from engine, authoritative storage and required provider readiness. Failures are visible; logs are bounded and exclude synthetic secret/credential sentinels (Requirement N29).",
+  "commit_id": "C29",
+  "base_commit": "3b15b44b46dc4101678afff3f39f562d6dacf083",
+  "git_commit_created": false,
+  "source_identity": "sha256:ec6c1d2dfd29b2ac86a989f7564eb97971b218c3ab319c344f332f4240271a7e",
+  "source_identity_method": "SHA-256 over sorted C29-owned source/fixture/generated path bytes, NUL separators and each file SHA-256; excludes plans/progress.json, docs/agents/SESSION_HANDOFF.json and docs/evidence/ to avoid recursive self-reference",
+  "source_identity_files": {
+    "cmd/keyhelix/main.go": "ec71b10ba14cc73012ec906d3454a7cbc915781716360f8826f78d466276f387",
+    "ops/diagnostics.md": "c9b8cdef28ecabcc8d1def79ed57d5690d852a24e6b2a881a0eaee1454704f6a",
+    "ops/web/runtime-config.json": "7d2314537e27a2e3009e6f56c1a7cf94f7366aa176a7b73fb3c3a488891d10e1",
+    "scripts/serve-web.mjs": "00d64dd8175627bdf4a36a74b164577f19ec144566af548600c7dd1592e5b4c6",
+    "tests/fixtures/keyhelix/C29/expected-output.json": "2a41913de16e401a8ecbb640352437eecd856f75223b54b9749de75253535f85",
+    "tests/fixtures/keyhelix/C29/negative.json": "68effeeff489898a61e58dfd7d22594ff2095cf2b227712f7e8031f8af9318db",
+    "tests/fixtures/keyhelix/C29/positive.json": "e753045d5b93e104faa126115d98e5e7e7b8f7831fdbc1fd6c1cf539dcef8b02",
+    "tests/readiness_test.go": "651b12c52faafdee9ba8ea118c8354bb14a6ae9e24ac0645634693e833ba53f9",
+    "tests/web/engine-readiness.test.mjs": "66320b3572e51165aff117af918a03b925d91f5e562ea92033c908ba3656cf89"
+  },
+  "environment": {
+    "os": "Linux 7.0.0-38-generic x86_64 (Ubuntu 24.04.5 LTS)",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (packageManager field pins npm@11.9.0; the executing npm reports 11.17.0)",
+    "go": "go version go1.26.2 linux/amd64 at /usr/local/go/bin/go",
+    "hardware_observed": {
+      "logical_cpus": 16,
+      "cpu_model": "AMD Ryzen 7 6800H with Radeon Graphics",
+      "memory_total_bytes": 32863940608,
+      "memory_available_bytes": 26746175488,
+      "filesystem_available_bytes": 102262476800
+    },
+    "providers": "Verified against in-process OpenBao mock adapter and local storage, session, step-up, and audit engine collaborators. All tests execute exclusively with synthetic sentinel secrets and verified synthetic payloads before any personal production credentials enter the provider.",
+    "toolchain_note": "Every Go command executed using PATH=/usr/local/go/bin:$PATH and verified with Go 1.26.2. Node test suite executed via node --test tests/web/*.test.mjs tests/contracts/*.test.mjs.",
+    "upstream_reference": [
+      "https://openbao.org/docs/",
+      "https://www.keycloak.org/documentation",
+      "https://openid.net/specs/openid-connect-core-1_0.html",
+      "https://nodejs.org/docs/latest-v24.x/api/"
+    ]
+  },
+  "fixtures": {
+    "path": "tests/fixtures/keyhelix/C29/",
+    "positive": "tests/fixtures/keyhelix/C29/positive.json",
+    "negative": "tests/fixtures/keyhelix/C29/negative.json",
+    "expected_output": "tests/fixtures/keyhelix/C29/expected-output.json",
+    "provenance": "repository-authored synthetic test fixtures and operational readiness failure cases; contains zero production secrets or credentials",
+    "license": "Apache-2.0"
+  },
+  "commands": [
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "23 passed across web and contract test suites (including 4 new C29 tests verifying web health isolation, real engine readiness, composite partitioned diagnostics, and bounded sentinel-redacted logging)"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 -v -run '^TestC29' ./tests/",
+      "exit_code": 0,
+      "summary": "Passed all C29 engine readiness, unseal surveillance, and redactor suites in 0.055s (TestC29EngineReadinessAndHealthHTTP, TestC29ProviderReadinessSurveillance, TestC29RedactedDiagnostics, TestC29DurabilityAcrossRestart, TestC29NegativeCasesFixtureMatch)"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 -race -run '^TestC29' ./tests/",
+      "exit_code": 0,
+      "summary": "Verified C29 suite under Go race detector with zero race warnings in 1.077s"
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test -count=1 ./...",
+      "exit_code": 0,
+      "summary": "Passed all engine packages and full test suite in 18.447s"
+    },
+    {
+      "command": "npm run test:browser",
+      "exit_code": 0,
+      "summary": "29 passed across 5 workers in 5.5s; zero browser regressions"
+    },
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "summary": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "summary": "Checked 262 JSON files and repository contract invariants; VALIDATION PASSED"
+    }
+  ],
+  "results": {
+    "requirement": "N29",
+    "acceptance": "Separate web health from engine, authoritative storage and required provider readiness. Failures are visible; logs are bounded and exclude synthetic secret/credential sentinels.",
+    "status": "passed",
+    "web_health_isolated": true,
+    "engine_readiness_exposed": true,
+    "composite_diagnostics_partitioned": true,
+    "provider_sealed_visible": true,
+    "provider_outage_visible": true,
+    "audit_degradation_visible": true,
+    "sentinel_secret_redacted": true,
+    "diagnostic_logs_bounded": true,
+    "invariants_verified": {
+      "provider_owns_secret_bytes": true,
+      "web_health_independent_of_engine": true,
+      "failures_explicitly_visible": true,
+      "zero_sentinel_leakage_in_logs": true,
+      "bounded_diagnostic_log_length": true
+    }
+  }
+}

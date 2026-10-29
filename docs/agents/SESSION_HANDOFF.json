@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-29",
-  "base_commit": "391659999a9be96e2b6fca23141788ec86526478",
-  "scope": "Measure bounded target and overload workloads on local profile (C28 / N28)",
+  "base_commit": "3b15b44b46dc4101678afff3f39f562d6dacf083",
+  "scope": "Operational diagnostics, readiness surveillance, and redacted logging (C29 / N29)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -31,27 +31,29 @@
     "C25",
     "C26",
     "C27",
-    "C28"
+    "C28",
+    "C29"
   ],
   "git_commit_created": false,
   "changed_paths": [
+    "cmd/keyhelix/main.go",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C28.json",
-    "docs/evidence/performance.json",
-    "ops/runtime-requirements.json",
+    "docs/evidence/C29.json",
+    "ops/diagnostics.md",
+    "ops/web/runtime-config.json",
     "plans/progress.json",
-    "scripts/benchmark-local.mjs",
-    "tests/fixtures/keyhelix/C28/expected-output.json",
-    "tests/fixtures/keyhelix/C28/negative.json",
-    "tests/fixtures/keyhelix/C28/positive.json",
-    "tests/perf_test.go",
-    "tests/scenarios/target-workload.json"
+    "scripts/serve-web.mjs",
+    "tests/fixtures/keyhelix/C29/expected-output.json",
+    "tests/fixtures/keyhelix/C29/negative.json",
+    "tests/fixtures/keyhelix/C29/positive.json",
+    "tests/readiness_test.go",
+    "tests/web/engine-readiness.test.mjs"
   ],
   "ci_defect_fixes": [],
   "commands": [
-    "node scripts/benchmark-local.mjs",
-    "PATH=/usr/local/go/bin:$PATH go test -count=1 -v -run '^TestC28' ./tests/",
-    "PATH=/usr/local/go/bin:$PATH go test -count=1 -race -run '^TestC28' ./tests/",
+    "npm test",
+    "PATH=/usr/local/go/bin:$PATH go test -count=1 -v -run '^TestC29' ./tests/",
+    "PATH=/usr/local/go/bin:$PATH go test -count=1 -race -run '^TestC29' ./tests/",
     "PATH=/usr/local/go/bin:$PATH go vet ./...",
     "PATH=/usr/local/go/bin:$PATH go test -count=1 ./...",
     "npm run test:browser",
@@ -59,8 +61,8 @@
     "python3 scripts/validate_repo.py"
   ],
   "results": {
-    "C27": "Proved project abuse and authorization boundaries across all browser and engine surfaces (Requirement N27). Prototype pollution, JSON complexity/depth bombs, oversized payloads, XSS text escaping, and zero telemetry verified via Playwright. Cross-tenant vault isolation, step-up bypass rejection, revoked access rejection, and provider outage fail-closed behavior verified in browser and engine. Path traversal rejection, tampered ciphertext AEAD rejection, and zero plaintext canary leakage verified under race detector with zero critical or high findings.",
-    "C28": "Measured bounded target and overload workloads on local profile (Requirement N28). Benchmarked target 5-user workload (p50: 6.1ms, p95: 14.16ms, p99: 18.64ms), confirmed overload rejection on oversized payloads and metadata with zero resource leaks, clean cancellation handling, engine restart durability, and verified provider-owned secret byte invariant under race detector."
+    "C28": "Measured bounded target and overload workloads on local profile (Requirement N28). Benchmarked target 5-user workload (p50: 6.1ms, p95: 14.16ms, p99: 18.64ms), confirmed overload rejection on oversized payloads and metadata with zero resource leaks, clean cancellation handling, engine restart durability, and verified provider-owned secret byte invariant under race detector.",
+    "C29": "Separated web health from engine, authoritative storage and required provider readiness (Requirement N29). Exposed real engine readiness at /api/engine/readiness and composite diagnostics at /api/diagnostics partitioning web, engine, storage, and provider components, proved fail-closed visibility on provider outage/sealed state and audit degradation, and verified bounded diagnostic logs with zero canary sentinel leakage under race detector."
   },
-  "next_recommended_task": "C29: feat(operations): expose real engine readiness and redacted diagnostics (N29)"
+  "next_recommended_task": "C30: test(acceptance): prove full local usability from git clone (N30)"
 }

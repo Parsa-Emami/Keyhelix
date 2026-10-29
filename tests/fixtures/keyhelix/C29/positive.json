@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic operational readiness fixtures; contains no real secrets, credentials or keys.",
+  "license": "Apache-2.0",
+  "expected_health": {
+    "web": {
+      "status": "ok",
+      "scope": "web-shell"
+    },
+    "engine": {
+      "status": "ok",
+      "scope": "engine-runtime",
+      "version": "0.0.1",
+      "coreReady": false
+    }
+  },
+  "expected_readiness": {
+    "engine": {
+      "status": "ready",
+      "scope": "engine-runtime",
+      "version": "0.0.1",
+      "storage": "ready",
+      "coreReady": false
+    },
+    "storage": {
+      "status": "ready",
+      "scope": "local-metadata-store"
+    },
+    "provider": {
+      "state": "HEALTHY",
+      "provider_id": "openbao",
+      "sealed": false,
+      "audit_ready": true
+    }
+  },
+  "diagnostics": {
+    "status": "ready",
+    "scope": "composite-diagnostics"
+  },
+  "redaction_sample": {
+    "input": "Operator check with Bearer eyJhbGciOiJIUzI1NiJ9.synthetic and keyhelix_session=sess-synth-123 and secret sentinel-canary-c29-secret-xyz",
+    "expected": "Operator check with [REDACTED] and [REDACTED] and secret [REDACTED]"
+  }
+}
