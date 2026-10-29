@@ -65,11 +65,12 @@ function containerRunning(name) {
   return result.ok && result.stdout.trim() === 'true';
 }
 
-function imagePresent(provider) {
-  const result = execute('podman', ['image', 'inspect', '--format', '{{json .RepoDigests}}', `${provider.image}:${provider.version}`]);
+function imagePresent(provider, reference = `${provider.image}:${provider.version}`) {
+  const result = execute('podman', ['image', 'inspect', '--format', '{{json .RepoDigests}}', reference]);
   if (!result.ok) return false;
   try {
-    return JSON.parse(result.stdout).some(reference => reference.endsWith('@' + provider.digest));
+    const digests = JSON.parse(result.stdout);
+    return Array.isArray(digests) && digests.some(digestRef => digestRef.endsWith('@' + provider.digest));
   } catch {
     return false;
   }
@@ -77,14 +78,19 @@ function imagePresent(provider) {
 
 async function ensureImage(provider) {
   if (imagePresent(provider)) return false;
-  if (process.env.KEYHELIX_OFFLINE === '1') {
-    throw new Error(`${provider.id} image ${provider.image}@${provider.digest} is not present locally and offline mode forbids pulling it.`);
-  }
-  podman(['pull', '--quiet', `${provider.image}@${provider.digest}`], { timeout: 600000 });
-  if (!imagePresent(provider)) {
-    throw new Error(`${provider.id} image digest does not match the pinned ${provider.digest} after pull.`);
+  if (!imagePresent(provider, `${provider.image}@${provider.digest}`)) {
+    if (process.env.KEYHELIX_OFFLINE === '1') {
+      throw new Error(`${provider.id} image ${provider.image}@${provider.digest} is not present locally and offline mode forbids pulling it.`);
+    }
+    podman(['pull', '--quiet', `${provider.image}@${provider.digest}`], { timeout: 600000 });
+    if (!imagePresent(provider, `${provider.image}@${provider.digest}`)) {
+      throw new Error(`${provider.id} image digest does not match the pinned ${provider.digest} after pull.`);
+    }
   }
   podman(['tag', `${provider.image}@${provider.digest}`, `${provider.image}:${provider.version}`]);
+  if (!imagePresent(provider)) {
+    throw new Error(`${provider.id} image tag ${provider.version} failed after pull.`);
+  }
   return true;
 }
 
