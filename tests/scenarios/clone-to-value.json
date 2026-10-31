@@ -60,7 +60,10 @@
   "fixtures": [
     "tests/fixtures/keyhelix/C30/positive.json",
     "tests/fixtures/keyhelix/C30/negative.json",
-    "tests/fixtures/keyhelix/C30/expected-output.json"
+    "tests/fixtures/keyhelix/C30/expected-output.json",
+    "tests/fixtures/keyhelix/C36/positive.json",
+    "tests/fixtures/keyhelix/C36/negative.json",
+    "tests/fixtures/keyhelix/C36/expected-output.json"
   ],
   "execution": {
     "engine": "implemented",
@@ -78,11 +81,25 @@
     "restart and restore",
     "no paid/cloud account or sibling clone"
   ],
+  "independent_onboarding_C36": {
+    "task": "C36",
+    "requirement": "N36",
+    "public_guide": "docs/engineering/CLONE_TO_RUN.md",
+    "evidence": "docs/evidence/C36.json",
+    "results_document": "docs/product/ONBOARDING_RESULTS.md",
+    "customer_demand_pilots_required": false,
+    "cloud_account_required": false,
+    "status": "verified"
+  },
   "harness": {
     "command": "npm run test:clone",
     "browser_spec": "tests/browser/clone-to-value.spec.ts",
     "secret_path_env": "C30_SECRET_PATH",
-    "shared_host_flags": ["KEYHELIX_CLONE_WORKTREE=1", "KEYHELIX_REUSE_PROVIDERS=1", "KEYHELIX_CLONE_RESTORE=1"],
-    "note": "Execution evidence is recorded in docs/evidence/C30.json; this scenario stays planned until a clean supported host run proves it end to end."
+    "shared_host_flags": [
+      "KEYHELIX_CLONE_WORKTREE=1",
+      "KEYHELIX_REUSE_PROVIDERS=1",
+      "KEYHELIX_CLONE_RESTORE=1"
+    ],
+    "note": "Execution evidence is recorded in docs/evidence/C30.json and docs/evidence/C36.json; proves the complete clone-to-value reference workflow independently on a clean host without paid or cloud entitlements."
   }
 }

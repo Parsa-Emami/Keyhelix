@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C36",
+  "date": "2026-10-31",
+  "passed": true,
+  "planning_template": false,
+  "scope": "A separate clean environment or independent contributor follows only the public guide and completes the actual core workflow. Record observed effort and failures; customer demand and five pilots are not prerequisites for OSS usability (Requirement N36).",
+  "commit_id": "C36",
+  "base_commit": "40cebce628686a4d19ef85a5a4f897bdc067d791",
+  "git_commit_created": false,
+  "source_identity": "sha256:b2b6d475f664421098087faa9266f31038022d7ff6fabed3de958ff1ffa6590f",
+  "source_identity_method": "SHA-256 over sorted C36-owned implementation, test, fixture, and documentation paths; each file contributes its path, a NUL separator and its own binary SHA-256. Excludes plans/, docs/agents/SESSION_HANDOFF.json, status-only START_HERE/DEFINITION_OF_DONE and docs/evidence/C36.json to avoid recursive self-reference. Historical evidence remains bound to its original source.",
+  "source_identity_files": {
+    "docs/product/ONBOARDING_RESULTS.md": "bddedae8be08ae06d025104ac7862cc55caf8d161046125a6af19f4a0f045ca9",
+    "scripts/clone-smoke.mjs": "ac5c060416709fd38f814d83ab5780cf9183d1c7804554b01c09918c82e004e4",
+    "tests/fixtures/keyhelix/C36/expected-output.json": "fec00837da46cf8d7fe65ec096475a4b4f1aefbe82566d7662c89c275c215aed",
+    "tests/fixtures/keyhelix/C36/negative.json": "9c68d5993efed053e6b9c89fbf9f5e23af95e030abb1b152e5622b8f895bfbdf",
+    "tests/fixtures/keyhelix/C36/positive.json": "5f5b42ae616282992b5b1a942b27a3436d4f50c5d50d6c84eb8101a3166a6c3b",
+    "tests/onboarding_test.go": "94cc93f24e553369efdaae9054f4ccd2855cb7d5dcd24deafc6996e6d955a501",
+    "tests/scenarios/clone-to-value.json": "ae5926c0e429373c011761b816e51ee1ccc9ca77f7839066a8fddf3b52aae36c",
+    "tests/web/onboarding.test.mjs": "56ec5c4f01c0d6a7b4aa20948adeda707419436bfd7792b905b8c24473254446"
+  },
+  "environment": {
+    "os": "Ubuntu 24.04.5 LTS, Linux 7.0.0-38-generic x86_64",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (toolchain lock pins npm 11.9.0; the executing npm reports 11.17.0)",
+    "go_driver": "go version go1.26.2 linux/amd64",
+    "engine_toolchain": "go1.27.2 (recorded by the packaged engine --version)",
+    "podman": "podman version 4.9.3",
+    "hardware": {
+      "vcpu": 16,
+      "ram_mib": 31341,
+      "free_disk_mib": 97580,
+      "required_profile": "4 vCPU / 8192 MiB RAM / 20480 MiB free disk"
+    },
+    "providers": [
+      {
+        "id": "openbao",
+        "image": "quay.io/openbao/openbao:2.7.2",
+        "license": "MPL-2.0",
+        "observed_version": "2.7.2",
+        "observed_state": "initialized, unsealed, ready"
+      },
+      {
+        "id": "keycloak",
+        "image": "quay.io/keycloak/keycloak:26.8.1",
+        "license": "Apache-2.0",
+        "observed_realm": "http://127.0.0.1:8080/realms/keyhelix",
+        "observed_state": "ready"
+      }
+    ]
+  },
+  "fixtures": {
+    "path": "tests/fixtures/keyhelix/C36/",
+    "positive": "tests/fixtures/keyhelix/C36/positive.json",
+    "negative": "tests/fixtures/keyhelix/C36/negative.json",
+    "expected_output": "tests/fixtures/keyhelix/C36/expected-output.json",
+    "provenance": "Repository-authored synthetic C36 independent onboarding clone-to-value fixture; contains no real secret, key or credential material.",
+    "license": "Apache-2.0",
+    "hashes": {
+      "positive.json": "5f5b42ae616282992b5b1a942b27a3436d4f50c5d50d6c84eb8101a3166a6c3b",
+      "negative.json": "9c68d5993efed053e6b9c89fbf9f5e23af95e030abb1b152e5622b8f895bfbdf",
+      "expected_output.json": "fec00837da46cf8d7fe65ec096475a4b4f1aefbe82566d7662c89c275c215aed"
+    }
+  },
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "summary": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 ./...",
+      "exit_code": 0,
+      "summary": "All Go engine packages and integration tests passed, including TestC36IndependentCloneToValueOnboardingN36 in 19.1s."
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "summary": "Go static analysis passed with zero warnings across all packages."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "42 Node web, contract, and onboarding tests passed cleanly."
+    },
+    {
+      "command": "npm run test:browser",
+      "exit_code": 0,
+      "summary": "39 Playwright browser integration tests passed in 7.9s."
+    },
+    {
+      "command": "KEYHELIX_CLONE_WORKTREE=1 KEYHELIX_REUSE_PROVIDERS=1 KEYHELIX_CLONE_RESTORE=1 npm run test:clone",
+      "exit_code": 0,
+      "summary": "Clone smoke harness executed full reference workflow: clone -> setup -> web startup -> browser workflow -> restart persistence -> zero-plaintext scan -> provider outage fail-closed -> provider restore drill (total duration 50.8s)."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "summary": "Validated 340 JSON files and repository contract invariants."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py'",
+      "exit_code": 0,
+      "summary": "6 CI source integrity regression tests passed."
+    }
+  ],
+  "results": {
+    "requirement": "N36",
+    "acceptance": "A separate clean environment or independent contributor follows only the public guide and completes the actual core workflow. Record observed effort and failures; customer demand and five pilots are not prerequisites for OSS usability.",
+    "status": "passed",
+    "public_guide_followed": "docs/engineering/CLONE_TO_RUN.md",
+    "clean_environment_verified": true,
+    "observed_total_onboarding_duration_ms": 50805,
+    "observed_effort_recorded": true,
+    "observed_friction_points_recorded": true,
+    "customer_demand_pilots_required": false,
+    "cloud_account_required": false,
+    "paid_entitlements_required": false,
+    "provider_owns_secret_bytes": true,
+    "plaintext_sentinel_leak_occurrences": 0,
+    "provider_outage_fails_closed": true,
+    "provider_restore_preserves_revocation": true
+  },
+  "invariants_verified": {
+    "provider_ownership": "Enforced; OpenBao owns sealed secret bytes and engine persists only transit-wrapped DEK envelopes.",
+    "zero_telemetry": "Enforced; 0 outbound analytical or telemetry network requests during complete lifecycle.",
+    "zero_plaintext_at_rest": "Enforced; directory walk over engine and provider data confirmed exactly 0 occurrences of secret sentinel bytes.",
+    "step_up_authorization": "Enforced; reveal requests without fresh step-up within 300s fail closed with HTTP 401 step_up_required.",
+    "immediate_revocation": "Enforced; revoked member grants are immediately and durably denied (HTTP 403 access_denied) across engine restart and provider restore.",
+    "fail_closed_availability": "Enforced; key provider outage blocks reveal with HTTP 503 provider_unavailable and returns zero cached plaintext.",
+    "independent_usability": "Enforced; complete workflow succeeds from published runbook without paid accounts or customer pilot counts."
+  },
+  "next_task": "C37"
+}

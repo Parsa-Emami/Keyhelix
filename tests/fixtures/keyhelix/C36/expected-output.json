@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "task": "C36",
+  "requirement": "N36",
+  "provenance": "Repository-authored synthetic C36 expected-output onboarding fixture; specifies target observable results and effort boundaries.",
+  "license": "Apache-2.0",
+  "status": "passed",
+  "public_guide": "docs/engineering/CLONE_TO_RUN.md",
+  "acceptance": "A separate clean environment or independent contributor follows only the public guide and completes the actual core workflow. Record observed effort and failures; customer demand and five pilots are not prerequisites for OSS usability.",
+  "steps": {
+    "auth-owner": {
+      "status": 200,
+      "session_cookie": "keyhelix_session",
+      "httpOnly": true,
+      "sameSite": "Lax",
+      "secure": true
+    },
+    "scoped-write": {
+      "status": 201,
+      "version": 1,
+      "plaintext_persisted": false
+    },
+    "step-up-reveal": {
+      "status": 200,
+      "plaintext_matches_sentinel": true,
+      "cache_control": "no-store",
+      "ttl_seconds": 30
+    },
+    "revoke-user": {
+      "status": 200,
+      "revoked": true,
+      "post_revocation_status": 403
+    },
+    "provider-outage": {
+      "status": 503,
+      "plaintext": null,
+      "fail_closed": true
+    },
+    "restore-isolated": {
+      "status": 200,
+      "reveal_after_restore": true,
+      "revoked_grant_after_restore": "still_revoked"
+    }
+  },
+  "readiness": {
+    "status": "ready",
+    "storage": "ready",
+    "provider.state": "ready",
+    "identity_provider.state": "ready"
+  },
+  "guards": {
+    "step_up_required": 401,
+    "access_denied": 403,
+    "forbidden_origin": 403,
+    "authentication_failed": 422,
+    "provider_unavailable": 503,
+    "invalid_input": 400
+  },
+  "effort_benchmarks": {
+    "setup_command": "npm run setup",
+    "start_command": "npm start",
+    "workflow_verified": true,
+    "zero_plaintext_leak": true
+  },
+  "prerequisites_status": {
+    "customer_demand_pilots_required": false,
+    "cloud_account_required": false
+  },
+  "evidence": "docs/evidence/C36.json"
+}

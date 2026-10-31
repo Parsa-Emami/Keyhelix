@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "task": "C36",
+  "requirement": "N36",
+  "provenance": "Repository-authored synthetic C36 independent onboarding clone-to-value fixture; contains no real secret, key or credential material. Follows public guide docs/engineering/CLONE_TO_RUN.md with synthetic local identities matching ops/local/keycloak-realm.json.",
+  "license": "Apache-2.0",
+  "workflow": "reference-workflow",
+  "public_guide": "docs/engineering/CLONE_TO_RUN.md",
+  "vault": {
+    "vault_id": "vault-prod",
+    "kek_id": "keyhelix-kek",
+    "kek_mount": "transit",
+    "payload_mount": "secret"
+  },
+  "identities": {
+    "owner": {
+      "username": "alice",
+      "email": "alice@keyhelix.local",
+      "realm_role": "vault-admin"
+    },
+    "member": {
+      "username": "bob",
+      "email": "bob@keyhelix.local",
+      "realm_role": "vault-member"
+    }
+  },
+  "secret": {
+    "secret_path_prefix": "app/prod/c36-onboarding-",
+    "classification": "restricted",
+    "plaintext_sentinel": "c36-synthetic-plaintext-sentinel-7b2e",
+    "expected_first_version": 1
+  },
+  "steps": [
+    {
+      "id": "auth-owner",
+      "actor": "alice",
+      "action": "Authenticate synthetic owner alice@keyhelix.local via Keycloak OIDC",
+      "expected_result": "PKCE authorization code flow completes; scoped local session cookie is issued with vault-admin role"
+    },
+    {
+      "id": "scoped-write",
+      "actor": "alice",
+      "action": "Write secret metadata envelope into vault-prod",
+      "expected_result": "Secret metadata version 1 is written with fresh DEK and nonce sealed by OpenBao transit; no plaintext is persisted"
+    },
+    {
+      "id": "step-up-reveal",
+      "actor": "alice",
+      "action": "Perform fresh step-up reauthentication and reveal secret",
+      "expected_result": "Fresh reauthentication issues a step-up grant; OpenBao transit unwraps the DEK and plaintext is returned transiently with no-store cache"
+    },
+    {
+      "id": "revoke-user",
+      "actor": "alice",
+      "action": "Revoke access grants for member bob@keyhelix.local",
+      "expected_result": "Grant revocation is synchronous and durable; subsequent access attempts by bob are rejected with 403 access_denied"
+    },
+    {
+      "id": "provider-outage",
+      "actor": "alice",
+      "action": "Simulate key provider outage during reveal attempt",
+      "expected_result": "Key provider outage produces explicit HTTP 503 provider_unavailable; zero plaintext returned from memory or cache"
+    },
+    {
+      "id": "restore-isolated",
+      "actor": "operator",
+      "action": "Restore isolated provider instance from recovery materials",
+      "expected_result": "OpenBao raft snapshot restore keeps sealed envelopes readable and revoked member grants remain revoked"
+    }
+  ],
+  "effort_profile": {
+    "prerequisites": "Linux x86_64, Node.js >= 24.19.0, Go 1.26.2+, Podman 4.9.3+",
+    "cloud_account_required": false,
+    "paid_entitlement_required": false,
+    "customer_pilot_count_required": 0,
+    "expected_max_duration_seconds": 900
+  },
+  "negative_cases": [
+    "missing-prerequisites",
+    "unauthorized-bypass",
+    "member-without-grant",
+    "revoked-grant-access",
+    "provider-disconnected",
+    "corrupted-auth-tag",
+    "foreign-origin-mutation"
+  ]
+}

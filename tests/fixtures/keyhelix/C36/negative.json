@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "task": "C36",
+  "requirement": "N36",
+  "provenance": "Repository-authored synthetic C36 negative onboarding fixture; contains no real secret, key or credential material.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "missing-prerequisites",
+      "description": "Execution on an environment lacking Node.js >= 24.19, Go 1.26.2+, or Podman fails fast with diagnostic message",
+      "expected_status": null,
+      "expected_code": "setup_failed",
+      "expected_plaintext": null
+    },
+    {
+      "case": "unauthorized-bypass",
+      "description": "Reveal attempted without fresh step-up authentication grant",
+      "expected_status": 401,
+      "expected_code": "step_up_required",
+      "expected_plaintext": null
+    },
+    {
+      "case": "member-without-grant",
+      "description": "Signed-in member with no active grant attempts to list or reveal owner secret",
+      "expected_status": 403,
+      "expected_code": "access_denied",
+      "expected_plaintext": null
+    },
+    {
+      "case": "revoked-grant-access",
+      "description": "Member whose grant was revoked attempts to reveal secret",
+      "expected_status": 403,
+      "expected_code": "access_denied",
+      "expected_plaintext": null
+    },
+    {
+      "case": "provider-disconnected",
+      "description": "Reveal attempted while key provider container is stopped or offline",
+      "expected_status": 503,
+      "expected_code": "provider_unavailable",
+      "expected_plaintext": null
+    },
+    {
+      "case": "corrupted-auth-tag",
+      "description": "Provider decrypts envelope whose authentication tag or ciphertext was tampered with",
+      "expected_status": 422,
+      "expected_code": "authentication_failed",
+      "expected_plaintext": null
+    },
+    {
+      "case": "foreign-origin-mutation",
+      "description": "Mutation or reveal request submitted with foreign Origin or Host header",
+      "expected_status": 403,
+      "expected_code": "forbidden_origin",
+      "expected_plaintext": null
+    }
+  ],
+  "prohibited_plaintext_storage": {
+    "sentinel": "c36-synthetic-plaintext-sentinel-7b2e",
+    "expected_occurrences_in_metadata_and_provider_kv": 0
+  },
+  "usability_barriers_rejected": {
+    "paid_account_prerequisite": false,
+    "cloud_subscription_prerequisite": false,
+    "customer_pilot_prerequisite": false,
+    "proprietary_driver_prerequisite": false
+  }
+}

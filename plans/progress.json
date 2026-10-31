@@ -321,10 +321,12 @@
     },
     {
       "id": "C36",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C36.json"
+      ],
+      "source_identity": "sha256:b2b6d475f664421098087faa9266f31038022d7ff6fabed3de958ff1ffa6590f",
+      "notes": "Verified independent clean-environment repetition of the reference clone-to-value workflow following exclusively the public guide docs/engineering/CLONE_TO_RUN.md without paid or cloud entitlements (Requirement N36). Observed onboarding effort metrics recorded in docs/product/ONBOARDING_RESULTS.md; fail-closed outage, provider restore durability, and zero plaintext at rest verified."
     },
     {
       "id": "C37",

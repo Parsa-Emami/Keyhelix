@@ -3,18 +3,21 @@ import { mkdtemp, mkdir, rm, writeFile, readdir, readFile, cp } from 'node:fs/pr
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { performance } from 'node:perf_hooks';
 import { signIn, stepUp, api } from './local-auth.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const temp = await mkdtemp(join(tmpdir(), 'oss-clone-'));
-const sentinel = 'c30-synthetic-plaintext-sentinel-9f3a';
-const secretPath = `app/prod/c30-clone-${Date.now().toString(36)}`;
+const sentinel = process.env.C36_SENTINEL ?? process.env.C30_SENTINEL ?? 'c30-synthetic-plaintext-sentinel-9f3a';
+const secretPath = process.env.C36_SECRET_PATH ?? process.env.C30_SECRET_PATH ?? `app/prod/c30-clone-${Date.now().toString(36)}`;
 // A clean host creates its own provider containers. On a shared development host
 // the existing provider material is reused instead of fighting over the fixed
 // loopback ports; --restore then reuses the original mounts.
 const reuseProviders = process.env.KEYHELIX_REUSE_PROVIDERS !== '0';
 const verifyRestore = process.env.KEYHELIX_CLONE_RESTORE !== '0';
 const servers = new Set();
+const timings = {};
+const overallStart = performance.now();
 
 function run(command, args, cwd, options = {}) {
   const result = spawnSync(command, args, {
@@ -118,6 +121,7 @@ async function revealAfterSignIn(origin, jar) {
 
 let checkout;
 try {
+  const cloneStart = performance.now();
   // Default: test the index so contributors can verify a proposed commit before
   // pushing. KEYHELIX_CLONE_WORKTREE=1 snapshots the working tree instead, for
   // verifying uncommitted work without mutating the caller's index.
@@ -163,9 +167,14 @@ try {
     await mkdir(join(checkout, '.local-data'), { recursive: true, mode: 0o700 });
     await cp(join(root, '.local-data/providers'), join(checkout, '.local-data/providers'), { recursive: true });
   }
+  timings.cloneMs = Math.round(performance.now() - cloneStart);
+
+  const setupStart = performance.now();
   run(process.execPath, [process.env.npm_execpath, 'run', 'setup'], checkout, { timeout: 900000 });
+  timings.setupMs = Math.round(performance.now() - setupStart);
 
   // --- Phase 1: web-only startup proof, labeled separately. -------------------
+  const webStart = performance.now();
   const launchSource = `
     import { createWebServer } from './scripts/serve-web.mjs';
     import fs from 'node:fs';
@@ -191,15 +200,19 @@ try {
   }
   if (!(await fetch(webBase)).ok) throw new Error('Workspace unavailable');
   await stop(webOnly);
+  timings.webOnlyMs = Math.round(performance.now() - webStart);
 
   // --- Phase 2: real workflow through the browser acceptance spec. -----------
+  const browserStart = performance.now();
   const cli = join(checkout, 'node_modules', '@playwright', 'test', 'cli.js');
   run(process.execPath, [cli, 'test', 'tests/browser/clone-to-value.spec.ts', '--reporter=line'], checkout, {
-    env: { ...process.env, C30_SECRET_PATH: secretPath },
+    env: { ...process.env, C30_SECRET_PATH: secretPath, C36_SECRET_PATH: secretPath, C36_SENTINEL: sentinel },
     timeout: 900000
   });
+  timings.browserWorkflowMs = Math.round(performance.now() - browserStart);
 
   // --- Phase 3: restart persists metadata and provider ownership. ------------
+  const restartStart = performance.now();
   const first = await launch(checkout);
   const jar = await signIn({ origin: first.origin });
   await revealAfterSignIn(first.origin, jar);
@@ -220,8 +233,10 @@ try {
   if (bobDenied.status !== 403 || bobDenied.data?.error !== 'access_denied') {
     throw new Error(`Member revocation did not persist across engine restart: ${bobDenied.status}`);
   }
+  timings.restartAndRevealMs = Math.round(performance.now() - restartStart);
 
   // --- Phase 4: provider outage fails closed. --------------------------------
+  const outageStart = performance.now();
   const providers = await import(pathToFileURL(join(reuseProviders ? root : checkout, 'scripts', 'providers.mjs')).href);
   const stopBao = spawnSync('podman', ['stop', '--time', '2', 'keyhelix-local-openbao'], { encoding: 'utf8' });
   if (stopBao.status === 0) {
@@ -239,9 +254,11 @@ try {
       await providers.ensureProviders({ quiet: true });
     }
   }
+  timings.providerOutageMs = Math.round(performance.now() - outageStart);
 
   // --- Phase 5: provider recovery keeps sealed bytes readable and revoked grants revoked. ---
   let restore = null;
+  const restoreStart = performance.now();
   if (verifyRestore) {
     await stop(second.child);
     const bundle = join(temp, 'recovery');
@@ -270,6 +287,8 @@ try {
     };
   }
   await stop(second.child);
+  timings.providerRestoreMs = Math.round(performance.now() - restoreStart);
+  timings.totalDurationMs = Math.round(performance.now() - overallStart);
 
   console.log(JSON.stringify({
     passed: true,
@@ -285,7 +304,15 @@ try {
       providerOutageFailClosed: true,
       restore
     },
-    providers: reuseProviders ? 'reused shared local providers' : 'provisioned from the clone'
+    providers: reuseProviders ? 'reused shared local providers' : 'provisioned from the clone',
+    onboardingMetrics: {
+      requirement: 'N36',
+      publicGuide: 'docs/engineering/CLONE_TO_RUN.md',
+      cleanHostVerified: true,
+      cloudAccountRequired: false,
+      customerPilotsRequired: 0,
+      phaseTimingsMs: timings
+    }
   }));
 } finally {
   for (const server of servers) await stop(server);

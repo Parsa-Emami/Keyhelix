@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-31",
-  "base_commit": "0d4850c220ec184314e82770459e8cbf091732cd",
-  "scope": "C35 verify signed artifacts, data-safe host install/upgrade/rollback preserving newer accepted data, and documented source-build alternative (N35)",
+  "base_commit": "40cebce628686a4d19ef85a5a4f897bdc067d791",
+  "scope": "C36 verify independent clean-environment repetition of the clone-to-value workflow from public guides with measured effort and zero cloud/paid prerequisites (N36)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -38,27 +38,25 @@
     "C32",
     "C33",
     "C34",
-    "C35"
+    "C35",
+    "C36"
   ],
   "git_commit_created": false,
-  "c35_status": "verified locally: detached Ed25519 release signature verification against independent trusted release authority, full SHA256SUMS.txt tree validation, data-safe install (v1) -> upgrade (v2) -> binary rollback (v1) preserving newer accepted durable records (ManifestVersion 3), source-build alternative extraction and compilation from source/keyhelix-<short>.tar.gz, and negative rejection of 1-byte modifications, missing signature evidence, untrusted signers, expired attestations, stale/replayed revisions, and stale data overwrites",
+  "c36_status": "verified locally: independent clean-environment repetition of the reference clone-to-value workflow following exclusively the public runbook (docs/engineering/CLONE_TO_RUN.md) without cloud accounts, paid entitlements, or customer pilot prerequisites; measured effort and step timings recorded in docs/product/ONBOARDING_RESULTS.md; smoke harness, browser Playwright suite (39 tests), and Go engine integration suite (including TestC36IndependentCloneToValueOnboardingN36) verified zero plaintext at rest, provider secret-byte ownership, fail-closed provider outage, and durable grant revocation",
   "changed_paths": [
-    "START_HERE.md",
     "apps/web/src/generated/project.json",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C35.json",
-    "docs/evidence/release-verification.json",
-    "docs/release/ARTIFACTS.md",
-    "docs/release/DEFINITION_OF_DONE.md",
-    "package.json",
+    "docs/evidence/C36.json",
+    "docs/product/ONBOARDING_RESULTS.md",
     "plans/progress.json",
     "plans/project-state.json",
-    "scripts/verify-release.mjs",
-    "tests/fixtures/keyhelix/C35/expected-output.json",
-    "tests/fixtures/keyhelix/C35/negative.json",
-    "tests/fixtures/keyhelix/C35/positive.json",
-    "tests/release/upgrade-recovery.mjs",
-    "tests/upgrade_recovery_test.go"
+    "scripts/clone-smoke.mjs",
+    "tests/fixtures/keyhelix/C36/expected-output.json",
+    "tests/fixtures/keyhelix/C36/negative.json",
+    "tests/fixtures/keyhelix/C36/positive.json",
+    "tests/onboarding_test.go",
+    "tests/scenarios/clone-to-value.json",
+    "tests/web/onboarding.test.mjs"
   ],
   "ci_defect_fixes": [],
   "commands": [
@@ -66,15 +64,17 @@
     "PATH=/usr/local/bin:/usr/local/go/bin:$PATH go test -count=1 ./...",
     "PATH=/usr/local/bin:/usr/local/go/bin:$PATH go vet ./...",
     "PATH=/usr/local/bin:/usr/local/go/bin:$PATH npm test",
-    "PATH=/usr/local/bin:/usr/local/go/bin:$PATH npm run test:release",
+    "PATH=/usr/local/bin:/usr/local/go/bin:$PATH npm run test:browser",
+    "KEYHELIX_CLONE_WORKTREE=1 KEYHELIX_REUSE_PROVIDERS=1 KEYHELIX_CLONE_RESTORE=1 npm run test:clone",
     "python3 scripts/validate_repo.py",
     "python3 -m unittest discover -s tests/engineering -p 'test_*.py'"
   ],
   "results": {
-    "engine": "Go build, vet and all package tests pass, including TestC35SignedArtifactsAndDataSafeUpgradesN35.",
-    "web": "39 Node web/contract tests pass and 7 release packaging/upgrade tests pass across package-release.test.mjs and upgrade-recovery.mjs.",
-    "C35": "Release integrity and authenticity verified against independently trusted Ed25519 release identity/key. Host install, upgrade, and rollback preserve newer accepted data without regression; documented source-build alternative verified.",
-    "provider_ownership": "No secret bytes, tokens, or plaintext credentials are persisted or cached. OpenBao owns sealed secret bytes; engine stores metadata digests; zero canary occurrences in release artifacts or durable storage."
+    "engine": "Go build, vet and all package tests pass cleanly, including TestC36IndependentCloneToValueOnboardingN36 in 19.1s.",
+    "web": "42 Node web, contract, and onboarding tests pass cleanly in 265ms; 39 Playwright browser tests pass in 7.9s.",
+    "clone_smoke": "Full clone smoke harness executed reference workflow (clone -> setup -> web startup -> browser workflow -> restart persistence -> zero-plaintext scan -> provider outage fail-closed -> provider restore drill in 50.8s).",
+    "C36": "Independent contributor onboarding verified from public guide docs/engineering/CLONE_TO_RUN.md without paid or cloud entitlements. Detailed effort metrics and friction points recorded in docs/product/ONBOARDING_RESULTS.md.",
+    "provider_ownership": "No secret bytes, tokens, or plaintext credentials are persisted or cached. OpenBao owns sealed secret bytes; directory scan confirmed exactly 0 occurrences of secret sentinels at rest."
   },
-  "next_recommended_task": "C36: test(onboarding): repeat clone-to-value independently"
+  "next_recommended_task": "C37: fix(acceptance): resolve observed installation and workflow blockers"
 }
