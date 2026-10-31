@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task": "C38",
+  "requirement": "N38",
+  "provenance": "Repository-authored synthetic expected results for C38 service policy, storage lifecycle, profile limits, and maintenance governance.",
+  "license": "Apache-2.0",
+  "status": "passed",
+  "acceptance": "Document local data locations, export/deletion/retention/backup/recovery, supported profiles and maintenance/dependency policy. No required hosted subscription, paid core feature or unearned SLA.",
+  "deliverables": {
+    "service_policy_present": true,
+    "maintenance_policy_present": true
+  },
+  "invariants_verified": {
+    "atomic_manifest_on_writer_crash": true,
+    "replay_idempotency_enforced": true,
+    "quota_bounds_enforced": true,
+    "stale_restore_rejected": true,
+    "provider_owns_secret_bytes": true,
+    "zero_unearned_sla": true,
+    "zero_telemetry": true,
+    "zero_paid_features": true
+  }
+}

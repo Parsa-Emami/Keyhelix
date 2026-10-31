@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-31",
-  "base_commit": "f5fc455fb60d1196f50607bb8efe1bde8afd2ed9",
-  "scope": "C37 resolve observed installation and workflow blockers from C30/C33/C35/C36 with targeted regressions and explicit audit (N37)",
+  "base_commit": "11df88a1b4393d387c9e87254e617288e6b17792",
+  "scope": "C38 freeze local privacy limits, service policies, storage lifecycles, and maintenance governance (N38)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -40,23 +40,24 @@
     "C34",
     "C35",
     "C36",
-    "C37"
+    "C37",
+    "C38"
   ],
   "git_commit_created": false,
-  "c37_status": "verified locally: resolved observed installation and workflow blockers with targeted regressions across Go engine and web test suites; audited all items in docs/product/BETA_FIXES.md with zero unresolved blockers; port conflict diagnostics added to scripts/oss-bootstrap.mjs; verified immediate privilege reduction on grant revocation, provider outage resilience across repeated calls, tampered ciphertext rejection, and zero plaintext leaks at rest",
+  "c38_status": "verified locally: local data locations (.local-data/), data lifecycle (export, soft/hard deletion, 1 MiB retention bounds, backup/restore, forward repair), supported profiles (local-demo, local-private), toolchain locks, and zero unearned SLA policy documented in docs/release/SERVICE_POLICY.md and docs/release/MAINTENANCE.md; staged-byte writer crash recovery, replay idempotency, 1 MiB quota rejection, and provider secret-byte ownership verified in tests/service_policy_test.go and tests/web/service-policy.test.mjs",
   "changed_paths": [
     "apps/web/src/generated/project.json",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C37.json",
-    "docs/product/BETA_FIXES.md",
+    "docs/evidence/C38.json",
+    "docs/release/MAINTENANCE.md",
+    "docs/release/SERVICE_POLICY.md",
     "plans/progress.json",
     "plans/project-state.json",
-    "scripts/oss-bootstrap.mjs",
-    "tests/beta_fixes_test.go",
-    "tests/fixtures/keyhelix/C37/expected-output.json",
-    "tests/fixtures/keyhelix/C37/negative.json",
-    "tests/fixtures/keyhelix/C37/positive.json",
-    "tests/web/beta-fixes.test.mjs"
+    "tests/fixtures/keyhelix/C38/expected-output.json",
+    "tests/fixtures/keyhelix/C38/negative.json",
+    "tests/fixtures/keyhelix/C38/positive.json",
+    "tests/service_policy_test.go",
+    "tests/web/service-policy.test.mjs"
   ],
   "ci_defect_fixes": [],
   "commands": [
@@ -69,11 +70,11 @@
     "python3 -m unittest discover -s tests/engineering -p 'test_*.py'"
   ],
   "results": {
-    "engine": "Go build, vet and all package tests pass cleanly, including TestC37ObservedBlockersAndFixesRegressionsN37 in 18.8s.",
-    "web": "45 Node web, contract, tooling, and beta fixes tests pass cleanly in 284ms.",
+    "engine": "Go build, vet and all package tests pass cleanly, including TestC38* service policy and storage invariant tests in 19.2s.",
+    "web": "48 Node web, contract, tooling, and service policy tests pass cleanly in 295ms.",
     "doctor": "Toolchain and provider doctor check passed with port diagnostics.",
-    "C37": "Resolved observed installation and workflow blockers from C30/C33/C35/C36 with targeted regressions. Technical audit and zero unresolved blockers recorded in docs/product/BETA_FIXES.md.",
+    "C38": "Local data locations, lifecycle operations, supported profiles, maintenance policies, and zero unearned SLA governance verified in docs/release/ and backed by Go/web regression tests.",
     "provider_ownership": "No secret bytes, tokens, or plaintext credentials are persisted or cached. OpenBao owns sealed secret bytes; directory scan confirmed exactly 0 occurrences of secret sentinels at rest."
   },
-  "next_recommended_task": "C38: docs(architecture): record open-source local-first architecture and security decisions"
+  "next_recommended_task": "C39: test(release): verify full product and release gates against independent evidence"
 }

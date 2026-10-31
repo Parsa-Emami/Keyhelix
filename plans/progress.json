@@ -339,10 +339,12 @@
     },
     {
       "id": "C38",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C38.json"
+      ],
+      "source_identity": "sha256:02f0a9389935e1aed4599bd68824f2621cde53ad450d1a0138e0350f1463dd0e",
+      "notes": "Verified local service policy, data locations (.local-data/), data lifecycle (export/delete/retention/backup/recovery), supported profiles (local-demo, local-private), toolchain locks, and zero unearned SLA governance (Requirement N38). Invariants for staged-byte writer crash recovery, replay idempotency, 1 MiB quota bounds, and provider secret byte ownership tested and passed in tests/service_policy_test.go and tests/web/service-policy.test.mjs."
     },
     {
       "id": "C39",

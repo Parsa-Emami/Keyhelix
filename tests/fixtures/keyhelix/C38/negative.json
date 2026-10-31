@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "task": "C38",
+  "requirement": "N38",
+  "provenance": "Repository-authored synthetic negative service policy, interrupted writer, replay idempotency, and invariant rejection scenarios; contains no real credential, provider state or plaintext secret.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "staged-byte-writer-crash",
+      "description": "Writer killed or crashed after persisting staged bytes but before atomic manifest commit; store restart exposes clean authoritative prior manifest and purges orphan staging files",
+      "expected_status": null,
+      "expected_code": "atomic_manifest_preserved",
+      "expected_plaintext": null
+    },
+    {
+      "case": "operation-replay-duplicate",
+      "description": "Replaying operation with an already-accepted operation_id produces an idempotent duplicate outcome without secondary side effects or extra manifest revisions",
+      "expected_status": null,
+      "expected_code": "duplicate_operation_detected",
+      "expected_plaintext": null
+    },
+    {
+      "case": "quota-bounds-exhaustion",
+      "description": "Input exceeding preview byte ceiling (1,048,576 bytes) or structure depth (32 levels) is rejected fail-closed",
+      "expected_status": null,
+      "expected_code": "bounds_exceeded",
+      "expected_plaintext": null
+    },
+    {
+      "case": "stale-manifest-downgrade",
+      "description": "Attempting to restore an older backup manifest over a newer accepted state revision fails closed",
+      "expected_status": null,
+      "expected_code": "stale_data_rejected",
+      "expected_plaintext": null
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "description": "Engine store and directory walk assert exactly zero occurrences of unsealed secret sentinels at rest",
+      "expected_status": null,
+      "expected_code": "zero_plaintext_at_rest",
+      "expected_plaintext": null
+    },
+    {
+      "case": "unearned-cloud-sla-bypass",
+      "description": "Enforcing mandatory cloud vendor account, paid subscription, or unearned cloud SLA fails verification",
+      "expected_status": null,
+      "expected_code": "unearned_sla_prohibited",
+      "expected_plaintext": null
+    }
+  ]
+}

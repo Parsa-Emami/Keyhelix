@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "task": "C38",
+  "requirement": "N38",
+  "provenance": "Repository-authored synthetic service policy, storage lifecycle, profile limits, and maintenance contract fixture; contains no real credential, provider state or plaintext secret.",
+  "license": "Apache-2.0",
+  "distribution": {
+    "license": "Apache-2.0",
+    "open_source_local_first": true,
+    "hosted_subscription_required": false,
+    "paid_features_required": false,
+    "telemetry_enabled": false,
+    "loopback_only": true,
+    "unearned_sla_claimed": false
+  },
+  "local_data_locations": {
+    "runtime_root": ".local-data",
+    "engine_store": ".local-data/engine/store",
+    "manifest_dir": ".local-data/engine/store/manifests",
+    "blob_dir": ".local-data/engine/store/blobs",
+    "staging_dir": ".local-data/engine/store/staging",
+    "openbao_data": ".local-data/openbao/data",
+    "keycloak_data": ".local-data/keycloak/data"
+  },
+  "data_lifecycle": {
+    "export_format": "json",
+    "secret_bytes_in_export": false,
+    "soft_delete_immediate_denial": true,
+    "cryptographic_destruction": true,
+    "max_preview_size_bytes": 1048576,
+    "max_structure_depth": 32,
+    "max_structure_keys": 20000,
+    "orphan_staging_cleanup_on_open": true,
+    "rpo_target_hours": 24,
+    "rto_target_hours": 4,
+    "stale_restore_prohibited": true,
+    "forward_repair_preferred": true
+  },
+  "supported_profiles": {
+    "demo_profile": "local-demo",
+    "private_profile": "local-private",
+    "hardware_requirements": {
+      "vcpu": 4,
+      "ram_mib": 8192,
+      "free_disk_mib": 20480
+    }
+  },
+  "maintenance": {
+    "versioning": "SemVer-2.0.0",
+    "n_minus_one_reader_compatible": true,
+    "security_response_sla_hours": 48,
+    "deprecation_advance_notice_cycles": 1,
+    "toolchain_lock": "docs/engineering/toolchain-lock.json",
+    "notices_inventory": "THIRD_PARTY_NOTICES.md"
+  }
+}

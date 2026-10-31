@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C38",
+  "date": "2026-10-31",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Document local data locations, export/deletion/retention/backup/recovery, supported profiles and maintenance/dependency policy. No required hosted subscription, paid core feature or unearned SLA (Requirement N38).",
+  "commit_id": "C38",
+  "base_commit": "11df88a1b4393d387c9e87254e617288e6b17792",
+  "git_commit_created": false,
+  "source_identity": "sha256:02f0a9389935e1aed4599bd68824f2621cde53ad450d1a0138e0350f1463dd0e",
+  "source_identity_method": "SHA-256 over sorted C38-owned implementation, test, fixture, and documentation paths; each file contributes its path, a NUL separator and its own binary SHA-256. Excludes plans/, docs/agents/SESSION_HANDOFF.json, status-only START_HERE/DEFINITION_OF_DONE and docs/evidence/C38.json to avoid recursive self-reference. Historical evidence remains bound to its original source.",
+  "source_identity_files": {
+    "docs/release/MAINTENANCE.md": "e407032f253a6db5f34abffef6239766bd5435903efaedca8e287e86c4a79c79",
+    "docs/release/SERVICE_POLICY.md": "a1ddb13a0bff3a023f79167232d8fcfebb842116acf433a9380fa1c708a08eef",
+    "tests/fixtures/keyhelix/C38/expected-output.json": "b117e650d5dd6a0f83dfdb925f9b6c521fa2015cec6df316ff87a4b8be90fbac",
+    "tests/fixtures/keyhelix/C38/negative.json": "499420fd730bde8c5e038f8864bc5eccce9238e9ca488b98e590ee411a3564c3",
+    "tests/fixtures/keyhelix/C38/positive.json": "07e31c20079983abd019cb3160e205df835e1ce5a6a8f787c34ec7b3f8eb2dc5",
+    "tests/service_policy_test.go": "fb655190abf9583da918bf2f3780be2f696cda67bd7c81d016f08a069d51d7c8",
+    "tests/web/service-policy.test.mjs": "16a056e963ebc15febad24f6f29cb0acdcf130d363e99f0be2fb8a36d6843237"
+  },
+  "environment": {
+    "os": "Ubuntu 24.04.5 LTS, Linux 7.0.0-38-generic x86_64",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (toolchain lock pins npm 11.9.0; the executing npm reports 11.17.0)",
+    "go_driver": "go version go1.26.2 linux/amd64",
+    "engine_toolchain": "go1.27.2 (recorded by the packaged engine --version)",
+    "podman": "podman version 4.9.3",
+    "hardware": {
+      "vcpu": 16,
+      "ram_mib": 31341,
+      "free_disk_mib": 97580,
+      "required_profile": "4 vCPU / 8192 MiB RAM / 20480 MiB free disk"
+    },
+    "providers": [
+      {
+        "id": "openbao",
+        "image": "quay.io/openbao/openbao:2.7.2",
+        "license": "MPL-2.0",
+        "observed_version": "2.7.2",
+        "observed_state": "initialized, unsealed, ready"
+      },
+      {
+        "id": "keycloak",
+        "image": "quay.io/keycloak/keycloak:26.8.1",
+        "license": "Apache-2.0",
+        "observed_realm": "http://127.0.0.1:8080/realms/keyhelix",
+        "observed_state": "ready"
+      }
+    ]
+  },
+  "fixtures": {
+    "path": "tests/fixtures/keyhelix/C38/",
+    "positive": "tests/fixtures/keyhelix/C38/positive.json",
+    "negative": "tests/fixtures/keyhelix/C38/negative.json",
+    "expected_output": "tests/fixtures/keyhelix/C38/expected-output.json",
+    "provenance": "Repository-authored synthetic C38 service policy, storage lifecycle, profile limits, and maintenance contract fixture; contains no real credential, provider state or plaintext secret.",
+    "license": "Apache-2.0",
+    "hashes": {
+      "positive.json": "07e31c20079983abd019cb3160e205df835e1ce5a6a8f787c34ec7b3f8eb2dc5",
+      "negative.json": "499420fd730bde8c5e038f8864bc5eccce9238e9ca488b98e590ee411a3564c3",
+      "expected_output.json": "b117e650d5dd6a0f83dfdb925f9b6c521fa2015cec6df316ff87a4b8be90fbac"
+    }
+  },
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "summary": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 ./...",
+      "exit_code": 0,
+      "summary": "All Go engine packages and integration tests passed, including TestC38* service policy and storage invariant tests in 19.2s."
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "summary": "Go static analysis passed with zero warnings across all packages."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "48 Node web, contract, tooling, and service policy tests passed cleanly."
+    },
+    {
+      "command": "npm run doctor",
+      "exit_code": 0,
+      "summary": "Toolchain and provider doctor check passed with port diagnostics."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "summary": "Validated 348 JSON files and repository contract invariants."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py'",
+      "exit_code": 0,
+      "summary": "6 CI source integrity regression tests passed."
+    }
+  ],
+  "results": {
+    "requirement": "N38",
+    "acceptance": "Document local data locations, export/deletion/retention/backup/recovery, supported profiles and maintenance/dependency policy. No required hosted subscription, paid core feature or unearned SLA.",
+    "status": "passed",
+    "local_data_locations_documented": true,
+    "data_lifecycle_documented": true,
+    "supported_profiles_documented": true,
+    "maintenance_and_dependency_policy_documented": true,
+    "hosted_subscription_required": false,
+    "paid_features_required": false,
+    "unearned_sla_claimed": false,
+    "staged_writer_crash_recovers_authoritative": true,
+    "operation_replay_is_idempotent": true,
+    "quota_bounds_enforced": true,
+    "provider_owns_secret_bytes": true,
+    "zero_plaintext_at_rest": true
+  },
+  "invariants_verified": {
+    "local_first_custody": "Enforced; runtime state contained in .local-data/ without external cloud storage dependencies.",
+    "atomic_manifest_publication": "Enforced; crashed or interrupted writers leave authoritative prior manifest intact and orphan staging bytes are reclaimed on open.",
+    "replay_idempotency": "Enforced; replayed operations with duplicate operation_ids produce idempotent responses without redundant manifest revisions.",
+    "quota_bounds_enforcement": "Enforced; payload writes exceeding 1 MiB or depth limits fail closed.",
+    "provider_ownership": "Enforced; OpenBao owns sealed secret bytes and zero plaintext sentinels are written to engine metadata storage.",
+    "zero_unearned_sla": "Enforced; service policy explicitly rejects commercial cloud uptime SLAs, grounding durability in local code invariants."
+  },
+  "next_task": "C39"
+}
