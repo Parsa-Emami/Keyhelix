@@ -9,7 +9,7 @@
   "commit_id": "C37",
   "base_commit": "f5fc455fb60d1196f50607bb8efe1bde8afd2ed9",
   "git_commit_created": false,
-  "source_identity": "sha256:4990bc5d08550d672b2d12827f856580042813c42e10d6ca8bb36ce405113b15",
+  "source_identity": "sha256:31d35ce5ec0a8068fc48e7ea32262f2a25d325f072372e759ee7382f6694a7f9",
   "source_identity_method": "SHA-256 over sorted C37-owned implementation, test, fixture, and documentation paths; each file contributes its path, a NUL separator and its own binary SHA-256. Excludes plans/, docs/agents/SESSION_HANDOFF.json, status-only START_HERE/DEFINITION_OF_DONE and docs/evidence/C37.json to avoid recursive self-reference. Historical evidence remains bound to its original source.",
   "source_identity_files": {
     "docs/product/BETA_FIXES.md": "88f8d4e1ed81e3cd60a14c4701dd1ca1ee64051847f649e4768eeb0e68d84886",
@@ -18,7 +18,7 @@
     "tests/fixtures/keyhelix/C37/expected-output.json": "f0c9e93b71bebf1b326c8c4a8dbc81442a0d60ce803d2c3f1d8e475f90c8b673",
     "tests/fixtures/keyhelix/C37/negative.json": "d9403dd8ab8fc40ff2514ee76cb8878cdfd132efbf63e1bbec7a1b3e48474b88",
     "tests/fixtures/keyhelix/C37/positive.json": "167f9e7f238b6951368ac014c86a3cc68356cff0ecad9292a95f98fa96cc9b1b",
-    "tests/web/beta-fixes.test.mjs": "3b0f019ac481a39b9f1958b5a9c1bb7aa874f90e0ccce804f131491d3a50b5db"
+    "tests/web/beta-fixes.test.mjs": "816b0a2174563dac6a57ef9848b6198433c8fa4c59d34968856f3ab781118d78"
   },
   "environment": {
     "os": "Ubuntu 24.04.5 LTS, Linux 7.0.0-38-generic x86_64",

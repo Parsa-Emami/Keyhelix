@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createServer } from 'node:net';
+import { once } from 'node:events';
 import { checkPortConflict } from '../../scripts/oss-bootstrap.mjs';
 
 const root = resolve(fileURLToPath(new URL('../../', import.meta.url)));
@@ -60,12 +62,19 @@ test('C37 fixtures: positive, negative, and expected-output conform to N37 contr
   assert.deepEqual(expected.unresolved_blockers, []);
 });
 
-test('checkPortConflict utility correctly identifies listening vs unbound ports', async () => {
-  // Keycloak runs on 8080 or OpenBao on 8200 in the verified environment
-  const keycloakBusy = await checkPortConflict(8080);
-  assert.equal(keycloakBusy, true, 'Port 8080 should be detected as listening');
+test('checkPortConflict utility correctly identifies listening vs unbound ports', async t => {
+  const server = createServer();
+  server.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  const port = server.address().port;
 
-  // Unbound random high port should return false
-  const unusedPortBusy = await checkPortConflict(58765);
-  assert.equal(unusedPortBusy, false, 'Unallocated port 58765 should be detected as free');
+  t.after(() => new Promise(resolve => server.close(resolve)));
+
+  const busyBeforeClose = await checkPortConflict(port);
+  assert.equal(busyBeforeClose, true, `Bound port ${port} should be detected as listening`);
+
+  await new Promise(resolve => server.close(resolve));
+
+  const freeAfterClose = await checkPortConflict(port);
+  assert.equal(freeAfterClose, false, `Closed port ${port} should be detected as free`);
 });
