@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
-  "date": "2026-10-29",
-  "base_commit": "b70e9cf670296b6d0e3b81e8f9041b5686c3496a",
-  "scope": "C30 local usability: cloned-checkout reference workflow, restart persistence and provider restore (N30)",
+  "date": "2026-10-31",
+  "base_commit": "2992c9e5310bc0957bd011222c4b0ba31000eae1",
+  "scope": "C31 complete reproducible release artifact: real engine, web UI, offline rules/resources, source archive and build recipes, CycloneDX SBOM, upstream notices, checksums and provenance with atomic publication and recovery (N31)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -33,38 +33,59 @@
     "C27",
     "C28",
     "C29",
-    "C30"
+    "C30",
+    "C31"
   ],
-  "git_commit_created": true,
-  "c30_status": "verified with full reference workflow from git clone, restart persistence, provider outage fail-closed, zero plaintext at rest, and OpenBao snapshot restore with durable grant revocation",
+  "git_commit_created": false,
+  "c31_status": "verified locally: complete artifact packaged and exercised; publication, signatures and installed-host proof remain C39/C40",
   "changed_paths": [
+    ".github/workflows/web.yml",
+    "apps/web/src/generated/project.json",
+    "Makefile",
+    "README.md",
+    "ROADMAP.md",
+    "START_HERE.md",
+    "THIRD_PARTY_NOTICES.md",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C30.json",
-    "docs/evidence/private-install.json",
+    "docs/ROADMAP_FA.md",
+    "docs/architecture/IMPLEMENTATION_BLUEPRINT.md",
+    "docs/engineering/WEB_RUNBOOK.md",
+    "docs/evidence/C31.json",
+    "docs/release/ARTIFACTS.md",
+    "docs/release/DEFINITION_OF_DONE.md",
+    "ops/deployment-profiles.json",
+    "ops/web/nginx.conf.template",
+    "ops/web/service.systemd",
+    "package.json",
     "plans/progress.json",
     "plans/project-state.json",
-    "plans/release-gates.json",
-    "scripts/clone-smoke.mjs",
-    "tests/browser/clone-to-value.spec.ts",
-    "tests/scenarios/clone-to-value.json"
+    "scripts/package-source.mjs",
+    "scripts/package-web.mjs",
+    "scripts/package.sh",
+    "tests/fixtures/keyhelix/C31/expected-output.json",
+    "tests/fixtures/keyhelix/C31/negative.json",
+    "tests/fixtures/keyhelix/C31/positive.json",
+    "tests/release/package-release.test.mjs",
+    "tests/web/package-contract.test.mjs"
   ],
   "ci_defect_fixes": [],
   "commands": [
     "npm run validate:plan",
-    "python3 scripts/plan.py validate",
-    "PATH=/usr/local/go/bin:$PATH go test ./...",
-    "npm run build",
     "npm test",
-    "npm run test:browser",
-    "npm run test:clone",
-    "npm run doctor",
-    "npm run plan -- next"
+    "PATH=/usr/local/go/bin:$PATH go test ./...",
+    "npm run test:release",
+    "KEYHELIX_PACKAGE_SKIP_BUILD=1 npm run package",
+    "cd dist/release && sha256sum -c SHA256SUMS.txt",
+    "npm run notices",
+    "python3 scripts/validate_repo.py"
   ],
   "results": {
-    "engine": "Go build, vet and all package tests pass; composed runtime serves health, readiness, diagnostics, OIDC sign-in, session/step-up, metadata, write, reveal, grants and rotation routes.",
-    "web": "23 Node web/contract tests and 30 Playwright tests pass cleanly. Configuration fails closed on engineEnabled=true, engine read endpoints reject non-GET methods, /readyz requires a composed core, and vaults console reflects real metadata statuses.",
-    "C30": "A cloned checkout from git index tree executed npm run setup, web startup boundary, browser workflow with owner sign-in, scoped write, step-up reveal, transient clear, member grant creation, member revocation denial, restart persistence, zero sentinel plaintext at rest, provider outage fail-closed (503), and OpenBao snapshot restore where the secret envelope remained readable and member revocation remained durable.",
-    "limitation": "None; milestone C30 is fully verified with clean-host acceptance and release gates advance to core_ready: true."
+    "engine": "Go build, vet and all package tests pass. The packaged engine binary reports version 0.0.1 with go1.27.2, boots on loopback and answers /healthz as an engine-runtime, coreReady=false without providers.",
+    "web": "28 Node web/contract tests pass. The packaged web server serves /, /healthz and /readyz (engineReady=false), returns 503 for /api without an engine, and keeps fingerprinted assets immutable/no-store rules.",
+    "C31": "Complete artifact contains web/, dist/engine/keyhelix, contracts, spec, ops resources, docs, source/keyhelix-<short>.tar.gz, sbom/keyhelix-0.0.1.cdx.json, THIRD_PARTY_NOTICES.md, notices/licenses/*, RESOURCES.json, RELEASE.json and SHA256SUMS.txt. Five release integration tests prove the artifact, replay byte identity, secret-material fail-closed, SIGKILL before publish with prior-state preservation and recovery, concurrent-writer rejection, and real ulimit quota failure with restart recovery. The packaged engine and web server were actually started and probed.",
+    "reproducibility": "Two complete packaging runs from the same source and toolchain produced byte-identical SHA256SUMS.txt, RELEASE.json, SBOM, notices and source archive. A rebuild with GOFLAGS=-buildvcs=false produced the same engine binary hash.",
+    "provider_ownership": "No .local-data, provider runtime state, credentials or plaintext was embedded. OpenBao/Keycloak are inventoried only by pinned immutable digest, SBOM marks them external/not embedded, and the package scan rejects private keys, OpenBao tokens, session tokens and bearer credentials.",
+    "limitations": "The worktree was dirty during verification; RELEASE.json records dirty=true. No commit, push, signature, publication or host service installation was performed. systemd/nginx templates were inspected structurally, not enabled. The full provider workflow from installed artifacts and C40 publication remain pending."
   },
-  "next_recommended_task": "C31: build(release): package complete reproducible open-source artifacts"
+  "next_recommended_task": "C32: feat(network): harden local launch and optional private hosting"
 }

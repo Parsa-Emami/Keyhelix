@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C31 expected-output contract; describes required observable outcomes, not measured release evidence.",
+  "license": "Apache-2.0",
+  "requirement": "N31",
+  "expected": {
+    "release": {
+      "schemaVersion": 1,
+      "scope": "complete-local-product",
+      "artifactFlags": {
+        "webOnly": false,
+        "engineIncluded": true,
+        "offlineResourcesIncluded": true,
+        "sourceArchiveIncluded": true,
+        "sbomIncluded": true,
+        "providerOwnedSecretBytes": true,
+        "embeddedProviderState": false
+      },
+      "checksumFile": "SHA256SUMS.txt",
+      "checksumAlgorithm": "sha256",
+      "license": "Apache-2.0"
+    },
+    "engine": {
+      "runnable": true,
+      "versionMatchesPackage": true,
+      "coreReadyWithoutProviders": false,
+      "healthStatus": 200
+    },
+    "web": {
+      "indexStatus": 200,
+      "healthStatus": 200,
+      "readyStatus": 200,
+      "readyEngineReady": false,
+      "apiWithoutEngine": 503,
+      "assetCacheControl": "public, max-age=31536000, immutable"
+    },
+    "sbom": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5",
+      "minimumComponents": 78
+    },
+    "notices": {
+      "runtimeLicenseTexts": [
+        "react",
+        "react-dom",
+        "scheduler"
+      ],
+      "providerLicenses": {
+        "openbao": "MPL-2.0",
+        "keycloak": "Apache-2.0"
+      }
+    },
+    "provenance": [
+      "source.commit",
+      "source.dirty",
+      "source.treeSha256",
+      "source.archive.sha256",
+      "sbom.sha256",
+      "notices.sha256",
+      "resources.sha256"
+    ],
+    "resources": {
+      "minimumEntries": 40,
+      "containsAuthorizationMatrix": true,
+      "containsContracts": true
+    },
+    "negativeOutcomes": {
+      "priorReleaseSurvivesFailure": true,
+      "restartRecoversStaleWriter": true,
+      "replayIsByteIdentical": true,
+      "noProviderStateEmbedded": true
+    }
+  },
+  "commands": [
+    "npm run validate:plan",
+    "npm test",
+    "go test ./...",
+    "npm run test:release",
+    "npm run package",
+    "sha256sum -c SHA256SUMS.txt",
+    "python3 scripts/validate_repo.py"
+  ]
+}

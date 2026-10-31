@@ -1,10 +1,14 @@
 # KeyHelix: completion endpoint
 
-Current: C01–C30 verified (`core_ready: true`); C31–C40 OSS release packaging pending.
+Current: C01–C31 verified (`core_ready: true`); C32–C40 OSS publication and installed-host proof pending.
 
 ## C30: locally usable (Verified)
 
 All C01–C30 acceptance and negative cases have source-bound evidence. A supported host completes `git clone`, `npm run setup`, `npm start`, the entire `REFERENCE_WORKFLOW.md` task, restart and restore using the actual engine, durable storage port, OpenBao, and Keycloak providers.
+
+## C31: complete reproducible artifact (Verified)
+
+`npm run package` produces a complete local artifact containing the actual Go engine, web UI, offline contracts/rules references, provider templates, source archive/build recipes, CycloneDX SBOM, upstream notices and license texts, SHA-256 checksums and provenance. Unknown licenses and secret-bearing payloads fail closed; publication is atomic and recovers the prior or new complete state after a killed writer or exhausted quota. The artifact records whether the source tree was dirty. Publication, signatures and installed-host workflow remain C39/C40 work.
 
 ## C39/C40: complete OSS v1
 

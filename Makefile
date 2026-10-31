@@ -17,4 +17,4 @@ build:
 test:
 	npm test
 package:
-	npm run package:web
+	npm run package

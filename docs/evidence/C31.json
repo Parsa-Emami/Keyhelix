@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C31",
+  "date": "2026-10-31",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Package the actual engine, web UI and offline rules/resources with source archive/build recipes, CycloneDX SBOM, upstream notices, checksums and provenance; prove atomic publish/recovery, replay, quota, secret exclusion and provider ownership (Requirement N31).",
+  "commit_id": "C31",
+  "base_commit": "2992c9e5310bc0957bd011222c4b0ba31000eae1",
+  "git_commit_created": false,
+  "source_identity": "sha256:13960f722131939ae072ceb2812e58491e6611920a51e969d44d8613b5b3202c",
+  "source_identity_method": "SHA-256 over sorted C31-owned implementation, test, fixture, release-documentation and packaging-wiring paths; each file contributes its path, a NUL separator and its own SHA-256. Excludes plans/, docs/agents/SESSION_HANDOFF.json, status-only README/START_HERE/DEFINITION_OF_DONE and docs/evidence/ to avoid recursive self-reference. Historical evidence remains bound to its original source.",
+  "source_identity_files": {
+    ".github/workflows/web.yml": "84536312ef5d35a11cf6c72edfaae24963eb436a1d4cbe1a6d91205236d18c20",
+    "Makefile": "e6b91b63e810227fb695c1013a091bf733500be8220c7d15c87647575e0bb3fe",
+    "THIRD_PARTY_NOTICES.md": "614da8958ac865b10801f49bed519a662827c20c17bf7f25330605622f676175",
+    "docs/engineering/WEB_RUNBOOK.md": "af0d75a18c75c6804cbaa611c9e1d234e8cb699f634a26155b281e4a4f2e0122",
+    "docs/release/ARTIFACTS.md": "ed848590724257ce12f93c39afb7476040d8b36b4508cb5f42232322218cad38",
+    "ops/deployment-profiles.json": "d04ca35a46529154e65eb53297cbad7efc2202bfa9b36d235e54dd8024e78fc6",
+    "ops/web/nginx.conf.template": "946d8ef14d744fc30a8c38f59854477021d6b930245545aa7b5de6945fba7839",
+    "ops/web/service.systemd": "506f184761031f7879ef74263144afb2d0d5e5f674c56605a6121dfeecc35414",
+    "package.json": "d7e71adce9fad165bd98fe37ccfed7c90395a8cef7256400a2d467772a1a9e74",
+    "scripts/package-source.mjs": "d2e3fd4fc996dbb562ed7715495a36099222066d5756f4ec26eba1e5fe5b10e9",
+    "scripts/package-web.mjs": "beca35eb9bae38fd1a2ed23603c4e214bf59d24f89b06f7c9b0f036ab9172cec",
+    "scripts/package.sh": "2f5aa88d1175885db4348e314fae4f649a66701690a84cff10f3f277be8247f1",
+    "tests/fixtures/keyhelix/C31/expected-output.json": "1cf346a7ad0f1702ac830291f77b5b0cf30a35eb6439501f89959d7bb27a4ebe",
+    "tests/fixtures/keyhelix/C31/negative.json": "711c44ddcb0de8c3e094cdc7fa5215a4c26f622d18e6f80def36e57780e1ef24",
+    "tests/fixtures/keyhelix/C31/positive.json": "72910f608309d99ec66c61488e05832bcd66ae47515a22720f23553db8f1e3d0",
+    "tests/release/package-release.test.mjs": "5dcbbdf96eb3b6fb7f102b757bca90cc28de920e7f295f6a59055574c42ed4be",
+    "tests/web/package-contract.test.mjs": "d9283e2e4daa509843fb24156ad24f907ae9f42e366f5092a93835bae78795d1"
+  },
+  "environment": {
+    "os": "Ubuntu 24.04.5 LTS, Linux 7.0.0-38-generic x86_64",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (toolchain lock pins npm 11.9.0; the executing npm reports 11.17.0)",
+    "go_driver": "go version go1.26.2 linux/amd64",
+    "engine_toolchain": "go1.27.2 (recorded by the packaged engine --version)",
+    "podman": "podman version 4.9.3",
+    "hardware": {
+      "vcpu": 16,
+      "ram_mib": 31341,
+      "free_disk_mib": 97623,
+      "required_profile": "4 vCPU / 8192 MiB RAM / 20480 MiB free disk"
+    }
+  },
+  "fixtures": {
+    "path": "tests/fixtures/keyhelix/C31/",
+    "positive": "tests/fixtures/keyhelix/C31/positive.json",
+    "negative": "tests/fixtures/keyhelix/C31/negative.json",
+    "expected_output": "tests/fixtures/keyhelix/C31/expected-output.json",
+    "provenance": "Repository-authored synthetic release contracts; the secret canary is inert and no real credential, provider state or plaintext is present.",
+    "license": "Apache-2.0",
+    "hashes": {
+      "positive.json": "72910f608309d99ec66c61488e05832bcd66ae47515a22720f23553db8f1e3d0",
+      "negative.json": "711c44ddcb0de8c3e094cdc7fa5215a4c26f622d18e6f80def36e57780e1ef24",
+      "expected-output.json": "1cf346a7ad0f1702ac830291f77b5b0cf30a35eb6439501f89959d7bb27a4ebe"
+    }
+  },
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "summary": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "28 web/contract tests passed, including exact notices freshness, deterministic SBOM, unknown-license rejection, source selection, secret scanning and missing-engine fail-closed behavior."
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test ./...",
+      "exit_code": 0,
+      "summary": "All Go packages passed; the domain test package completed in 18.253s."
+    },
+    {
+      "command": "npm run test:release",
+      "exit_code": 0,
+      "summary": "Five complete-release integration tests passed: artifact contents, checksums and live engine/web probes; byte-identical replay; secret-material fail-closed with prior preservation; SIGKILL before publish plus concurrent-writer rejection and restart recovery; real ulimit quota failure and recovery."
+    },
+    {
+      "command": "GOFLAGS=\"-buildvcs=false\" npm run build",
+      "exit_code": 0,
+      "summary": "Rebuilt the web UI and engine; the engine binary hash remained 80f8dbc0d0d3df9cc4746d2c7b5e6dfff1b8e7d6dca2b34ee61183d9bd4b210e, proving the build recipe is stable with VCS stamping disabled."
+    },
+    {
+      "command": "KEYHELIX_PACKAGE_SKIP_BUILD=1 npm run package",
+      "exit_code": 0,
+      "summary": "Packaged the verified build and atomically published the complete 70-file artifact at dist/release with 69 checksum entries, 45 RESOURCES entries, 78 SBOM components, engine go1.27.2/0.0.1 and a 516-file source archive."
+    },
+    {
+      "command": "cd dist/release && sha256sum -c SHA256SUMS.txt",
+      "exit_code": 0,
+      "summary": "All 69 listed artifact files verified; no missing, extra or mismatched file."
+    },
+    {
+      "command": "npm run notices",
+      "exit_code": 0,
+      "summary": "Regenerated THIRD_PARTY_NOTICES.md from the committed npm, provider and toolchain locks; the contract test enforces exact freshness."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "summary": "Repository contract validation passed; checked 318 JSON files and invariants."
+    }
+  ],
+  "observed": {
+    "artifact": {
+      "path": "dist/release",
+      "release_id": "2992c9e5310b-dirty",
+      "files": 70,
+      "checksum_entries": 69,
+      "bytes": 13123606,
+      "scope": "complete-local-product",
+      "flags": {
+        "webOnly": false,
+        "engineIncluded": true,
+        "offlineResourcesIncluded": true,
+        "sourceArchiveIncluded": true,
+        "sbomIncluded": true,
+        "providerOwnedSecretBytes": true,
+        "embeddedProviderState": false,
+        "signed": false,
+        "published": false
+      }
+    },
+    "hashes": {
+      "SHA256SUMS.txt": "15171562e1bf746a1d738c51ecf89ad0da9950e750e17c69a1e5aa17161b9b4f",
+      "RELEASE.json": "44b94dad851d671227d7e839d5cc087c943faa73946f1ce1ca4d0d0d69f91156",
+      "engine_binary": "80f8dbc0d0d3df9cc4746d2c7b5e6dfff1b8e7d6dca2b34ee61183d9bd4b210e",
+      "web_index": "441aa741598f932e5daa19ac043e1525eaaa6cc70d9659a654a8a2dee75e6af6",
+      "web_asset": "1011e1ee541aebfd6b3b5901b000612d1542b2618d390ee36ef5f62dc2ad8708",
+      "source_archive": "a425a5e7c570b318e1c185e618569ff371f8071d140e03509b2e56684de046f3",
+      "sbom": "15d3f6e8c6af0d696de6d3946a03538d459a251001991342f2b332f6a76af354",
+      "notices": "6019cf69593bbd255c1457120684d48ccc8ad2ad82eaa230fabbbfe60c20fd6b",
+      "resources": "9bbd748d261b8286ca151828833b18433bf022e945f8def7cb107faed1113946"
+    },
+    "engine": {
+      "version": "0.0.1",
+      "toolchain": "go1.27.2",
+      "coreReadyWithoutProviders": false,
+      "healthStatus": 200,
+      "scope": "engine-runtime"
+    },
+    "web": {
+      "indexStatus": 200,
+      "healthStatus": 200,
+      "readyStatus": 200,
+      "readyEngineReady": false,
+      "apiWithoutEngine": 503,
+      "assetCacheControl": "public, max-age=31536000, immutable"
+    },
+    "sbom": {
+      "format": "CycloneDX",
+      "specVersion": "1.5",
+      "components": 78,
+      "npmComponents": 76,
+      "providerContainers": 2,
+      "serialNumber": "urn:uuid:13c0363a-8de7-5cf3-954a-658bcbf533e3"
+    },
+    "notices": {
+      "licenseTexts": 3,
+      "runtimeComponents": ["react", "react-dom", "scheduler"],
+      "providerLicenses": {"openbao": "MPL-2.0", "keycloak": "Apache-2.0"},
+      "staleInventoryRejectedByTest": true
+    },
+    "resources": {
+      "count": 45,
+      "containsAuthorizationMatrix": true,
+      "containsContracts": true,
+      "rules": "authorization rules compile into the Go engine; offline contracts and the authorization matrix are included"
+    },
+    "source": {
+      "fileCount": 516,
+      "treeSha256": "38e6254afa202d8686b947eb91ba051eab882251a2512495219a158407b4cdd2",
+      "archiveBytes": 605869,
+      "dirty": true,
+      "evidenceExcludedFromArchive": true
+    },
+    "reproducibility": {
+      "runs": 2,
+      "checksumsIdentical": true,
+      "releaseManifestIdentical": true,
+      "sbomIdentical": true,
+      "noticesIdentical": true,
+      "sourceArchiveIdentical": true,
+      "engineRebuiltHashStable": true,
+      "scope": "same source, host and locked toolchain"
+    },
+    "negative_cases": {
+      "secret_material": {
+        "blocked": true,
+        "error": "package-error: secret-material:private-key",
+        "prior_release_unchanged": true
+      },
+      "writer_killed_before_publish": {
+        "prior_release_unchanged": true,
+        "stale_lock_recovered": true,
+        "stale_stage_removed": true,
+        "restart_published_complete_release": true
+      },
+      "concurrent_writer": {
+        "rejected": true,
+        "error": "package-error: package-in-progress",
+        "partial_release_published": false
+      },
+      "disk_quota_exhausted": {
+        "aborted": true,
+        "prior_release_unchanged": true,
+        "restart_recovered": true
+      },
+      "replay": {
+        "checksums_identical": true,
+        "duplicate_entries": false
+      },
+      "provider_ownership": {
+        "embedded_provider_state": false,
+        "embedded_secret_material": false,
+        "provider_digests_pinned": true,
+        "plaintext_in_engine_binary": false,
+        ".local-data_paths_in_artifact": 0
+      }
+    }
+  },
+  "results": {
+    "requirement": "N31",
+    "acceptance": "Package the actual engine, web UI and offline rules/resources, source archive/build recipes, SBOM, upstream notices, checksums and provenance. A web-only artifact cannot satisfy this complete-product task.",
+    "status": "passed",
+    "complete_artifact": true,
+    "engine_packaged_and_exercised": true,
+    "web_packaged_and_exercised": true,
+    "offline_resources_inventoried": true,
+    "source_and_build_recipes_archived": true,
+    "sbom_generated": true,
+    "notices_and_license_audit_passed": true,
+    "checksums_verified": true,
+    "provenance_recorded": true,
+    "atomic_publish_and_recovery": true,
+    "reproducible_on_recorded_environment": true,
+    "provider_owns_secret_bytes": true
+  },
+  "limitations": [
+    "The verification worktree was dirty; RELEASE.json records dirty=true and source tree 38e6254afa202d8686b947eb91ba051eab882251a2512495219a158407b4cdd2. Rebuild from a clean commit before publication.",
+    "No commit, push, signature, public artifact upload or host deployment was performed.",
+    "systemd and nginx templates were checked structurally; the unit was not installed or enabled and no host was provisioned.",
+    "The full OpenBao/Keycloak reference workflow from an installed release artifact, clean-host installed workflow and C40 publication remain C39/C40 proof.",
+    "Cross-host byte-for-byte reproducibility is not claimed; replay identity is proven on the recorded host and locked toolchain.",
+    "Provider container images are external pinned dependencies; their blobs and license texts are not embedded in this artifact."
+  ],
+  "rollback_or_recovery_observation": "Publication writes the new complete tree only after all checksums and inventories pass. The prior complete release is retained as dist/release.previous. SIGKILL before publish, a concurrent second writer and a real ulimit file-size failure all left the prior SHA256SUMS.txt unchanged; the next run reclaimed stale lock/stage state and published a complete release.",
+  "core_ready_before_task": true,
+  "next_task": "C32"
+}

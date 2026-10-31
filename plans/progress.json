@@ -276,10 +276,12 @@
     },
     {
       "id": "C31",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C31.json"
+      ],
+      "source_identity": "sha256:13960f722131939ae072ceb2812e58491e6611920a51e969d44d8613b5b3202c",
+      "notes": "Complete reproducible local release artifact verified: engine, web UI, offline contracts/rules references, source archive, CycloneDX SBOM, notices, checksums and provenance; atomic publish/recovery, replay, secret scan, concurrent writer and real quota failure cases passed. Publication and installed-host proof remain C39/C40."
     },
     {
       "id": "C32",

@@ -1,16 +1,19 @@
 [Unit]
-Description=KeyHelix web application shell
-After=network.target
+Description=KeyHelix complete local web and engine
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
 User=keyhelix-web
 Group=keyhelix-web
 WorkingDirectory=/srv/keyhelix/current
-ExecStart=/usr/bin/node scripts/serve-web.mjs --root web --port 4305 --config ops/web/runtime-config.json
+StateDirectory=keyhelix
+StateDirectoryMode=0700
+ExecStart=/usr/bin/node scripts/start-local.mjs --host 127.0.0.1 --port 4305 --root web --config ops/web/runtime-config.json --runtime /etc/keyhelix/runtime.json --providers reuse
 Restart=on-failure
 RestartSec=3
-TimeoutStopSec=15
+TimeoutStopSec=20
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
@@ -21,6 +24,7 @@ ProtectControlGroups=true
 RestrictSUIDSGID=true
 CapabilityBoundingSet=
 UMask=0077
+ReadWritePaths=/var/lib/keyhelix
 
 [Install]
 WantedBy=multi-user.target

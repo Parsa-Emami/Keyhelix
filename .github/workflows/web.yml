@@ -29,10 +29,12 @@ jobs:
       - run: npm run providers
       - run: npm run test:browser
       - run: npm run test:clone
-      - run: npm run package:web
+      - run: npm run test:release
+      - run: KEYHELIX_PACKAGE_SKIP_BUILD=1 npm run package
+      - run: (cd dist/release && sha256sum -c SHA256SUMS.txt)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: web-${{ github.sha }}
+          name: keyhelix-release-${{ github.sha }}
           path: dist/release/
           retention-days: 14
           if-no-files-found: error

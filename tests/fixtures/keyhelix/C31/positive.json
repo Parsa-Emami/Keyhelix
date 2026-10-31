@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C31 complete-release contract; contains no real credential, provider state or plaintext secret.",
+  "license": "Apache-2.0",
+  "requirement": "N31",
+  "release": {
+    "requiredPaths": [
+      "RELEASE.json",
+      "SHA256SUMS.txt",
+      "README.md",
+      "LICENSE",
+      "NOTICE",
+      "THIRD_PARTY_NOTICES.md",
+      "RESOURCES.json",
+      "web/index.html",
+      "dist/engine/keyhelix",
+      "scripts/serve-web.mjs",
+      "scripts/start-local.mjs",
+      "scripts/providers.mjs",
+      "apps/web/src/lib/runtime-config.mjs",
+      "ops/web/runtime-config.json",
+      "ops/providers.lock.json",
+      "docs/engineering/toolchain-lock.json",
+      "docs/release/ARTIFACTS.md",
+      "docs/engineering/WEB_RUNBOOK.md",
+      "docs/product/REFERENCE_WORKFLOW.md",
+      "contracts/openapi.v1.json",
+      "spec/04_AUTHORIZATION_MATRIX.md",
+      "notices/licenses/react-LICENSE.txt",
+      "notices/licenses/react-dom-LICENSE.txt",
+      "notices/licenses/scheduler-LICENSE.txt"
+    ],
+    "requiredPrefixes": [
+      "source/keyhelix-",
+      "sbom/keyhelix-"
+    ],
+    "requiredFlags": {
+      "webOnly": false,
+      "engineIncluded": true,
+      "offlineResourcesIncluded": true,
+      "sourceArchiveIncluded": true,
+      "sbomIncluded": true,
+      "providerOwnedSecretBytes": true,
+      "embeddedProviderState": false
+    },
+    "licenseAllowlist": [
+      "Apache-2.0",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "ISC",
+      "MPL-2.0"
+    ],
+    "requiredSbomComponents": [
+      "pkg:npm/react@19.3.1",
+      "pkg:npm/react-dom@19.3.1",
+      "pkg:npm/scheduler@0.28.0"
+    ],
+    "requiredProviderIds": [
+      "openbao",
+      "keycloak"
+    ],
+    "requiredSourceFiles": [
+      "package.json",
+      "package-lock.json",
+      "go.mod",
+      "Makefile",
+      "scripts/package.sh",
+      "scripts/package-web.mjs",
+      "scripts/package-source.mjs",
+      "docs/release/ARTIFACTS.md",
+      "contracts/openapi.v1.json",
+      "spec/04_AUTHORIZATION_MATRIX.md"
+    ],
+    "forbiddenPathSegments": [
+      ".local-data",
+      "node_modules",
+      ".git",
+      "test-results",
+      "playwright-report"
+    ],
+    "minimumResourceEntries": 40,
+    "minimumSbomComponents": 78
+  }
+}

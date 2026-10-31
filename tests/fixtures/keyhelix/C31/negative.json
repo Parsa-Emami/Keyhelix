@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C31 negative contract; the secret material is an inert canary used only by tests and is never real credential material.",
+  "license": "Apache-2.0",
+  "canary": "c31-runtime-only-secret-sentinel-4f8a",
+  "cases": [
+    {
+      "id": "secret-material",
+      "description": "A staged payload contains a synthetic private-key block or OpenBao token marker.",
+      "expectedError": "package-error: secret-material",
+      "expectedNonZeroExit": true,
+      "priorReleaseIntact": true
+    },
+    {
+      "id": "unknown-license",
+      "description": "A lockfile component declares an unknown or missing license.",
+      "expectedError": "package-error: unknown-license",
+      "expectedNonZeroExit": true,
+      "priorReleaseIntact": true
+    },
+    {
+      "id": "missing-engine",
+      "description": "The complete package is requested without a built engine binary.",
+      "expectedError": "package-error: missing-engine",
+      "expectedNonZeroExit": true,
+      "priorReleaseIntact": true
+    },
+    {
+      "id": "writer-killed-before-publish",
+      "description": "Kill the writer after RELEASE.json exists in staging but before publish; restart must expose the prior complete release and then publish a complete new release.",
+      "expectedNonZeroExit": true,
+      "priorReleaseIntact": true,
+      "restartPublishesCompleteRelease": true
+    },
+    {
+      "id": "disk-quota-exhausted",
+      "description": "A real file-size limit aborts staging; the prior release remains complete and the next run recovers.",
+      "expectedNonZeroExit": true,
+      "priorReleaseIntact": true,
+      "restartPublishesCompleteRelease": true
+    },
+    {
+      "id": "concurrent-writer",
+      "description": "A second live writer is rejected explicitly and cannot publish a partial release.",
+      "expectedError": "package-error: package-in-progress",
+      "expectedNonZeroExit": true,
+      "priorReleaseIntact": true
+    },
+    {
+      "id": "replay",
+      "description": "Repeating packaging produces identical checksums and no duplicate nested release or staging entries.",
+      "expectedNonZeroExit": false,
+      "identicalChecksums": true,
+      "duplicateEntries": false
+    },
+    {
+      "id": "provider-ownership",
+      "description": "No .local-data, provider state, runtime credential or plaintext is embedded; provider images remain pinned external digests.",
+      "expectedNonZeroExit": false,
+      "embeddedProviderState": false,
+      "providerDigestsPinned": true
+    }
+  ]
+}

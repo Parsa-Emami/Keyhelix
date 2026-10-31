@@ -1,4 +1,4 @@
-> Current OSS delivery/resources/storage/release policy is ADR-0003-open-source-local-first.md and DEFINITION_OF_DONE.md. The C01–C30 domain engine and web workspace are implemented (`core_ready: true`).
+> Current OSS delivery/resources/storage/release policy is ADR-0003-open-source-local-first.md and DEFINITION_OF_DONE.md. The C01–C31 domain engine, web workspace and complete release artifact are implemented (`core_ready: true`).
 
 # Current web and engine entry points
 

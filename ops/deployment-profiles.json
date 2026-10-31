@@ -1,7 +1,7 @@
 {
   "version": "0",
   "project": "KeyHelix",
-  "status": "web_foundation",
+  "status": "complete_local_release",
   "primary_mode": "private-web",
   "domain_profile": {
     "public_demo": "synthetic-only",
@@ -30,6 +30,8 @@
   "engine_mode": "provider-backed-private",
   "web": {
     "artifact": "dist/release",
+    "artifact_scope": "complete-local-product",
+    "engine_packaged": true,
     "listen": "127.0.0.1",
     "port": 4305,
     "https_proxy": "ops/web/nginx.conf.template",

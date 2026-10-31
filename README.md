@@ -4,7 +4,7 @@
 
 [CI source integrity and dependency updates](docs/engineering/CI_SOURCE_INTEGRITY.md)
 
-Open-source local-first secret management and cryptographic authorization workspace under [Apache-2.0](LICENSE). **Current implementation: C01–C30 core engine, provider integration, and web workspace implemented; C31–C40 OSS release packaging in progress.**
+Open-source local-first secret management and cryptographic authorization workspace under [Apache-2.0](LICENSE). **Current implementation: C01–C31 complete local engine, provider integration, web workspace and reproducible release packaging implemented; C32–C40 OSS publication and installed-host proof remain.**
 
 ## Clone and run the local workspace
 
@@ -23,14 +23,14 @@ Open http://localhost:4173. Features include OIDC authentication and fresh step-
 
 Authenticate synthetic owner -> scoped write -> fresh step-up reveal -> grant & revoke other user -> provider outage test -> restore isolated provider from proper recovery material.
 
-[C30](plans/commits/C30.md) proves the locally usable supported product from a clone, including restart/restore. [C40](plans/commits/C40.md) proves complete published OSS v1. [Runtime resources](ops/runtime-requirements.json).
+[C30](plans/commits/C30.md) proves the locally usable supported product from a clone, including restart/restore. [C31](plans/commits/C31.md) packages the complete engine, web UI, offline rules/resources, source archive, SBOM, notices, checksums and provenance; see [release artifacts](docs/release/ARTIFACTS.md). [C40](plans/commits/C40.md) proves complete published OSS v1. [Runtime resources](ops/runtime-requirements.json).
 
 ## Implement the next commit
 
 ```sh
 npm run plan -- status
 npm run plan -- next
-npm run plan -- show C31
+npm run plan -- show C32
 npm run check
 ```
 
