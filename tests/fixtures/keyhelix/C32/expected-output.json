@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic expected results for C32 network boundaries; contains no real credential, provider state or plaintext secret.",
+  "license": "Apache-2.0",
+  "requirement": "N32",
+  "task": "C32",
+  "results": {
+    "loopback_valid_host": {
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store",
+        "pragma": "no-cache",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY"
+      },
+      "body": {
+        "status": "ok",
+        "scope": "web-shell"
+      }
+    },
+    "external_host_rejection": {
+      "status": 400,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": {
+        "error": "invalid_host"
+      }
+    },
+    "cross_origin_api_rejection": {
+      "status": 403,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": {
+        "error": "cross_origin_forbidden"
+      }
+    },
+    "engine_unintegrated_or_unavailable": {
+      "status": 503,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store"
+      },
+      "body": {
+        "error": "engine_not_integrated"
+      }
+    },
+    "static_asset_cache": {
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "x-content-type-options": "nosniff"
+      }
+    }
+  }
+}

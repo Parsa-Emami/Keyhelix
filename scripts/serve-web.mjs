@@ -126,6 +126,8 @@ export function proxyToEngine(engineAddress, req, res) {
       if (['connection', 'keep-alive', 'transfer-encoding', 'upgrade', 'content-length'].includes(name)) continue;
       outgoing[name] = value;
     }
+    outgoing['cache-control'] = 'no-store';
+    outgoing['pragma'] = 'no-cache';
     res.writeHead(response.statusCode ?? 502, outgoing);
     response.pipe(res);
   });
@@ -135,7 +137,7 @@ export function proxyToEngine(engineAddress, req, res) {
       res.destroy();
       return;
     }
-    res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Pragma': 'no-cache' });
     res.end(JSON.stringify({ error: 'engine_unavailable' }));
   });
   let received = 0;
@@ -146,7 +148,42 @@ export function proxyToEngine(engineAddress, req, res) {
   req.pipe(upstream);
 }
 
-export function createWebServer({ root, config, projectId, engineAddress }) {
+export function isAllowedHost(hostHeader, allowedHosts = []) {
+  if (!hostHeader || typeof hostHeader !== 'string') return false;
+  const host = hostHeader.toLowerCase().trim();
+  let hostname;
+  if (host.startsWith('[')) {
+    const endBracket = host.indexOf(']');
+    hostname = endBracket !== -1 ? host.slice(0, endBracket + 1) : host;
+  } else if (host === '::1') {
+    hostname = '::1';
+  } else {
+    hostname = host.split(':')[0];
+  }
+  const defaultAllowed = ['127.0.0.1', 'localhost', '::1', '[::1]'];
+  if (defaultAllowed.includes(hostname)) return true;
+  return Array.isArray(allowedHosts) && allowedHosts.includes(hostname);
+}
+
+export function isAllowedOrigin(originHeader, hostHeader, allowedHosts = []) {
+  if (!originHeader) return true;
+  try {
+    const url = new URL(originHeader);
+    const hostname = url.hostname.toLowerCase();
+    const defaultAllowed = ['127.0.0.1', 'localhost', '::1', '[::1]'];
+    if (defaultAllowed.includes(hostname)) return true;
+    if (hostHeader) {
+      const reqHost = hostHeader.toLowerCase().trim();
+      const reqHostname = reqHost.startsWith('[') ? reqHost.slice(0, reqHost.indexOf(']') + 1) : reqHost.split(':')[0];
+      if (hostname === reqHostname) return true;
+    }
+    return Array.isArray(allowedHosts) && allowedHosts.includes(hostname);
+  } catch {
+    return false;
+  }
+}
+
+export function createWebServer({ root, config, projectId, engineAddress, allowedHosts }) {
   const valid = validateRuntimeConfig(config, projectId);
   const publicRoot = resolve(root);
   const within = path => {
@@ -160,11 +197,20 @@ export function createWebServer({ root, config, projectId, engineAddress }) {
     res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Pragma', 'no-cache');
     const send = (status, body, type = 'application/json; charset=utf-8') => {
-      res.writeHead(status, { 'Content-Type': type, 'Content-Length': Buffer.byteLength(body) });
+      res.writeHead(status, { 'Content-Type': type, 'Content-Length': Buffer.byteLength(body), 'Cache-Control': 'no-store', 'Pragma': 'no-cache' });
       res.end(req.method === 'HEAD' ? undefined : body);
     };
+    if (!isAllowedHost(req.headers.host, allowedHosts)) {
+      send(400, '{"error":"invalid_host"}');
+      return;
+    }
     const apiRequest = (req.url ?? '/').startsWith('/api/') || (req.url ?? '/') === '/api';
+    if (apiRequest && !isAllowedOrigin(req.headers.origin, req.headers.host, allowedHosts)) {
+      send(403, '{"error":"cross_origin_forbidden"}');
+      return;
+    }
     if (!apiRequest && !['GET', 'HEAD'].includes(req.method ?? '')) {
       res.setHeader('Allow', 'GET, HEAD');
       send(405, '{"error":"method_not_allowed"}');
@@ -296,7 +342,8 @@ export function createWebServer({ root, config, projectId, engineAddress }) {
       res.writeHead(200, {
         'Content-Type': types[extname(filename)] ?? 'application/octet-stream',
         'Content-Length': bytes.length,
-        'Cache-Control': asset ? 'public, max-age=31536000, immutable' : 'no-store'
+        'Cache-Control': asset ? 'public, max-age=31536000, immutable' : 'no-store',
+        ...(asset ? {} : { 'Pragma': 'no-cache' })
       });
       res.end(req.method === 'HEAD' ? undefined : bytes);
     } catch {

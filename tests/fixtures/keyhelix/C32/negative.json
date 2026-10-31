@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C32 negative test scenarios for network boundaries; contains no real credential, provider state or plaintext secret.",
+  "license": "Apache-2.0",
+  "requirement": "N32",
+  "task": "C32",
+  "cases": {
+    "non_loopback_bind": {
+      "host": "0.0.0.0",
+      "expected_error": "Bind to loopback"
+    },
+    "external_host_header": {
+      "host_header": "evil-attacker.example.com",
+      "path": "/healthz",
+      "expected_status": 400,
+      "expected_error": "invalid_host"
+    },
+    "cross_origin_api_request": {
+      "origin": "http://untrusted-cross-origin.com",
+      "method": "POST",
+      "path": "/api/v1/auth/session",
+      "expected_status": 403,
+      "expected_error": "cross_origin_forbidden"
+    },
+    "invalid_engine_address": {
+      "engine_address": "192.168.1.50:8080",
+      "path": "/api/engine/health",
+      "expected_status": 503,
+      "expected_error": "engine_unavailable"
+    },
+    "missing_web_index": {
+      "path": "/readyz",
+      "expected_status": 503,
+      "expected_scope": "web-shell"
+    },
+    "provider_outage": {
+      "path": "/api/vaults/vault-prod/secrets",
+      "expected_status": 503,
+      "expected_error": "engine_unavailable"
+    },
+    "provider_owns_secret_bytes": {
+      "cache_disclosure": false,
+      "unauthenticated_reveal": false,
+      "plaintext_in_memory_after_clear": false
+    }
+  }
+}

@@ -285,10 +285,12 @@
     },
     {
       "id": "C32",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C32.json"
+      ],
+      "source_identity": "sha256:921f20b0d70432198e9acae9fc3cc483f45a838673717a859a5a23f78dfa312e",
+      "notes": "Network boundaries and local launch hardening verified: loopback binding, DNS rebinding mitigation via Host header validation, origin boundary enforcement for API routes, no-store cache segregation, and optional private TLS ingress documented with zero public domain requirement."
     },
     {
       "id": "C33",

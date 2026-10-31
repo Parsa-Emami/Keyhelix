@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic C32 network boundaries and hosting contract; contains no real credential, provider state or plaintext secret.",
+  "license": "Apache-2.0",
+  "requirement": "N32",
+  "task": "C32",
+  "network_boundaries": {
+    "owned_domain_required": false,
+    "loopback_only": true,
+    "allowed_loopback_hosts": [
+      "127.0.0.1",
+      "localhost",
+      "::1",
+      "[::1]"
+    ],
+    "default_ports": {
+      "web_dev": 4173,
+      "web_prod": 4305,
+      "engine": "ephemeral-loopback",
+      "openbao": 8200,
+      "keycloak": 8080
+    },
+    "cache_rules": {
+      "no_store_routes": [
+        "/",
+        "/index.html",
+        "/healthz",
+        "/readyz",
+        "/runtime-config.json",
+        "/api/diagnostics",
+        "/api/*"
+      ],
+      "immutable_routes": [
+        "/assets/*"
+      ]
+    },
+    "security_headers": {
+      "content_security_policy": "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'",
+      "x_content_type_options": "nosniff",
+      "referrer_policy": "no-referrer",
+      "x_frame_options": "DENY",
+      "permissions_policy": "camera=(), microphone=(), geolocation=()",
+      "pragma": "no-cache"
+    },
+    "private_ingress": {
+      "template": "ops/web/nginx.conf.template",
+      "tls_protocols": [
+        "TLSv1.2",
+        "TLSv1.3"
+      ],
+      "hsts_max_age": 31536000,
+      "default_action": "deny all",
+      "allowlist_loopback": [
+        "127.0.0.1",
+        "::1"
+      ]
+    },
+    "engine_isolation": {
+      "exposed_publicly": false,
+      "loopback_address_pattern": "^127\\.0\\.0\\.1:[1-9]\\d{0,4}$",
+      "fail_closed_status": 503
+    }
+  }
+}

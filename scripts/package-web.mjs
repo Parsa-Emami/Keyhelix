@@ -17,6 +17,7 @@ export const RUNTIME_SCRIPTS = [
 export const RESOURCE_DIRECTORIES = ['contracts', 'spec', 'ops/web', 'ops/local'];
 
 export const RESOURCE_FILES = [
+  'infra/deployment.md',
   'ops/DEPLOYMENT_PREREQUISITES.md',
   'ops/deployment-profiles.json',
   'ops/diagnostics.md',

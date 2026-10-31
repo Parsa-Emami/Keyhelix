@@ -23,6 +23,16 @@ No paid or cloud account, sibling clone or owned public domain is needed. Provid
 
 OpenBao owns the sealed secret bytes: the engine stores a wrapped DEK and nonce through the transit and KV mounts and persists only metadata and an integrity digest. Keycloak issues identity and step-up proofs. Readiness and `/api/diagnostics` report web, engine, storage, key provider and identity provider separately; failures are explicit and never cached into success.
 
+## Network boundaries and private hosting
+
+KeyHelix requires no owned public domain for local or private operation:
+
+1. **Loopback isolation**: Both the web server (`scripts/serve-web.mjs`) and the Go BFF engine (`cmd/keyhelix`) bind strictly to loopback interfaces (`127.0.0.1`, `::1`). The engine listens on an ephemeral loopback port (`127.0.0.1:0`) and is never directly exposed to external networks.
+2. **DNS rebinding defense**: The web server validates incoming `Host` headers against loopback hostnames (`localhost`, `127.0.0.1`, `[::1]`) and rejects external hosts with `400 Bad Request` (`invalid_host`).
+3. **Origin boundary**: State-changing and data-access routes under `/api/*` enforce same-origin semantics; untrusted cross-origin requests are rejected with `403 Forbidden` (`cross_origin_forbidden`).
+4. **Cache boundaries**: Sensitive routes (`/`, `/healthz`, `/readyz`, `/runtime-config.json`, `/api/diagnostics`, `/api/*`) emit `Cache-Control: no-store` and `Pragma: no-cache`. Fingerprinted static assets under `/assets/*` are immutable.
+5. **Optional TLS / private ingress**: Operators can terminate TLS with Nginx (`ops/web/nginx.conf.template`) and proxy to loopback port `4305`, enforcing strict CIDR allowlists (`deny all` by default). See [infra/deployment.md](file:///home/amirreza/Desktop/Projects/Keyhelix/infra/deployment.md) for full deployment details.
+
 ## Checks
 
 ```sh

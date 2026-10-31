@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C32",
+  "date": "2026-10-31",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Local operation needs no owned public domain. Prove loopback/origin/cache boundaries and document optional TLS/private ingress without exposing engine work by default (Requirement N32).",
+  "commit_id": "C32",
+  "base_commit": "2992c9e5310bc0957bd011222c4b0ba31000eae1",
+  "git_commit_created": false,
+  "source_identity": "sha256:921f20b0d70432198e9acae9fc3cc483f45a838673717a859a5a23f78dfa312e",
+  "source_identity_method": "SHA-256 over sorted C32-owned implementation, test, fixture, documentation and packaging-wiring paths; each file contributes its path, a NUL separator and its own binary SHA-256. Excludes plans/, docs/agents/SESSION_HANDOFF.json, status-only README/START_HERE/DEFINITION_OF_DONE and docs/evidence/ to avoid recursive self-reference. Historical evidence remains bound to its original source.",
+  "source_identity_files": {
+    "docs/engineering/CLONE_TO_RUN.md": "f468d045941d33ffa7c6c01a1f5414b24322e45e64af28f942066b76cd7b6051",
+    "infra/deployment.md": "d2811e23872f957bada3a04fad4b0ccd141cacdd43dddbc4a746409c92b1ac94",
+    "scripts/package-web.mjs": "6e40d8b94c42969c43b6d58a388413b83556f88c9824c1368e02ed8a05c139f9",
+    "scripts/serve-web.mjs": "8d7721407375ad78ab2518e0879a4fd96e44606be22d2d9e6ca739c97c979cc6",
+    "tests/fixtures/keyhelix/C32/expected-output.json": "0b4d3220729178315670d76f91a58e86789f8253dd9a277b5b5be767bcf532ef",
+    "tests/fixtures/keyhelix/C32/negative.json": "368a6f0e3fac9375387d05ba6f3485367dadbbfac776a26cad739e1f7d70bf1f",
+    "tests/fixtures/keyhelix/C32/positive.json": "deda1f4f437445b37f1bf9201f57d8974fc24a5c4f57911f6bd9041878437562",
+    "tests/web/network-boundaries.test.mjs": "42940282382d1dcb3cae5507b7b9d8f19b0bb88815458e106b06bfbfce407b03"
+  },
+  "environment": {
+    "os": "Ubuntu 24.04.5 LTS, Linux 7.0.0-38-generic x86_64",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (toolchain lock pins npm 11.9.0; the executing npm reports 11.17.0)",
+    "go_driver": "go version go1.26.2 linux/amd64",
+    "engine_toolchain": "go1.27.2 (recorded by the packaged engine --version)",
+    "podman": "podman version 4.9.3",
+    "hardware": {
+      "vcpu": 16,
+      "ram_mib": 31341,
+      "free_disk_mib": 97623,
+      "required_profile": "4 vCPU / 8192 MiB RAM / 20480 MiB free disk"
+    }
+  },
+  "fixtures": {
+    "path": "tests/fixtures/keyhelix/C32/",
+    "positive": "tests/fixtures/keyhelix/C32/positive.json",
+    "negative": "tests/fixtures/keyhelix/C32/negative.json",
+    "expected_output": "tests/fixtures/keyhelix/C32/expected-output.json",
+    "provenance": "Repository-authored synthetic network boundaries, negative scenarios and expected output contracts; contains no real credential, provider state or plaintext secret.",
+    "license": "Apache-2.0",
+    "hashes": {
+      "positive.json": "deda1f4f437445b37f1bf9201f57d8974fc24a5c4f57911f6bd9041878437562",
+      "negative.json": "368a6f0e3fac9375387d05ba6f3485367dadbbfac776a26cad739e1f7d70bf1f",
+      "expected-output.json": "0b4d3220729178315670d76f91a58e86789f8253dd9a277b5b5be767bcf532ef"
+    }
+  },
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "summary": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "35 web and contract tests passed, including DNS rebinding defense via Host validation, same-origin API enforcement, cache-control segregation, and engine loopback isolation."
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test ./...",
+      "exit_code": 0,
+      "summary": "All Go packages passed; engine lifecycle, internal auth, vaults, storage, and domain integration passed."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "summary": "Validated JSON files, OpenAPI 3.2.0, AsyncAPI 3.1.0, and repository invariants."
+    },
+    {
+      "command": "npm run test:release",
+      "exit_code": 0,
+      "summary": "Five complete-release integration tests passed with updated resources including infra/deployment.md."
+    }
+  ],
+  "invariants_verified": {
+    "owned_domain_required": false,
+    "loopback_isolation": "Enforced; web and engine bind to loopback interfaces (127.0.0.1, ::1); external binds fail closed.",
+    "dns_rebinding_defense": "Enforced; foreign Host headers rejected with 400 invalid_host.",
+    "origin_boundary": "Enforced; untrusted cross-origin requests to /api rejected with 403 cross_origin_forbidden.",
+    "cache_boundaries": "Enforced; sensitive and dynamic routes emit Cache-Control: no-store and Pragma: no-cache; static assets emit public, max-age=31536000, immutable.",
+    "engine_isolation": "Enforced; Go engine communicates solely via loopback proxy on ephemeral port; direct external exposure is prohibited.",
+    "provider_ownership": "Enforced; OpenBao seals and owns secret bytes; Keycloak manages identity and fresh step-up tokens; provider outage fails closed with 503."
+  },
+  "next_task": "C33"
+}

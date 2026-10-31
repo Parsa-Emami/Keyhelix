@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C32",
+  "date": "2026-10-31",
+  "requirement": "N32",
+  "passed": true,
+  "scope": "KeyHelix complete open-source local web profile",
+  "domain_profile": {
+    "owned_public_domain_required": false,
+    "primary_mode": "private-web",
+    "status": "hardened_loopback_and_private_hosting",
+    "public_demo": "synthetic-only"
+  },
+  "boundaries": {
+    "loopback": {
+      "enforced": true,
+      "interfaces": [
+        "127.0.0.1",
+        "::1"
+      ],
+      "non_loopback_rejected": true,
+      "dns_rebinding_defense": true,
+      "engine_ephemeral_loopback": true,
+      "engine_direct_exposure_blocked": true
+    },
+    "origin": {
+      "enforced": true,
+      "same_origin_required_for_api": true,
+      "cross_origin_api_rejected": true,
+      "csp_connect_src": "'self'",
+      "cookie_same_site": "Lax"
+    },
+    "cache": {
+      "sensitive_routes_no_store": true,
+      "api_routes_no_store": true,
+      "pragma_no_cache": true,
+      "assets_immutable": true,
+      "service_worker_caching": false
+    },
+    "private_ingress": {
+      "optional": true,
+      "tls_termination": true,
+      "min_tls_version": "TLSv1.2",
+      "hsts_enabled": true,
+      "hsts_max_age": 31536000,
+      "default_action": "deny all",
+      "template": "ops/web/nginx.conf.template"
+    }
+  },
+  "provider_ownership": {
+    "secret_bytes_in_openbao": true,
+    "engine_stores_plaintext": false,
+    "step_up_in_keycloak": true,
+    "fail_closed_on_outage": true
+  },
+  "invariants_verified": [
+    "Local operation requires no owned public domain",
+    "Loopback binding rejects external interfaces",
+    "DNS rebinding mitigated by Host header validation",
+    "Origin boundary blocks untrusted cross-origin API calls",
+    "Sensitive endpoints enforce no-store and pragma no-cache",
+    "Engine work is never published or exposed by default",
+    "Provider outage fails closed with explicit 503 error"
+  ],
+  "verification": {
+    "test_suite": "tests/web/network-boundaries.test.mjs",
+    "fixtures": "tests/fixtures/keyhelix/C32/",
+    "result": "passed"
+  }
+}
