@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "task": "C37",
+  "requirement": "N37",
+  "provenance": "Repository-authored synthetic acceptance and beta blocker fix verification fixture; contains no real credential, secret, or private key material.",
+  "license": "Apache-2.0",
+  "target_milestones": [
+    "C30",
+    "C33",
+    "C35",
+    "C36"
+  ],
+  "fixes": [
+    {
+      "id": "FIX-01-PORT-PREFLIGHT",
+      "milestone": "C30/C36",
+      "description": "Preflight loopback port conflict detection in scripts/oss-bootstrap.mjs for ports 8080 (Keycloak) and 8200 (OpenBao) with actionable remediation advice",
+      "status": "resolved"
+    },
+    {
+      "id": "FIX-02-PROVIDER-TIMEOUT-RESILIENCE",
+      "milestone": "C30/C36",
+      "description": "Container readiness probing and health status diagnostics in scripts/providers.mjs ensuring reliable bootstrap on clean hosts",
+      "status": "resolved"
+    },
+    {
+      "id": "FIX-03-STEPUP-MEM-CLEAR",
+      "milestone": "C33",
+      "description": "Modal escape dismissal and countdown auto-clear immediately zero in-memory plaintext buffers and DOM elements",
+      "status": "resolved"
+    },
+    {
+      "id": "FIX-04-REVOCATION-IMMEDIACY",
+      "milestone": "C30/C36",
+      "description": "Grant revocation immediately invalidates existing step-up tokens and denies member access across engine restart and provider restore drills",
+      "status": "resolved"
+    },
+    {
+      "id": "FIX-05-DOWNGRADE-DATA-SAFETY",
+      "milestone": "C35",
+      "description": "Manifest downgrade attempts or restoration of stale backups fail closed without corrupting or overwriting newer accepted records",
+      "status": "resolved"
+    }
+  ],
+  "vault": {
+    "vault_id": "vault-prod",
+    "kek_id": "keyhelix-kek",
+    "kek_mount": "transit",
+    "payload_mount": "secret"
+  },
+  "identities": {
+    "admin": {
+      "username": "alice",
+      "email": "alice@keyhelix.local",
+      "realm_role": "vault-admin",
+      "allowed_scopes": [
+        "secret:read",
+        "secret:write",
+        "app/prod/*"
+      ]
+    },
+    "member": {
+      "username": "bob",
+      "email": "bob@keyhelix.local",
+      "realm_role": "vault-member",
+      "allowed_scopes": []
+    }
+  },
+  "secret": {
+    "secret_path_prefix": "app/prod/c37-fix-",
+    "classification": "restricted",
+    "plaintext_sentinel": "c37-synthetic-plaintext-sentinel-8c3d",
+    "expected_first_version": 1
+  },
+  "invariants": [
+    "Provider owns secret bytes",
+    "Zero telemetry",
+    "Fail-closed on provider outage",
+    "Forward repair over stale rollback",
+    "Immediate privilege reduction upon grant revocation"
+  ]
+}

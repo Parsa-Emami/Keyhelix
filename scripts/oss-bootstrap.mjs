@@ -3,6 +3,7 @@ import { readFile, access } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
+import { createConnection } from 'node:net';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const lock = JSON.parse(readFileSync(new URL('../docs/engineering/toolchain-lock.json', import.meta.url)));
@@ -18,6 +19,15 @@ export const goEnvironment = {
   GOSUMDB: 'sum.golang.org',
   GOPROXY: 'https://proxy.golang.org|direct'
 };
+
+export function checkPortConflict(port, host = '127.0.0.1', timeout = 1000) {
+  return new Promise(resolve => {
+    const socket = createConnection({ port, host });
+    const timer = setTimeout(() => { socket.destroy(); resolve(false); }, timeout);
+    socket.once('connect', () => { clearTimeout(timer); socket.destroy(); resolve(true); });
+    socket.once('error', () => { clearTimeout(timer); resolve(false); });
+  });
+}
 
 export function prerequisites(run = spawnSync) {
   const go = run('go', ['version'], { cwd: root, encoding: 'utf8', timeout: 120000, env: goEnvironment });
@@ -97,12 +107,19 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       const state = JSON.parse(await readFile(new URL('../plans/project-state.json', import.meta.url), 'utf8'));
       const { providerStatus } = await import('./providers.mjs');
       const providers = await providerStatus();
+      const keycloakBusy = await checkPortConflict(8080);
+      const openbaoBusy = await checkPortConflict(8200);
+      const portDiagnostics = {
+        keycloakPort8080: keycloakBusy ? (providers.keycloak.running ? 'listening (managed container)' : 'conflict (foreign process)') : 'free',
+        openbaoPort8200: openbaoBusy ? (providers.openbao.running ? 'listening (managed container)' : 'conflict (foreign process)') : 'free'
+      };
       console.log(JSON.stringify({
         nodeSupported: supportedNode(process.version),
         webAssetsBuilt: built,
         tools,
         runtime,
         providers,
+        portDiagnostics,
         readiness: state.readiness,
         engineReady: state.core_ready,
         start: 'npm start',

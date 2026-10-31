@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "task": "C37",
+  "requirement": "N37",
+  "provenance": "Repository-authored synthetic negative acceptance and regression fixture; contains no real credential, secret, or private key material.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "port-conflict-unhandled",
+      "description": "Attempting setup or startup when required loopback port 8080 or 8200 is bound by a foreign process",
+      "expected_status": null,
+      "expected_code": "port_conflict_detected",
+      "expected_plaintext": null
+    },
+    {
+      "case": "stale-data-overwrite-attempt",
+      "description": "Attempting to restore an older store revision over a newer accepted manifest version fails closed",
+      "expected_status": null,
+      "expected_code": "stale_data_rejected",
+      "expected_plaintext": null
+    },
+    {
+      "case": "revoked-member-token-replay",
+      "description": "Member attempts to reveal secret using a prior step-up token after grant revocation",
+      "expected_status": 403,
+      "expected_code": "access_denied",
+      "expected_plaintext": null
+    },
+    {
+      "case": "provider-outage-leakage",
+      "description": "Reveal attempted while key provider is offline returns 503 with zero cached plaintext",
+      "expected_status": 503,
+      "expected_code": "provider_unavailable",
+      "expected_plaintext": null
+    },
+    {
+      "case": "tampered-auth-tag",
+      "description": "Decryption of ciphertext envelope with tampered authentication tag fails closed",
+      "expected_status": 422,
+      "expected_code": "authentication_failed",
+      "expected_plaintext": null
+    },
+    {
+      "case": "missing-prerequisites",
+      "description": "Execution on an environment missing Go, Podman, or compatible Node version fails fast with diagnostics",
+      "expected_status": null,
+      "expected_code": "setup_failed",
+      "expected_plaintext": null
+    }
+  ],
+  "prohibited_plaintext_storage": {
+    "sentinel": "c37-synthetic-plaintext-sentinel-8c3d",
+    "expected_occurrences_in_metadata_and_provider_kv": 0
+  },
+  "unresolved_blockers_policy": {
+    "blockers_concealed": false,
+    "invariants_weakened": false,
+    "invented_user_feedback": false
+  }
+}

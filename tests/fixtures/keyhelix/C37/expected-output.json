@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task": "C37",
+  "requirement": "N37",
+  "provenance": "Repository-authored synthetic expected-output acceptance fixture; specifies target regression outcomes and blocker resolution status.",
+  "license": "Apache-2.0",
+  "status": "passed",
+  "acceptance": "Fix actual C30/C33/C35/C36 failures with targeted regressions and repeat affected checks. Keep unresolved blockers explicit; never invent feedback or weaken an invariant to claim completion.",
+  "target_milestones_covered": [
+    "C30",
+    "C33",
+    "C35",
+    "C36"
+  ],
+  "fixes_summary": {
+    "port_conflict_preflight": true,
+    "provider_timeout_resilience": true,
+    "step_up_memory_clearing": true,
+    "revocation_immediate_denial": true,
+    "downgrade_data_safety": true
+  },
+  "regression_suites": {
+    "go_engine": "tests/beta_fixes_test.go",
+    "web_contracts": "tests/web/beta-fixes.test.mjs"
+  },
+  "unresolved_blockers": [],
+  "evidence": "docs/evidence/C37.json"
+}

@@ -18,10 +18,11 @@
     "verified reference UX across 360px/1440px viewports, keyboard skip-link/tab navigation, failure states, and N-1 metadata compatibility (C33)",
     "complete installation, usage, contribution, support, and security guides with zero cloud or paid entitlements (C34)",
     "detached Ed25519 release signature verification, data-safe install/upgrade/rollback preserving newer accepted data, and verified source-build alternative (C35)",
-    "independent clean-host repetition of the reference clone-to-value workflow from public guides with measured effort and zero cloud/paid prerequisites (C36)"
+    "independent clean-host repetition of the reference clone-to-value workflow from public guides with measured effort and zero cloud/paid prerequisites (C36)",
+    "observed blockers resolved and audited with targeted regressions across provider outage, grant revocation privilege reduction, tampered auth tags, and port conflict detection (C37)"
   ],
-  "engine": "implemented locally and fully verified against real local providers with clean-host acceptance certified; complete release packaging verified at C31; network boundaries hardened at C32; UX viewports, keyboard accessibility, and failure states verified at C33; complete OSS user, contribution, and security guides verified at C34; signed artifacts, data-safe upgrades/rollbacks, and source-build alternative verified at C35; independent clone-to-value onboarding repeat verified from public guide at C36",
-  "next_task": "C37",
+  "engine": "implemented locally and fully verified against real local providers with clean-host acceptance certified; complete release packaging verified at C31; network boundaries hardened at C32; UX viewports, keyboard accessibility, and failure states verified at C33; complete OSS user, contribution, and security guides verified at C34; signed artifacts, data-safe upgrades/rollbacks, and source-build alternative verified at C35; independent clone-to-value onboarding repeat verified from public guide at C36; observed installation and workflow blockers audited and verified with targeted regressions at C37",
+  "next_task": "C38",
   "next_command": "npm run plan -- next",
   "full_product_endpoint": "C31 complete local artifact; C40 full published OSS v1",
   "open_blockers": []

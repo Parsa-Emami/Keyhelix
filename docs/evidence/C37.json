@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C37",
+  "date": "2026-10-31",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Fix actual C30/C33/C35/C36 failures with targeted regressions and repeat affected checks. Keep unresolved blockers explicit; never invent feedback or weaken an invariant to claim completion (Requirement N37).",
+  "commit_id": "C37",
+  "base_commit": "f5fc455fb60d1196f50607bb8efe1bde8afd2ed9",
+  "git_commit_created": false,
+  "source_identity": "sha256:4990bc5d08550d672b2d12827f856580042813c42e10d6ca8bb36ce405113b15",
+  "source_identity_method": "SHA-256 over sorted C37-owned implementation, test, fixture, and documentation paths; each file contributes its path, a NUL separator and its own binary SHA-256. Excludes plans/, docs/agents/SESSION_HANDOFF.json, status-only START_HERE/DEFINITION_OF_DONE and docs/evidence/C37.json to avoid recursive self-reference. Historical evidence remains bound to its original source.",
+  "source_identity_files": {
+    "docs/product/BETA_FIXES.md": "88f8d4e1ed81e3cd60a14c4701dd1ca1ee64051847f649e4768eeb0e68d84886",
+    "scripts/oss-bootstrap.mjs": "4ea4cebf1fe0293d893ef69da2c97af59ae376abc274be6379f0c9e57d3058fd",
+    "tests/beta_fixes_test.go": "3bce7dd423e1b43676aaf8025a14b440109ea4dae27acd7fb0c60dae333525d4",
+    "tests/fixtures/keyhelix/C37/expected-output.json": "f0c9e93b71bebf1b326c8c4a8dbc81442a0d60ce803d2c3f1d8e475f90c8b673",
+    "tests/fixtures/keyhelix/C37/negative.json": "d9403dd8ab8fc40ff2514ee76cb8878cdfd132efbf63e1bbec7a1b3e48474b88",
+    "tests/fixtures/keyhelix/C37/positive.json": "167f9e7f238b6951368ac014c86a3cc68356cff0ecad9292a95f98fa96cc9b1b",
+    "tests/web/beta-fixes.test.mjs": "3b0f019ac481a39b9f1958b5a9c1bb7aa874f90e0ccce804f131491d3a50b5db"
+  },
+  "environment": {
+    "os": "Ubuntu 24.04.5 LTS, Linux 7.0.0-38-generic x86_64",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (toolchain lock pins npm 11.9.0; the executing npm reports 11.17.0)",
+    "go_driver": "go version go1.26.2 linux/amd64",
+    "engine_toolchain": "go1.27.2 (recorded by the packaged engine --version)",
+    "podman": "podman version 4.9.3",
+    "hardware": {
+      "vcpu": 16,
+      "ram_mib": 31341,
+      "free_disk_mib": 97580,
+      "required_profile": "4 vCPU / 8192 MiB RAM / 20480 MiB free disk"
+    },
+    "providers": [
+      {
+        "id": "openbao",
+        "image": "quay.io/openbao/openbao:2.7.2",
+        "license": "MPL-2.0",
+        "observed_version": "2.7.2",
+        "observed_state": "initialized, unsealed, ready"
+      },
+      {
+        "id": "keycloak",
+        "image": "quay.io/keycloak/keycloak:26.8.1",
+        "license": "Apache-2.0",
+        "observed_realm": "http://127.0.0.1:8080/realms/keyhelix",
+        "observed_state": "ready"
+      }
+    ]
+  },
+  "fixtures": {
+    "path": "tests/fixtures/keyhelix/C37/",
+    "positive": "tests/fixtures/keyhelix/C37/positive.json",
+    "negative": "tests/fixtures/keyhelix/C37/negative.json",
+    "expected_output": "tests/fixtures/keyhelix/C37/expected-output.json",
+    "provenance": "Repository-authored synthetic C37 observed blockers and regression resolution fixture; contains no real secret, key or credential material.",
+    "license": "Apache-2.0",
+    "hashes": {
+      "positive.json": "167f9e7f238b6951368ac014c86a3cc68356cff0ecad9292a95f98fa96cc9b1b",
+      "negative.json": "d9403dd8ab8fc40ff2514ee76cb8878cdfd132efbf63e1bbec7a1b3e48474b88",
+      "expected_output.json": "f0c9e93b71bebf1b326c8c4a8dbc81442a0d60ce803d2c3f1d8e475f90c8b673"
+    }
+  },
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "summary": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "go test -count=1 ./...",
+      "exit_code": 0,
+      "summary": "All Go engine packages and integration tests passed, including TestC37ObservedBlockersAndFixesRegressionsN37 in 18.8s."
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "summary": "Go static analysis passed with zero warnings across all packages."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "45 Node web, contract, tooling, and beta fixes tests passed cleanly."
+    },
+    {
+      "command": "npm run doctor",
+      "exit_code": 0,
+      "summary": "Toolchain and provider doctor check passed with port diagnostics."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "summary": "Validated 344 JSON files and repository contract invariants."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py'",
+      "exit_code": 0,
+      "summary": "6 CI source integrity regression tests passed."
+    }
+  ],
+  "results": {
+    "requirement": "N37",
+    "acceptance": "Fix actual C30/C33/C35/C36 failures with targeted regressions and repeat affected checks. Keep unresolved blockers explicit; never invent feedback or weaken an invariant to claim completion.",
+    "status": "passed",
+    "c30_provider_resilience_verified": true,
+    "c33_port_conflict_detection_verified": true,
+    "c35_immediate_privilege_reduction_verified": true,
+    "c36_zero_plaintext_leak_verified": true,
+    "unresolved_blockers_count": 0,
+    "invented_feedback_used": false,
+    "weakened_invariants": false,
+    "provider_owns_secret_bytes": true,
+    "tampered_ciphertext_rejected": true
+  },
+  "invariants_verified": {
+    "provider_ownership": "Enforced; OpenBao owns sealed secret bytes and engine persists only transit-wrapped DEK envelopes.",
+    "immediate_privilege_reduction": "Enforced; revoking a member grant immediately revokes access token validity and denies secret reveal on the very next attempt.",
+    "fail_closed_availability": "Enforced; consecutive provider outage drills consistently fail closed with HTTP 503 provider_unavailable and zero plaintext leakage.",
+    "tamper_detection": "Enforced; tampered ciphertext payload or auth tag is rejected with HTTP 500 secret_unseal_failed.",
+    "zero_plaintext_at_rest": "Enforced; full directory walk over engine and provider data confirms 0 occurrences of secret sentinel bytes.",
+    "port_conflict_safety": "Enforced; diagnostic tooling inspects port availability before launch and provides actionable remediations."
+  },
+  "next_task": "C38"
+}

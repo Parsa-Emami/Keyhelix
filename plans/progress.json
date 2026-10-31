@@ -330,10 +330,12 @@
     },
     {
       "id": "C37",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C37.json"
+      ],
+      "source_identity": "sha256:4990bc5d08550d672b2d12827f856580042813c42e10d6ca8bb36ce405113b15",
+      "notes": "Resolved observed installation and workflow blockers from C30/C33/C35/C36 with targeted regressions (Requirement N37). Recorded full technical audit and zero unresolved blockers in docs/product/BETA_FIXES.md. Verified immediate privilege reduction on grant revocation, outage fail-closed resilience across 3 consecutive calls, tampered ciphertext auth tag rejection, and zero-plaintext leak scans in tests/beta_fixes_test.go and tests/web/beta-fixes.test.mjs; enhanced scripts/oss-bootstrap.mjs with port conflict detection."
     },
     {
       "id": "C38",

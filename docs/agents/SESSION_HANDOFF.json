@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-31",
-  "base_commit": "40cebce628686a4d19ef85a5a4f897bdc067d791",
-  "scope": "C36 verify independent clean-environment repetition of the clone-to-value workflow from public guides with measured effort and zero cloud/paid prerequisites (N36)",
+  "base_commit": "f5fc455fb60d1196f50607bb8efe1bde8afd2ed9",
+  "scope": "C37 resolve observed installation and workflow blockers from C30/C33/C35/C36 with targeted regressions and explicit audit (N37)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -39,24 +39,24 @@
     "C33",
     "C34",
     "C35",
-    "C36"
+    "C36",
+    "C37"
   ],
   "git_commit_created": false,
-  "c36_status": "verified locally: independent clean-environment repetition of the reference clone-to-value workflow following exclusively the public runbook (docs/engineering/CLONE_TO_RUN.md) without cloud accounts, paid entitlements, or customer pilot prerequisites; measured effort and step timings recorded in docs/product/ONBOARDING_RESULTS.md; smoke harness, browser Playwright suite (39 tests), and Go engine integration suite (including TestC36IndependentCloneToValueOnboardingN36) verified zero plaintext at rest, provider secret-byte ownership, fail-closed provider outage, and durable grant revocation",
+  "c37_status": "verified locally: resolved observed installation and workflow blockers with targeted regressions across Go engine and web test suites; audited all items in docs/product/BETA_FIXES.md with zero unresolved blockers; port conflict diagnostics added to scripts/oss-bootstrap.mjs; verified immediate privilege reduction on grant revocation, provider outage resilience across repeated calls, tampered ciphertext rejection, and zero plaintext leaks at rest",
   "changed_paths": [
     "apps/web/src/generated/project.json",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C36.json",
-    "docs/product/ONBOARDING_RESULTS.md",
+    "docs/evidence/C37.json",
+    "docs/product/BETA_FIXES.md",
     "plans/progress.json",
     "plans/project-state.json",
-    "scripts/clone-smoke.mjs",
-    "tests/fixtures/keyhelix/C36/expected-output.json",
-    "tests/fixtures/keyhelix/C36/negative.json",
-    "tests/fixtures/keyhelix/C36/positive.json",
-    "tests/onboarding_test.go",
-    "tests/scenarios/clone-to-value.json",
-    "tests/web/onboarding.test.mjs"
+    "scripts/oss-bootstrap.mjs",
+    "tests/beta_fixes_test.go",
+    "tests/fixtures/keyhelix/C37/expected-output.json",
+    "tests/fixtures/keyhelix/C37/negative.json",
+    "tests/fixtures/keyhelix/C37/positive.json",
+    "tests/web/beta-fixes.test.mjs"
   ],
   "ci_defect_fixes": [],
   "commands": [
@@ -64,17 +64,16 @@
     "PATH=/usr/local/bin:/usr/local/go/bin:$PATH go test -count=1 ./...",
     "PATH=/usr/local/bin:/usr/local/go/bin:$PATH go vet ./...",
     "PATH=/usr/local/bin:/usr/local/go/bin:$PATH npm test",
-    "PATH=/usr/local/bin:/usr/local/go/bin:$PATH npm run test:browser",
-    "KEYHELIX_CLONE_WORKTREE=1 KEYHELIX_REUSE_PROVIDERS=1 KEYHELIX_CLONE_RESTORE=1 npm run test:clone",
+    "PATH=/usr/local/bin:/usr/local/go/bin:$PATH npm run doctor",
     "python3 scripts/validate_repo.py",
     "python3 -m unittest discover -s tests/engineering -p 'test_*.py'"
   ],
   "results": {
-    "engine": "Go build, vet and all package tests pass cleanly, including TestC36IndependentCloneToValueOnboardingN36 in 19.1s.",
-    "web": "42 Node web, contract, and onboarding tests pass cleanly in 265ms; 39 Playwright browser tests pass in 7.9s.",
-    "clone_smoke": "Full clone smoke harness executed reference workflow (clone -> setup -> web startup -> browser workflow -> restart persistence -> zero-plaintext scan -> provider outage fail-closed -> provider restore drill in 50.8s).",
-    "C36": "Independent contributor onboarding verified from public guide docs/engineering/CLONE_TO_RUN.md without paid or cloud entitlements. Detailed effort metrics and friction points recorded in docs/product/ONBOARDING_RESULTS.md.",
+    "engine": "Go build, vet and all package tests pass cleanly, including TestC37ObservedBlockersAndFixesRegressionsN37 in 18.8s.",
+    "web": "45 Node web, contract, tooling, and beta fixes tests pass cleanly in 284ms.",
+    "doctor": "Toolchain and provider doctor check passed with port diagnostics.",
+    "C37": "Resolved observed installation and workflow blockers from C30/C33/C35/C36 with targeted regressions. Technical audit and zero unresolved blockers recorded in docs/product/BETA_FIXES.md.",
     "provider_ownership": "No secret bytes, tokens, or plaintext credentials are persisted or cached. OpenBao owns sealed secret bytes; directory scan confirmed exactly 0 occurrences of secret sentinels at rest."
   },
-  "next_recommended_task": "C37: fix(acceptance): resolve observed installation and workflow blockers"
+  "next_recommended_task": "C38: docs(architecture): record open-source local-first architecture and security decisions"
 }
