@@ -75,6 +75,18 @@
       "summary": "Five complete-release integration tests passed with updated resources including infra/deployment.md."
     }
   ],
+  "results": {
+    "requirement": "N32",
+    "acceptance": "Local operation needs no owned public domain. Prove loopback/origin/cache boundaries and document optional TLS/private ingress without exposing engine work by default.",
+    "status": "passed",
+    "loopback_boundaries_proved": true,
+    "dns_rebinding_defense_verified": true,
+    "origin_boundaries_enforced": true,
+    "cache_boundaries_enforced": true,
+    "engine_work_unexposed_by_default": true,
+    "optional_private_ingress_documented": true,
+    "provider_owns_secret_bytes": true
+  },
   "invariants_verified": {
     "owned_domain_required": false,
     "loopback_isolation": "Enforced; web and engine bind to loopback interfaces (127.0.0.1, ::1); external binds fail closed.",
