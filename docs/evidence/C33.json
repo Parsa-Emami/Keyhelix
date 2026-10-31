@@ -7,14 +7,14 @@
   "planning_template": false,
   "scope": "Complete the actual reference workflow with keyboard/table equivalents at 360px and 1440px, invalid/empty/interrupted/provider-outage cases and N-1 data/export fixtures. Advertise only observed supported platforms (Requirement N33).",
   "commit_id": "C33",
-  "base_commit": "15bc8b6d9fc82985d34943dd7c6a53c9fd2eb9c3",
+  "base_commit": "8ef6043684cb0df42385ec81910b7ce4e4a4a756",
   "git_commit_created": false,
-  "source_identity": "sha256:54f43f08d45493f84bda167a44e9be5f5a3c932e65219da6f5fe8eb4f5287288",
+  "source_identity": "sha256:b677cfe511c539bebe75b57bc169d74c5db2cb0ea463c8f788d1197419d15efa",
   "source_identity_method": "SHA-256 over sorted C33-owned implementation, test, fixture, and ux-evidence paths; each file contributes its path, a NUL separator and its own binary SHA-256. Excludes plans/, docs/agents/SESSION_HANDOFF.json, status-only README/START_HERE/DEFINITION_OF_DONE and docs/evidence/ to avoid recursive self-reference. Historical evidence remains bound to its original source.",
   "source_identity_files": {
     "apps/web/src/styles.css": "3f8def71d11f5da94190b7545b86590f89f8c7c25661de8347664b5167910801",
     "docs/evidence/ux.json": "1fe42267f9e51e11dded7dbb19677b10544a9e8e4795ee031e34f5563c62178e",
-    "tests/browser/full-workflow-accessibility.spec.ts": "8e589344bfd7d152b24bc58a017dcbefe0fd4d23d93c8982a1404e43da5cac85",
+    "tests/browser/full-workflow-accessibility.spec.ts": "5a2d8d4a288aa0c4b8d48fb611e8db3a8c05a2ba73a6cf774166eed8dceadd59",
     "tests/fixtures/keyhelix/C33/expected-output.json": "ea141afc80821cfed6189ea29bc806809b3ea8cf9b0508a347342f0df18a79ae",
     "tests/fixtures/keyhelix/C33/negative.json": "d2b27eb8dbd2fac7f7e3ea7642c7e23da20351a2bc8629fb146ae8a7985ca741",
     "tests/fixtures/keyhelix/C33/positive.json": "6e852de4d5db2aea6748d13fc43b63467c796cbfa17fdb1e4d33a8e2ce8219a2"

@@ -38,33 +38,49 @@ test.describe('C33: UX Viewports, Keyboard Accessibility, Failure States & N-1 C
 
   test('Keyboard accessibility: skip link, tab navigation, and focus management', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
+
+    // 1. Skip link bypasses header navigation and shifts focus to main #content
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await expect(page.getByRole('region', { name: 'Availability' })).toContainText('Engine runtime');
     await expect(page.locator('.session-badge')).toHaveAttribute('aria-busy', 'false');
 
-    // Initial Tab focuses the skip link
     await page.keyboard.press('Tab');
     const skipLink = page.getByRole('link', { name: 'Skip to content' });
     await expect(skipLink).toBeFocused();
 
-    // Activating skip link focuses main #content container
     await page.keyboard.press('Enter');
-    await page.waitForURL('**/#content');
     await expect(page.locator('#content')).toBeFocused();
 
-    // Tab into main content interactive controls
-    await page.keyboard.press('Tab');
-    await expect(page.getByLabel('Choose JSON file')).toBeFocused();
+    // 2. Sequential keyboard tab navigation across reference workflow form and controls
+    await page.goto('/#vaults');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 
-    // Tab to next interactive control (Explore implementation plan link)
-    await page.keyboard.press('Tab');
-    const roadmapLink = page.getByRole('link', { name: /Explore the implementation plan/i });
-    await expect(roadmapLink).toBeFocused();
+    const pathInput = page.getByLabel('Secret path', { exact: true });
+    await pathInput.focus();
+    await expect(pathInput).toBeFocused();
 
-    // Pressing Enter activates link and navigates to roadmap
-    await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(/#roadmap/);
+    // Tab to Classification dropdown
+    await page.keyboard.press('Tab');
+    await expect(page.getByLabel('Secret classification')).toBeFocused();
+
+    // Tab to Secret value textarea
+    await page.keyboard.press('Tab');
+    await expect(page.getByLabel('Secret value')).toBeFocused();
+
+    // Tab to Search secret paths filter (skips disabled write button when not authenticated)
+    await page.keyboard.press('Tab');
+    await expect(page.getByLabel('Search secret paths')).toBeFocused();
+
+    // Tab to Filter by classification dropdown
+    await page.keyboard.press('Tab');
+    await expect(page.getByLabel('Filter by classification')).toBeFocused();
+
+    // Shift-Tab back to Search secret paths and type query
+    await page.keyboard.press('Shift+Tab');
+    await expect(page.getByLabel('Search secret paths')).toBeFocused();
+    await page.keyboard.type('test-filter');
+    await expect(page.getByLabel('Search secret paths')).toHaveValue('test-filter');
   });
 
   test('Empty input validation: displays inline error and prevents submission', async ({ page }) => {
