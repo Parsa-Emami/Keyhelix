@@ -5,9 +5,9 @@ package vaults
 import (
 	"context"
 	"crypto/subtle"
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"sync"
 	"time"
 
@@ -25,6 +25,84 @@ type SecretSummary struct {
 	Classification string `json:"classification"`
 	CreatedAt      string `json:"created_at"`
 	MetadataDigest string `json:"metadata_digest"`
+	Status         string `json:"status,omitempty"`
+	DeletedAt      string `json:"deleted_at,omitempty"`
+	RetainUntil    string `json:"retain_until,omitempty"`
+	DestroyedAt    string `json:"destroyed_at,omitempty"`
+}
+
+type lifecycleEnvelope struct {
+	SchemaVersion  string                    `json:"schema_version"`
+	VaultID        string                    `json:"vault_id"`
+	SecretPath     string                    `json:"secret_path"`
+	Version        int64                     `json:"version"`
+	Status         string                    `json:"status"`
+	CreatedAt      string                    `json:"created_at,omitempty"`
+	DeletedAt      string                    `json:"deleted_at,omitempty"`
+	RetainUntil    string                    `json:"retain_until,omitempty"`
+	DestroyedAt    string                    `json:"destroyed_at,omitempty"`
+	ActiveMetadata *contracts.SecretMetadata `json:"active_metadata,omitempty"`
+}
+
+func summarizeRecord(ctx context.Context, vaultID, canonicalPath string, rec storage.Record) SecretSummary {
+	decoded, vErr := contracts.DecodeSecret(ctx, rec.Metadata)
+	if vErr == nil {
+		return SecretSummary{
+			VaultID:        decoded.VaultID,
+			SecretPath:     decoded.SecretPath,
+			Version:        decoded.Version,
+			Classification: decoded.Classification,
+			CreatedAt:      decoded.CreatedAt,
+			MetadataDigest: rec.MetadataDigest,
+			Status:         "ACTIVE",
+		}
+	}
+
+	var lc lifecycleEnvelope
+	if err := json.Unmarshal(rec.Metadata, &lc); err == nil && lc.SchemaVersion == "lifecycle-v1" {
+		classification := "restricted"
+		createdAt := rec.CreatedAt.Format(time.RFC3339)
+		if lc.ActiveMetadata != nil {
+			if lc.ActiveMetadata.Classification != "" {
+				classification = lc.ActiveMetadata.Classification
+			}
+			if lc.ActiveMetadata.CreatedAt != "" {
+				createdAt = lc.ActiveMetadata.CreatedAt
+			}
+		} else if lc.CreatedAt != "" {
+			createdAt = lc.CreatedAt
+		}
+		version := lc.Version
+		if version <= 0 {
+			version = rec.EntityVersion
+		}
+		status := lc.Status
+		if status == "" {
+			status = "ACTIVE"
+		}
+		return SecretSummary{
+			VaultID:        vaultID,
+			SecretPath:     canonicalPath,
+			Version:        version,
+			Classification: classification,
+			CreatedAt:      createdAt,
+			MetadataDigest: rec.MetadataDigest,
+			Status:         status,
+			DeletedAt:      lc.DeletedAt,
+			RetainUntil:    lc.RetainUntil,
+			DestroyedAt:    lc.DestroyedAt,
+		}
+	}
+
+	return SecretSummary{
+		VaultID:        vaultID,
+		SecretPath:     canonicalPath,
+		Version:        rec.EntityVersion,
+		Classification: "restricted",
+		CreatedAt:      rec.CreatedAt.Format(time.RFC3339),
+		MetadataDigest: rec.MetadataDigest,
+		Status:         "ACTIVE",
+	}
 }
 
 // VaultSummary represents the metadata listing of a vault filtered strictly to caller's authorization.
@@ -110,25 +188,10 @@ func (s *Service) ListAuthorizedMetadata(
 	}
 
 	// Owner check: if targetOwner is supplied, verify caller authorization
-	if targetOwner != "" {
-		ownerMatch := false
-		if identity.Email != "" && subtle.ConstantTimeCompare([]byte(identity.Email), []byte(targetOwner)) == 1 {
-			ownerMatch = true
-		} else if identity.Subject != "" && subtle.ConstantTimeCompare([]byte(identity.Subject), []byte(targetOwner)) == 1 {
-			ownerMatch = true
-		} else {
-			for _, allowed := range identity.AllowedOwners {
-				if subtle.ConstantTimeCompare([]byte(allowed), []byte(targetOwner)) == 1 {
-					ownerMatch = true
-					break
-				}
-			}
-		}
-		if !ownerMatch {
-			return nil, &auth.Error{
-				Code:    auth.CodeScopeDenied,
-				Message: fmt.Sprintf("identity %q not authorized for owner %q", identity.Subject, targetOwner),
-			}
+	if targetOwner != "" && !auth.IsOwnerAuthorized(identity, targetOwner) {
+		return nil, &auth.Error{
+			Code:    auth.CodeScopeDenied,
+			Message: fmt.Sprintf("identity %q not authorized for owner %q", identity.Subject, targetOwner),
 		}
 	}
 
@@ -183,30 +246,7 @@ func (s *Service) ListAuthorizedMetadata(
 			continue
 		}
 
-		// Decode contract envelope
-		decoded, vErr := contracts.DecodeSecret(ctx, rec.Metadata)
-		if vErr != nil {
-			// Fallback summary from storage record if contract parse fails
-			summary.Secrets = append(summary.Secrets, SecretSummary{
-				VaultID:        vaultID,
-				SecretPath:     canonical,
-				Version:        rec.EntityVersion,
-				Classification: "restricted",
-				CreatedAt:      rec.CreatedAt.Format(time.RFC3339),
-				MetadataDigest: rec.MetadataDigest,
-			})
-			summary.AuthorizedCount++
-			continue
-		}
-
-		summary.Secrets = append(summary.Secrets, SecretSummary{
-			VaultID:        decoded.VaultID,
-			SecretPath:     decoded.SecretPath,
-			Version:        decoded.Version,
-			Classification: decoded.Classification,
-			CreatedAt:      decoded.CreatedAt,
-			MetadataDigest: rec.MetadataDigest,
-		})
+		summary.Secrets = append(summary.Secrets, summarizeRecord(ctx, vaultID, canonical, rec))
 		summary.AuthorizedCount++
 	}
 
@@ -262,21 +302,7 @@ func (s *Service) GetSecretMetadata(
 		reqOwner = identity.Email
 	}
 
-	ownerAuthorized := false
-	if identity.Email != "" && subtle.ConstantTimeCompare([]byte(identity.Email), []byte(reqOwner)) == 1 {
-		ownerAuthorized = true
-	} else if identity.Subject != "" && subtle.ConstantTimeCompare([]byte(identity.Subject), []byte(reqOwner)) == 1 {
-		ownerAuthorized = true
-	} else {
-		for _, allowed := range identity.AllowedOwners {
-			if subtle.ConstantTimeCompare([]byte(allowed), []byte(reqOwner)) == 1 {
-				ownerAuthorized = true
-				break
-			}
-		}
-	}
-
-	// Check path authorization
+	ownerAuthorized := auth.IsOwnerAuthorized(identity, reqOwner)
 	pathAuthorized := s.isPathAuthorized(identity, canonicalPath)
 
 	if !ownerAuthorized || !pathAuthorized {
@@ -300,53 +326,11 @@ func (s *Service) GetSecretMetadata(
 		}
 	}
 
-	decoded, vErr := contracts.DecodeSecret(ctx, rec.Metadata)
-	if vErr != nil {
-		return &SecretSummary{
-			VaultID:        vaultID,
-			SecretPath:     canonicalPath,
-			Version:        rec.EntityVersion,
-			Classification: "restricted",
-			CreatedAt:      rec.CreatedAt.Format(time.RFC3339),
-			MetadataDigest: rec.MetadataDigest,
-		}, nil
-	}
-
-	return &SecretSummary{
-		VaultID:        decoded.VaultID,
-		SecretPath:     decoded.SecretPath,
-		Version:        decoded.Version,
-		Classification: decoded.Classification,
-		CreatedAt:      decoded.CreatedAt,
-		MetadataDigest: rec.MetadataDigest,
-	}, nil
+	item := summarizeRecord(ctx, vaultID, canonicalPath, rec)
+	return &item, nil
 }
 
 func (s *Service) isPathAuthorized(identity *auth.Identity, canonicalPath string) bool {
-	hasPathRestrictions := false
-	pathMatched := false
-
-	for _, sc := range identity.AllowedScopes {
-		if strings.Contains(sc, "/") {
-			hasPathRestrictions = true
-			if auth.MatchPathScope(sc, canonicalPath) {
-				pathMatched = true
-				break
-			}
-		} else if sc == "*" || sc == "secret:*" {
-			return true
-		}
-	}
-
-	if hasPathRestrictions {
-		return pathMatched
-	}
-
-	// If no path patterns are configured, check generic secret:read / vault:read
-	for _, sc := range identity.AllowedScopes {
-		if sc == "secret:read" || sc == "vault:read" {
-			return true
-		}
-	}
-	return false
+	return auth.IsPathScopeAuthorized(identity, canonicalPath, "secret:read", "vault:read")
 }
+

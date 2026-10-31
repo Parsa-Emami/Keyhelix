@@ -123,45 +123,20 @@ test.describe('C30: reference workflow from a clone', () => {
       expect(initialDenied.status).toBe(403);
       expect(initialDenied.body.error).toBe('access_denied');
 
-      // 7. Owner creates an access grant for member (bob) with step-up elevation.
-      let createRes = await page.evaluate(async ({ path, recipient }) => {
-        const res = await fetch('/api/vaults/vault-prod/grants', {
-          method: 'POST',
-          credentials: 'same-origin',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({
-            principal_id: recipient,
-            permissions: ['secret:read', path],
-            expires_in_seconds: 3600
-          })
-        });
-        return { status: res.status, body: await res.json() };
-      }, { path: secretPath, recipient: 'bob@keyhelix.local' });
-
-      if (createRes.status === 401 && createRes.body.authorize_url) {
-        const authorizeUrl = createRes.body.authorize_url.startsWith('http')
-          ? createRes.body.authorize_url
-          : `${ORIGIN}${createRes.body.authorize_url}`;
-        await page.goto(authorizeUrl);
-        await submitKeycloakCredentials(page, 'alice', 'keyhelix-local-alice');
-        await page.waitForURL(url => url.origin === ORIGIN, { timeout: 30000 });
-
-        createRes = await page.evaluate(async ({ path, recipient }) => {
-          const res = await fetch('/api/vaults/vault-prod/grants', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-              principal_id: recipient,
-              permissions: ['secret:read', path],
-              expires_in_seconds: 3600
-            })
-          });
-          return { status: res.status, body: await res.json() };
-        }, { path: secretPath, recipient: 'bob@keyhelix.local' });
-      }
-      expect(createRes.status, `createGrant failed: ${JSON.stringify(createRes)}`).toBe(201);
-      const grantId = createRes.body.grant_id;
+      // 7. Owner creates an access grant for member (bob) via the Access console UI with step-up elevation.
+      await page.goto(`${ORIGIN}/#access`);
+      await expect(page.getByTestId('access-console')).toBeVisible();
+      await page.getByLabel('Member principal', { exact: true }).fill('bob@keyhelix.local');
+      await page.getByLabel('Allowed path scope', { exact: true }).fill(secretPath);
+      await page.getByTestId('create-grant-btn').click();
+      await page.waitForURL(url => url.port === '8080', { timeout: 15000 });
+      await submitKeycloakCredentials(page, 'alice', 'keyhelix-local-alice');
+      await page.waitForURL(url => url.origin === ORIGIN && url.hash === '#access', { timeout: 30000 });
+      await expect(page.getByTestId('access-notice')).toContainText('Created grant', { timeout: 15000 });
+      const firstGrantItem = page.locator('.grants-list > li').first();
+      await expect(firstGrantItem).toBeVisible();
+      const grantTestId = await firstGrantItem.getAttribute('data-testid');
+      const grantId = (grantTestId ?? '').replace(/^grant-/, '');
       expect(grantId).toBeTruthy();
 
       // 8. Member (bob) now has an authorized grant; reveal demands step-up (401) instead of access denial (403).
@@ -178,9 +153,6 @@ test.describe('C30: reference workflow from a clone', () => {
       expect(grantedReveal.body.error).toBe('step_up_required');
 
       // 9. Owner revokes member's grant via the Access console UI with step-up reauthentication.
-      await page.goto(`${ORIGIN}/#access`);
-      await page.reload();
-      await expect(page.getByTestId('access-console')).toBeVisible();
       await expect(page.getByTestId(`grant-${grantId}`)).toBeVisible();
       await expect(page.getByTestId(`grant-status-${grantId}`)).toHaveText('ACTIVE');
 

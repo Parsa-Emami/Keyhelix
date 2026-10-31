@@ -4,12 +4,11 @@
 
 [CI source integrity and dependency updates](docs/engineering/CI_SOURCE_INTEGRITY.md)
 
+Open-source local-first secret management and cryptographic authorization workspace under [Apache-2.0](LICENSE). **Current implementation: C01–C30 core engine, provider integration, and web workspace implemented; C31–C40 OSS release packaging in progress.**
 
-Open-source local-first web application under [Apache-2.0](LICENSE). **Current implementation: web foundation; complete domain workflow pending.**
+## Clone and run the local workspace
 
-## Clone and run the current workspace
-
-Prerequisites: Git and Node 24.19+ within Node 24 (npm included).
+Prerequisites: Git, Node 24.19+ within Node 24 (npm included), Go 1.26.2+, and rootless Podman 4.9.3 on Linux x86_64.
 
 ```sh
 git clone https://github.com/Parsa-Emami/Keyhelix.git
@@ -18,20 +17,20 @@ npm run setup
 npm start
 ```
 
-Open http://127.0.0.1:4173. Current features are a roadmap browser and local bounded JSON structure preview. No Python, database, paid/cloud account, public domain or sibling clone is needed for this shell. It does not run the domain engine. [Clone guide](docs/engineering/CLONE_TO_RUN.md).
+Open http://localhost:4173. Features include OIDC authentication and fresh step-up elevation via local Keycloak, provider-owned envelope encryption via OpenBao Transit & KV v2, versioned secret metadata management (`Vaults`), soft-delete/restore/destroy lifecycle, strict audited transient reveal (`Reveal`), member access grants and synchronous revocation (`Access & Rotations`), resumable KEK rotation, roadmap browser, and bounded local JSON structure preview. [Clone guide](docs/engineering/CLONE_TO_RUN.md).
 
 ## Full product endpoint
 
-Authenticate synthetic owner -> scoped write -> fresh step-up reveal -> revoke other user -> provider outage test -> restore isolated provider from proper recovery material.
+Authenticate synthetic owner -> scoped write -> fresh step-up reveal -> grant & revoke other user -> provider outage test -> restore isolated provider from proper recovery material.
 
-[C30](plans/commits/C30.md) proves the first locally usable supported product from a clean clone, including restart/restore. [C40](plans/commits/C40.md) proves complete published OSS v1. These are future evidence gates, not current shell capability claims. [Runtime resources](ops/runtime-requirements.json).
+[C30](plans/commits/C30.md) proves the locally usable supported product from a clone, including restart/restore. [C40](plans/commits/C40.md) proves complete published OSS v1. [Runtime resources](ops/runtime-requirements.json).
 
 ## Implement the next commit
 
 ```sh
 npm run plan -- status
 npm run plan -- next
-npm run plan -- show C07
+npm run plan -- show C31
 npm run check
 ```
 

@@ -18,7 +18,9 @@ import (
 	"github.com/parsa-emami/keyhelix/internal/audit"
 	"github.com/parsa-emami/keyhelix/internal/auth"
 	"github.com/parsa-emami/keyhelix/internal/grants"
+	"github.com/parsa-emami/keyhelix/internal/health"
 	"github.com/parsa-emami/keyhelix/internal/provider"
+	"github.com/parsa-emami/keyhelix/internal/rotation"
 	"github.com/parsa-emami/keyhelix/internal/secrets"
 	"github.com/parsa-emami/keyhelix/internal/security"
 	"github.com/parsa-emami/keyhelix/internal/storage"
@@ -96,6 +98,8 @@ type Runtime struct {
 	secrets   *secrets.Service
 	vaults    *vaults.Service
 	grants    *grants.Service
+	rotation  *rotation.Service
+	monitor   *health.Monitor
 	audit     *audit.Recorder
 	client    *http.Client
 
@@ -209,6 +213,8 @@ func New(ctx context.Context, config Config) (*Runtime, error) {
 		secrets:   secrets.NewService(mapper, adapter, store),
 		vaults:    vaults.NewService(store, mapper),
 		grants:    grantService,
+		rotation:  rotation.NewService(mapper, adapter, store, recorder),
+		monitor:   health.NewMonitor(adapter, recorder),
 		audit:     recorder,
 		client:    client,
 		pending:   map[string]*pendingFlow{},
@@ -367,15 +373,39 @@ func (r *Runtime) clearElevation(sessionID string) {
 	delete(r.elevated, sessionID)
 }
 
-func (r *Runtime) record(eventType, subject string, data audit.AuditData) {
+func (r *Runtime) revokeMemberElevations(ctx context.Context, principal string) *auth.Session {
+	if strings.TrimSpace(principal) == "" || r.sessions == nil || r.sessions.Store() == nil {
+		return nil
+	}
+	sessions, err := r.sessions.Store().ListForSubject(ctx, principal)
+	if err != nil || len(sessions) == 0 {
+		return nil
+	}
+	var first *auth.Session
+	for _, sess := range sessions {
+		if sess == nil {
+			continue
+		}
+		if first == nil {
+			first = sess
+		}
+		r.clearElevation(sess.ID)
+		if r.stepUp != nil {
+			_, _ = r.stepUp.RevokeAllForSession(ctx, sess.ID)
+		}
+	}
+	return first
+}
+
+func (r *Runtime) record(eventType, subject string, data audit.AuditData) error {
 	if r.audit == nil {
-		return
+		return fmt.Errorf("audit recorder is not initialized")
 	}
 	event, err := audit.NewEvent(eventType, subject, data)
 	if err != nil {
-		return
+		return err
 	}
-	_ = r.audit.Record(context.Background(), event)
+	return r.audit.Record(context.Background(), event)
 }
 
 func randomState() (string, error) {
@@ -385,3 +415,4 @@ func randomState() (string, error) {
 	}
 	return hex.EncodeToString(buffer), nil
 }
+

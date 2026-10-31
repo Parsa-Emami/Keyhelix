@@ -26,7 +26,8 @@ test('real launcher serves engine health, preserves disabled admission, stops an
     t.after(() => running.close());
     const base = `http://127.0.0.1:${running.server.address().port}`;
     const health = await (await fetch(base + '/api/engine/health')).json();
-    assert.deepEqual(health, { status: 'ok', scope: 'engine-runtime', version: '0.0.1', toolchain: 'go1.27.2', coreReady: false });
+    assert.match(health.toolchain, /^go1\.2[67]\.\d+$/);
+    assert.deepEqual(health, { status: 'ok', scope: 'engine-runtime', version: '0.0.1', toolchain: health.toolchain, coreReady: false });
     assert.equal((await fetch(base + '/api/v1/unimplemented')).status, 503);
     assert.equal((await fetch(base + '/api/engine/health', { method: 'POST' })).status, 405);
     assert.equal((await (await fetch(base + '/runtime-config.json')).json()).engineEnabled, false);

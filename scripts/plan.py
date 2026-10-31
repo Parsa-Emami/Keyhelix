@@ -60,7 +60,7 @@ def validate():
         for f in ['START_HERE.md','AGENTS.md','docs/architecture/ADR-0001-lean-v0.md','docs/engineering/CONTINUATION.md','docs/release/RELEASE_POLICY.md','ops/DEPLOYMENT_PREREQUISITES.md','product/PRODUCT_REVIEW_FA.md','contracts/input.schema.json','contracts/result.schema.json']:
             if not (ROOT/f).is_file():errors.append('Missing '+f)
         for path in ROOT.rglob('*.json'):
-            if 'legacy' in path.parts or any(x in path.parts for x in ['node_modules','target','.venv','dist','.git','test-results','playwright-report']):continue
+            if 'legacy' in path.parts or any(x in path.parts for x in ['node_modules','target','.venv','dist','.git','test-results','playwright-report','.local-data']):continue
             try:json.loads(path.read_text(encoding='utf-8'))
             except Exception as ex:errors.append(str(path.relative_to(ROOT))+': '+str(ex))
     except Exception as ex: errors.append(str(ex))

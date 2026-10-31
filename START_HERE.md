@@ -1,13 +1,13 @@
 # Continue KeyHelix
 
-Current: web foundation; full domain workflow pending.
+Current: C01–C30 core domain engine, OpenBao/Keycloak local provider integration, and React web workspace implemented (`core_ready: true`). Tasks C31–C40 remain for OSS v1 packaging and release.
 
 ```sh
 npm run setup
 npm start
 ```
 
-Open http://127.0.0.1:4173. Read docs/engineering/CLONE_TO_RUN.md for actual prerequisites/capability. For implementation read AGENTS.md, docs/agents/EXECUTION_CONTRACT.md and ROADMAP.md, then use:
+Open http://localhost:4173. Read docs/engineering/CLONE_TO_RUN.md for actual prerequisites and capability. For implementation read AGENTS.md, docs/agents/EXECUTION_CONTRACT.md and ROADMAP.md, then use:
 
 ```sh
 npm run validate:plan

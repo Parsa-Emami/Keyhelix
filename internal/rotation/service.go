@@ -612,7 +612,7 @@ func (s *Service) rewrapSingleItem(
 		Owner:           owner,
 		Scope:           job.VaultID,
 		Name:            item.SecretPath,
-		ExpectedVersion: item.PriorVersion,
+		ExpectedVersion: rec.EntityVersion,
 		Metadata:        metaBytes,
 	})
 	if err != nil {
@@ -715,6 +715,36 @@ func (s *Service) GetJob(ctx context.Context, owner, vaultID, jobID string) (*Ro
 	return job, nil
 }
 
+// ListJobs returns all durable rotation jobs recorded for a vault.
+func (s *Service) ListJobs(ctx context.Context, owner, vaultID string) ([]RotationJob, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	lister, ok := s.store.(storage.Lister)
+	if !ok || lister == nil {
+		return []RotationJob{}, nil
+	}
+	records, err := lister.List(ctx, storage.ListRequest{
+		Owner: owner,
+		Scope: rotationStorageScope,
+	})
+	if err != nil {
+		return nil, err
+	}
+	jobs := make([]RotationJob, 0, len(records))
+	for _, rec := range records {
+		var job RotationJob
+		if err := json.Unmarshal(rec.Metadata, &job); err != nil {
+			continue
+		}
+		if vaultID != "" && job.VaultID != vaultID {
+			continue
+		}
+		jobs = append(jobs, job)
+	}
+	return jobs, nil
+}
+
 // CanRetirePriorKEK enforces frozen v1 invariant 4:
 // Retiring a KEK is forbidden until all live envelopes in the rotation job are verified rewrapped.
 func (s *Service) CanRetirePriorKEK(ctx context.Context, owner, vaultID, jobID string) (bool, error) {
@@ -743,7 +773,7 @@ func (s *Service) loadJobLocked(ctx context.Context, owner, jobID string) (*Rota
 	rec, err := s.store.Read(ctx, storage.ReadRequest{
 		Owner: owner,
 		Scope: rotationStorageScope,
-		Name:  jobID,
+	Name:  jobID,
 	})
 	if err != nil {
 		var stErr *storage.Error
@@ -892,42 +922,11 @@ func extractErrorCode(err error) string {
 }
 
 func isOwnerAuthorized(identity *auth.Identity, targetOwner string) bool {
-	if identity == nil {
-		return false
-	}
-	if identity.Email != "" && subtle.ConstantTimeCompare([]byte(identity.Email), []byte(targetOwner)) == 1 {
-		return true
-	}
-	if identity.Subject != "" && subtle.ConstantTimeCompare([]byte(identity.Subject), []byte(targetOwner)) == 1 {
-		return true
-	}
-	for _, allowed := range identity.AllowedOwners {
-		if subtle.ConstantTimeCompare([]byte(allowed), []byte(targetOwner)) == 1 {
-			return true
-		}
-	}
-	return false
+	return auth.IsOwnerAuthorized(identity, targetOwner)
 }
 
 func isPathAuthorized(identity *auth.Identity, canonicalPath string) bool {
-	if identity == nil {
-		return false
-	}
-	hasPathRestrictions := false
-	pathMatched := false
-	for _, sc := range identity.AllowedScopes {
-		if strings.Contains(sc, "/") {
-			hasPathRestrictions = true
-			if auth.MatchPathScope(sc, canonicalPath) {
-				pathMatched = true
-				break
-			}
-		}
-	}
-	if hasPathRestrictions && !pathMatched {
-		return false
-	}
-	return true
+	return auth.IsPathScopeAuthorized(identity, canonicalPath)
 }
 
 func wipeBytes(b []byte) {
@@ -935,3 +934,4 @@ func wipeBytes(b []byte) {
 		b[i] = 0
 	}
 }
+

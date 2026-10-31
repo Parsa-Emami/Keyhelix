@@ -16,7 +16,6 @@ package secrets
 import (
 	"context"
 	"crypto/sha256"
-	"crypto/subtle"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -297,14 +296,9 @@ func (s *Service) DeleteSecret(ctx context.Context, req DeleteRequest) (*DeleteO
 
 	// Also record in lifecycle scope for durable audit/version tracking
 	versionOpID := fmt.Sprintf("op-lc-del-%s-v%d-%d", hex.EncodeToString([]byte(cleanPath))[:8], targetVersion, now.UnixNano())
-	_, _ = s.store.Write(ctx, storage.WriteRequest{
-		OperationID:     versionOpID,
-		Owner:           targetOwner,
-		Scope:           lifecycleScope(req.VaultID),
-		Name:            lifecycleRecordName(cleanPath, targetVersion),
-		ExpectedVersion: 0,
-		Metadata:        metaBytes,
-	})
+	if err := s.writeLifecycleArchive(ctx, versionOpID, targetOwner, req.VaultID, cleanPath, targetVersion, metaBytes); err != nil {
+		return nil, err
+	}
 
 	return &DeleteOutcome{
 		VaultID:     req.VaultID,
@@ -442,16 +436,14 @@ func (s *Service) UndeleteSecret(ctx context.Context, req UndeleteRequest) (*Und
 	archivedLifecycle.RestoredAt = restoredAt
 	archivedLifecycle.RestoredBy = targetOwner
 	archivedLifecycle.Version = restoredMeta.Version
-	archivedBytes, _ := json.Marshal(archivedLifecycle)
+	archivedBytes, err := json.Marshal(archivedLifecycle)
+	if err != nil {
+		return nil, fmt.Errorf("marshal archived lifecycle record: %w", err)
+	}
 	versionOpID := fmt.Sprintf("op-lc-undel-%s-v%d-%d", hex.EncodeToString([]byte(cleanPath))[:8], restoredMeta.Version, now.UnixNano())
-	_, _ = s.store.Write(ctx, storage.WriteRequest{
-		OperationID:     versionOpID,
-		Owner:           targetOwner,
-		Scope:           lifecycleScope(req.VaultID),
-		Name:            lifecycleRecordName(cleanPath, restoredMeta.Version),
-		ExpectedVersion: 0,
-		Metadata:        archivedBytes,
-	})
+	if err := s.writeLifecycleArchive(ctx, versionOpID, targetOwner, req.VaultID, cleanPath, restoredMeta.Version, archivedBytes); err != nil {
+		return nil, err
+	}
 
 	return &UndeleteOutcome{
 		VaultID:    req.VaultID,
@@ -597,14 +589,9 @@ func (s *Service) DestroySecretVersion(ctx context.Context, req DestroyRequest) 
 
 	// Archive destroyed record under lifecycle scope
 	versionOpID := fmt.Sprintf("op-lc-dst-%s-v%d-%d", hex.EncodeToString([]byte(cleanPath))[:8], secretVersion, now.UnixNano())
-	_, _ = s.store.Write(ctx, storage.WriteRequest{
-		OperationID:     versionOpID,
-		Owner:           targetOwner,
-		Scope:           lifecycleScope(req.VaultID),
-		Name:            lifecycleRecordName(cleanPath, secretVersion),
-		ExpectedVersion: 0,
-		Metadata:        metaBytes,
-	})
+	if err := s.writeLifecycleArchive(ctx, versionOpID, targetOwner, req.VaultID, cleanPath, secretVersion, metaBytes); err != nil {
+		return nil, err
+	}
 
 	return &DestroyOutcome{
 		VaultID:     req.VaultID,
@@ -661,11 +648,29 @@ func (s *Service) GetVersionLifecycle(ctx context.Context, vaultID, secretPath s
 }
 
 func lifecycleScope(vaultID string) string {
-	return "lifecycle:" + vaultID
+	return "lifecycle-" + vaultID
 }
 
 func lifecycleRecordName(secretPath string, version int64) string {
 	return fmt.Sprintf("%s/v%d", secretPath, version)
+}
+
+func (s *Service) writeLifecycleArchive(ctx context.Context, opID, owner, vaultID, secretPath string, version int64, metadata []byte) error {
+	scope := lifecycleScope(vaultID)
+	name := lifecycleRecordName(secretPath, version)
+	expectedVersion, err := s.currentVersion(ctx, owner, scope, name)
+	if err != nil {
+		return err
+	}
+	_, err = s.store.Write(ctx, storage.WriteRequest{
+		OperationID:     opID,
+		Owner:           owner,
+		Scope:           scope,
+		Name:            name,
+		ExpectedVersion: expectedVersion,
+		Metadata:        metadata,
+	})
+	return err
 }
 
 func hasScope(identity *auth.Identity, requiredScope string) bool {
@@ -681,48 +686,17 @@ func hasScope(identity *auth.Identity, requiredScope string) bool {
 }
 
 func isDeleteAuthorized(identity *auth.Identity, targetOwner, canonicalPath string) bool {
-	if identity == nil {
+	if !auth.IsOwnerAuthorized(identity, targetOwner) || !auth.IsPathScopeAuthorized(identity, canonicalPath) {
 		return false
 	}
-	if identity.ExpiresAt > 0 && time.Now().Unix() > identity.ExpiresAt {
-		return false
-	}
-	// Check owner authorization
-	ownerAuthorized := false
-	if identity.Email != "" && subtle.ConstantTimeCompare([]byte(identity.Email), []byte(targetOwner)) == 1 {
-		ownerAuthorized = true
-	} else if identity.Subject != "" && subtle.ConstantTimeCompare([]byte(identity.Subject), []byte(targetOwner)) == 1 {
-		ownerAuthorized = true
-	} else {
-		for _, allowed := range identity.AllowedOwners {
-			if subtle.ConstantTimeCompare([]byte(allowed), []byte(targetOwner)) == 1 {
-				ownerAuthorized = true
-				break
-			}
-		}
-	}
-	if !ownerAuthorized {
-		return false
-	}
-
-	// Check path-level scopes
-	hasPathRestrictions := false
-	pathMatched := false
-	for _, sc := range identity.AllowedScopes {
-		if strings.Contains(sc, "/") {
-			hasPathRestrictions = true
-			if auth.MatchPathScope(sc, canonicalPath) {
-				pathMatched = true
-				break
-			}
-		}
-	}
-	if hasPathRestrictions && !pathMatched {
-		return false
-	}
-
 	if identity.VaultRole == "vault-admin" || hasScope(identity, "secret:delete") || hasScope(identity, "secret:write") || hasScope(identity, "*") {
 		return true
 	}
+	for _, sc := range identity.AllowedScopes {
+		if strings.Contains(sc, "/") {
+			return true
+		}
+	}
 	return false
 }
+

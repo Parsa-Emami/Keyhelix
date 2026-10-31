@@ -309,18 +309,34 @@ func (m *MemorySessionStore) DeleteExpired(ctx context.Context, now time.Time) (
 	return count, nil
 }
 
-// ListForSubject returns all sessions registered for a subject.
+// ListForSubject returns all sessions registered for a subject or email principal.
 func (m *MemorySessionStore) ListForSubject(ctx context.Context, subject string) ([]*Session, error) {
+	target := strings.TrimSpace(subject)
+	if target == "" {
+		return nil, nil
+	}
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
-	sessionIDs, ok := m.bySubject[subject]
-	if !ok {
-		return nil, nil
+	seen := make(map[string]struct{})
+	var list []*Session
+	if sessionIDs, ok := m.bySubject[target]; ok {
+		for id := range sessionIDs {
+			if sess, exists := m.byID[id]; exists && sess != nil {
+				seen[id] = struct{}{}
+				list = append(list, sess)
+			}
+		}
 	}
-	list := make([]*Session, 0, len(sessionIDs))
-	for id := range sessionIDs {
-		if sess, exists := m.byID[id]; exists && sess != nil {
+	for id, sess := range m.byID {
+		if sess == nil || sess.Identity == nil {
+			continue
+		}
+		if _, already := seen[id]; already {
+			continue
+		}
+		if sess.Identity.Email == target || sess.Identity.Subject == target {
+			seen[id] = struct{}{}
 			list = append(list, sess)
 		}
 	}
@@ -332,6 +348,7 @@ type SessionManager struct {
 	cfg   SessionConfig
 	store SessionStore
 }
+
 
 // NewSessionManager initializes a SessionManager with verified configuration.
 func NewSessionManager(cfg SessionConfig, store SessionStore) (*SessionManager, error) {

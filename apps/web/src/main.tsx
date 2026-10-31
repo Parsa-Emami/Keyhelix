@@ -27,6 +27,7 @@ function App({ config }: { config: Runtime }) {
   const [engine, setEngine] = useState('Checking engine runtime…');
   const [coreReady, setCoreReady] = useState(false);
   const [session, setSession] = useState<SessionState>({ authenticated: false });
+  const [sessionLoading, setSessionLoading] = useState(true);
   const busy = useRef(false);
   const generation = useRef(0);
   useEffect(() => {
@@ -61,10 +62,12 @@ function App({ config }: { config: Runtime }) {
   }, []);
   useEffect(() => {
     let cancelled = false;
+    setSessionLoading(true);
     fetch('/api/v1/auth/session', { cache: 'no-store', credentials: 'same-origin' })
       .then(response => response.json())
       .then((value: SessionState) => { if (!cancelled) setSession(value); })
-      .catch(() => { if (!cancelled) setSession({ authenticated: false }); });
+      .catch(() => { if (!cancelled) setSession({ authenticated: false }); })
+      .finally(() => { if (!cancelled) setSessionLoading(false); });
     return () => { cancelled = true; };
   }, [page]);
   async function signOut() {
@@ -90,7 +93,7 @@ function App({ config }: { config: Runtime }) {
   const tasks = project.tasks.filter(task => (stage === 'all' || task.stage === stage) && `${task.id} ${task.title}`.toLowerCase().includes(query.toLowerCase()));
   return <div className="app" style={{ '--accent': project.accent } as React.CSSProperties}>
     <a className="skip" href="#content">Skip to content</a>
-    <header><a className="brand" href="#workspace"><span className="mark" aria-hidden="true">{project.name.slice(0, 1)}</span>{project.name}</a><nav aria-label="Main"><a href="#workspace" aria-current={page === 'workspace' ? 'page' : undefined}>Workspace</a><a href="#vaults" aria-current={page === 'vaults' ? 'page' : undefined}>Vaults</a><a href="#access" aria-current={page === 'access' ? 'page' : undefined}>Access & Rotations</a><a href="#roadmap" aria-current={page === 'roadmap' ? 'page' : undefined}>Roadmap</a></nav><div className="session-badge">{session.authenticated ? <><span className="badge" data-testid="signed-in-user">{session.user?.email}</span><button type="button" className="badge" onClick={() => void signOut()} data-testid="sign-out">Sign out</button></> : <a className="badge" href="/api/v1/auth/login?return_to=/">Sign in</a>}</div></header>
+    <header><a className="brand" href="#workspace"><span className="mark" aria-hidden="true">{project.name.slice(0, 1)}</span>{project.name}</a><nav aria-label="Main"><a href="#workspace" aria-current={page === 'workspace' ? 'page' : undefined}>Workspace</a><a href="#vaults" aria-current={page === 'vaults' ? 'page' : undefined}>Vaults</a><a href="#access" aria-current={page === 'access' ? 'page' : undefined}>Access & Rotations</a><a href="#roadmap" aria-current={page === 'roadmap' ? 'page' : undefined}>Roadmap</a></nav><div className="session-badge" aria-busy={sessionLoading}>{session.authenticated ? <><span className="badge" data-testid="signed-in-user">{session.user?.email}</span><button type="button" className="badge" onClick={() => void signOut()} data-testid="sign-out">Sign out</button></> : <a className="badge" href="/api/v1/auth/login?return_to=/">Sign in</a>}</div></header>
     <main id="content" tabIndex={-1}>
       <div className="eyebrow">{project.mode.replaceAll('-', ' ')} · browser workspace</div>
       <h1>{page === 'workspace' ? project.title : page === 'vaults' ? 'Authorized secret metadata console.' : page === 'access' ? 'Provider operations and access control.' : 'A clear path to release.'}</h1>

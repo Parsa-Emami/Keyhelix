@@ -25,9 +25,9 @@ Built URL: http://127.0.0.1:4305. The unified supervisor (`scripts/start-local.m
 
 ## What is runnable
 
-The responsive React workspace, forty-step product roadmap, local bounded JSON structure preview, Node static server and its health endpoints are implemented. Preview uses tab memory, does not persist files and does not send them to the server. Reload clears the preview. This is not a domain import or a security assessment. The PWA manifest supplies install metadata; there is no service worker or offline claim. Cache rules retain only fingerprinted static assets; HTML and runtime configuration are no-store.
+The responsive React workspace (`Vaults`, `Reveal`, `Access & Rotations`, `Workspace`, `Roadmap`), forty-step product roadmap, local bounded JSON structure preview, Node static/proxy server, and Go BFF engine integration are implemented. JSON preview uses tab memory, does not persist files and does not send them to the server; reload clears the preview. The PWA manifest supplies install metadata; there is no service worker or offline claim. Cache rules retain only fingerprinted static assets; HTML, runtime configuration, and reveal/API responses are `no-store`.
 
-`GET /healthz` covers the web process; `GET /readyz` covers web assets and valid startup configuration. Neither proves engine/provider/database health. `/api` and all `/api/` routes return 503 while the engine is unavailable. No upload endpoint or authentication service is created. Engine admission cannot be enabled by a public config flag.
+`GET /healthz` covers the web process; `GET /readyz` covers web assets, startup configuration, and (when `.local-data/runtime.json` is active) engine, storage, key provider, and identity provider readiness. `/api` and all `/api/` routes return 503 when the engine is unavailable or launched in unconfigured foundation mode. Engine admission cannot be enabled by a public config flag.
 
 ## Build an artifact
 
@@ -44,7 +44,7 @@ Package after build. `release.json` records the source commit and whether the wo
 
 Prerequisites: operator-owned domain/DNS, valid TLS certificate/key, installed Node 24.19.0, Nginx, systemd, and an unprivileged `keyhelix-web` account. Reserve port 4305 for this project. Keep certificates outside the artifact and never commit a private key. Install releases under `/srv/keyhelix/releases/<source-commit>` and point `/srv/keyhelix/current` to the selected verified release. Ensure the service user has read/execute access to artifact directories. Match the actual Node binary path in the service file.
 
-Use `ops/web/service.systemd` and render `ops/web/nginx.conf.template` with the real owned domain, TLS paths and reviewed operator network ranges. The proxy initially denies external traffic. Keep the deny-all default until private admission is configured and tested; do not treat an IP range as per-user authentication. Runtime APIs remain blocked until W06/W07. Validate the rendered Nginx configuration with `nginx -t` before reload. Install the service under `/etc/systemd/system/keyhelix-web.service`, then run:
+Use `ops/web/service.systemd` and render `ops/web/nginx.conf.template` with the real owned domain, TLS paths and reviewed operator network ranges. The proxy initially denies external traffic. Keep the deny-all default until private admission is configured and tested; do not treat an IP range as per-user authentication. Validate the rendered Nginx configuration with `nginx -t` before reload. Install the service under `/etc/systemd/system/keyhelix-web.service`, then run:
 
 ```sh
 sudo systemctl daemon-reload
@@ -58,14 +58,14 @@ Test HTTPS access from an allowed operator and rejection from a disallowed netwo
 
 ## Update and rollback
 
-Build/test/package from a clean source commit; verify SHA256SUMS before switching the current symlink. Retain the previous artifact; switch the symlink and restart the service in a maintenance window. Check both web probes and browser navigation. If either fails, restore the previous symlink and restart. The shell has no durable user data, so it has no data restore operation. Once domain storage/providers are integrated, add backup/restore and schema-compatibility evidence before updates; a frontend rollback does not roll back engine data.
+Build/test/package from a clean source commit; verify SHA256SUMS before switching the current symlink. Retain the previous artifact; switch the symlink and restart the service in a maintenance window. Check both web probes and browser navigation. If either fails, restore the previous symlink and restart. A frontend rollback does not roll back engine data; always verify OpenBao and storage port backups before updates.
 
-## Engine integration and operations still required
+## Engine integration and operations
 
-Profile: `private-web`. Retained engine choices: Go BFF, OpenBao KV v2 and durable storage, React UI, OIDC identity provider. Implement the first vertical slice in IMPLEMENTATION_BLUEPRINT.md and W06, then authenticated negative tests in W07. Route only explicitly supported endpoints through a same-origin authenticated service. Keep secrets exclusively on the server/provider. Add real engine readiness, bounded jobs, cancellation, redacted audit, operational metrics, alerts and retention/restore proof alongside the domain implementation. Public marketing/static demonstrations must use synthetic data; they cannot admit arbitrary runtime work.
+Profile: `private-web` / `local`. Active engine choices: Go BFF (`cmd/keyhelix`, `internal/app`), OpenBao KV v2 & Transit, single-writer local storage port (`internal/storage`), React UI (`apps/web`), and OIDC identity provider (Keycloak). Route only explicitly supported endpoints through the same-origin authenticated BFF. Keep secrets exclusively on the provider. Public marketing/static demonstrations must use synthetic data; they cannot admit arbitrary runtime work.
 
-For KeyHelix, no plaintext secrets may enter browser file preview; import only synthetic nonsecret metadata. For RiftRange/MirageMesh, orchestration/sensors stay on isolated private hosts. Existing RiskWeft Laravel source is preserved and has not been connected to this shell or certified by web tests.
+For KeyHelix, no plaintext secrets may enter browser file preview; import only synthetic nonsecret metadata.
 
 ## Reproduce source evidence
 
-Run `python3 scripts/source_identity.py --check` against the committed checkout. The digest covers tracked and deliverable untracked files, excluding only the self-referential evidence JSON and SHA256SUMS.txt. Build/test output directories are ignored. Verification evidence records web-only checks and the exact tested runtime; it does not certify the domain engine.
+Run `python3 scripts/source_identity.py --check` against the committed checkout. The digest covers tracked and deliverable untracked files, excluding only the self-referential evidence JSON and SHA256SUMS.txt. Build/test output directories are ignored.

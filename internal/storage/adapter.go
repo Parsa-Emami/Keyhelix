@@ -484,12 +484,17 @@ func decodeManifest(data []byte, expected int64) (manifest, error) {
 	if value.SchemaVersion != SchemaVersion || value.ManifestVersion != expected || value.PublishedAt.IsZero() {
 		return value, corrupt("manifest")
 	}
-	if len(value.Records) > MaxRecords || len(value.Operations) > MaxOperations {
+	if len(value.Operations) > MaxOperations {
 		return value, corrupt("manifest")
 	}
 	seen := make(map[string]bool, len(value.Records))
+	scopeCounts := make(map[string]int)
 	for index, record := range value.Records {
 		if err := validateRecordMeta(record); err != nil {
+			return manifest{}, corrupt("manifest")
+		}
+		scopeCounts[record.Scope]++
+		if scopeCounts[record.Scope] > MaxRecords {
 			return manifest{}, corrupt("manifest")
 		}
 		key := recordKey(record.Owner, record.Scope, record.Name)
@@ -662,8 +667,16 @@ func (s *Store) Write(ctx context.Context, request WriteRequest) (WriteResult, e
 	} else if request.ExpectedVersion != 0 {
 		return WriteResult{}, &Error{Code: CodeStaleVersion, Field: "expected_version"}
 	}
-	if !exists && len(s.records) >= MaxRecords {
-		return WriteResult{}, &Error{Code: CodeQuotaExceeded, Field: "records"}
+	if !exists {
+		scopeRecords := 0
+		for _, rec := range s.records {
+			if rec.Scope == request.Scope {
+				scopeRecords++
+			}
+		}
+		if scopeRecords >= MaxRecords {
+			return WriteResult{}, &Error{Code: CodeQuotaExceeded, Field: "records"}
+		}
 	}
 
 	nextManifestVersion := s.manifestVersion + 1

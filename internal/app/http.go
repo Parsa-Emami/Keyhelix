@@ -17,7 +17,9 @@ import (
 	"github.com/parsa-emami/keyhelix/internal/auth"
 	"github.com/parsa-emami/keyhelix/internal/contracts"
 	"github.com/parsa-emami/keyhelix/internal/grants"
+	"github.com/parsa-emami/keyhelix/internal/health"
 	"github.com/parsa-emami/keyhelix/internal/provider"
+	"github.com/parsa-emami/keyhelix/internal/rotation"
 	"github.com/parsa-emami/keyhelix/internal/secrets"
 	"github.com/parsa-emami/keyhelix/internal/storage"
 )
@@ -39,14 +41,22 @@ func NewServer(engine *Runtime) http.Handler {
 	mux.HandleFunc("GET /api/v1/auth/callback", server.callback)
 	mux.HandleFunc("GET /api/v1/auth/step-up", server.beginStepUp)
 	mux.HandleFunc("POST /api/v1/auth/logout", server.logout)
-	mux.HandleFunc("GET /api/vaults/{vault}/metadata", server.metadata)
-	mux.HandleFunc("POST /api/vaults/{vault}/secrets", server.writeSecret)
-	mux.HandleFunc("POST /api/vaults/{vault}/reveal", server.revealSecret)
-	mux.HandleFunc("GET /api/vaults/{vault}/grants", server.listGrants)
-	mux.HandleFunc("POST /api/vaults/{vault}/grants", server.createGrant)
-	mux.HandleFunc("POST /api/vaults/{vault}/grants/{grant}/revoke", server.revokeGrant)
-	mux.HandleFunc("GET /api/vaults/{vault}/rotations", server.listRotations)
-	mux.HandleFunc("POST /api/vaults/{vault}/rotations/{job}/resume", server.resumeRotation)
+
+	for _, prefix := range []string{"/api/vaults/{vault}", "/api/v1/vaults/{vault}"} {
+		mux.HandleFunc("GET "+prefix+"/metadata", server.metadata)
+		mux.HandleFunc("POST "+prefix+"/secrets", server.writeSecret)
+		mux.HandleFunc("POST "+prefix+"/secrets/delete", server.deleteSecret)
+		mux.HandleFunc("POST "+prefix+"/secrets/undelete", server.undeleteSecret)
+		mux.HandleFunc("POST "+prefix+"/secrets/destroy", server.destroySecret)
+		mux.HandleFunc("POST "+prefix+"/reveal", server.revealSecret)
+		mux.HandleFunc("GET "+prefix+"/grants", server.listGrants)
+		mux.HandleFunc("POST "+prefix+"/grants", server.createGrant)
+		mux.HandleFunc("POST "+prefix+"/grants/{grant}/revoke", server.revokeGrant)
+		mux.HandleFunc("GET "+prefix+"/rotations", server.listRotations)
+		mux.HandleFunc("POST "+prefix+"/rotations", server.startRotation)
+		mux.HandleFunc("POST "+prefix+"/rotations/{job}/resume", server.resumeRotation)
+	}
+	mux.HandleFunc("GET /api/v1/audit/checkpoints/{id}/verify", server.verifyCheckpoint)
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusNotFound, "not_found", "No engine route matches this request.")
 	})
@@ -157,6 +167,12 @@ func ownerFor(identity *auth.Identity) string {
 }
 
 func isAdmin(identity *auth.Identity) bool {
+	if identity == nil {
+		return false
+	}
+	if identity.VaultRole == "vault-admin" {
+		return true
+	}
 	for _, scope := range identity.AllowedScopes {
 		if scope == "vault-admin" || scope == "policy:write" || scope == "*" {
 			return true
@@ -287,9 +303,7 @@ func (s *Server) beginStepUp(w http.ResponseWriter, r *http.Request) {
 		}
 		resource = canonical
 		sensitive = auth.ActionRevealSecret
-	case "grant:create":
-		sensitive = auth.ActionPolicyChange
-	case "grant:revoke":
+	case "grant:create", "grant:revoke", "rotation:start", "rotation:resume", "secret:destroy":
 		sensitive = auth.ActionPolicyChange
 	default:
 		writeError(w, http.StatusBadRequest, "invalid_step_up_action", "Unsupported step-up action.")
@@ -476,13 +490,16 @@ func (s *Server) writeSecret(w http.ResponseWriter, r *http.Request) {
 		s.domainError(w, err)
 		return
 	}
-	s.runtime.record(audit.EventSecretVersionCreated, outcome.SecretID, audit.AuditData{
+	if err := s.runtime.record(audit.EventSecretVersionCreated, outcome.SecretID, audit.AuditData{
 		Actor:   session.Identity.Subject,
 		VaultID: vaultID,
 		Action:  "secret:write",
 		Outcome: "success",
 		Details: map[string]any{"secret_path": outcome.SecretPath, "version": outcome.Version},
-	})
+	}); err != nil {
+		writeError(w, http.StatusServiceUnavailable, "audit_unavailable", "The audit pipeline could not record this secret write.")
+		return
+	}
 	status := http.StatusCreated
 	if body.ExpectedVersion > 0 {
 		status = http.StatusOK
@@ -495,6 +512,129 @@ func (s *Server) writeSecret(w http.ResponseWriter, r *http.Request) {
 		"metadata_hash": outcome.MetadataHash,
 		"created_at":    outcome.CreatedAt,
 	})
+}
+
+type lifecycleActionBody struct {
+	SecretPath               string `json:"secret_path"`
+	Version                  int64  `json:"version"`
+	RetentionDurationSeconds int64  `json:"retention_duration_seconds"`
+	Confirmation             string `json:"confirmation"`
+	ExplicitOperatorAction   bool   `json:"explicit_operator_action"`
+}
+
+func (s *Server) deleteSecret(w http.ResponseWriter, r *http.Request) {
+	vaultID := r.PathValue("vault")
+	if !s.vault(w, r, vaultID) || !s.sameOrigin(w, r) {
+		return
+	}
+	session := s.requireSession(w, r)
+	if session == nil {
+		return
+	}
+	var body lifecycleActionBody
+	if !decodeBody(w, r, &body) {
+		return
+	}
+	var retention time.Duration
+	if body.RetentionDurationSeconds > 0 {
+		retention = time.Duration(body.RetentionDurationSeconds) * time.Second
+	}
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
+	outcome, err := s.runtime.secrets.DeleteSecret(ctx, secrets.DeleteRequest{
+		VaultID:           vaultID,
+		SecretPath:        body.SecretPath,
+		Version:           body.Version,
+		RetentionDuration: retention,
+		Owner:             ownerFor(session.Identity),
+		Identity:          session.Identity,
+	})
+	if err != nil {
+		s.domainError(w, err)
+		return
+	}
+	_ = s.runtime.record(audit.EventSecretVersionCreated, outcome.SecretPath, audit.AuditData{
+		Actor:   session.Identity.Subject,
+		VaultID: vaultID,
+		Action:  "secret:delete",
+		Outcome: "success",
+		Details: map[string]any{"secret_path": outcome.SecretPath, "version": outcome.Version, "status": outcome.Status},
+	})
+	writeJSON(w, http.StatusOK, outcome)
+}
+
+func (s *Server) undeleteSecret(w http.ResponseWriter, r *http.Request) {
+	vaultID := r.PathValue("vault")
+	if !s.vault(w, r, vaultID) || !s.sameOrigin(w, r) {
+		return
+	}
+	session := s.requireSession(w, r)
+	if session == nil {
+		return
+	}
+	var body lifecycleActionBody
+	if !decodeBody(w, r, &body) {
+		return
+	}
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
+	outcome, err := s.runtime.secrets.UndeleteSecret(ctx, secrets.UndeleteRequest{
+		VaultID:    vaultID,
+		SecretPath: body.SecretPath,
+		Version:    body.Version,
+		Owner:      ownerFor(session.Identity),
+		Identity:   session.Identity,
+	})
+	if err != nil {
+		s.domainError(w, err)
+		return
+	}
+	_ = s.runtime.record(audit.EventSecretVersionCreated, outcome.SecretPath, audit.AuditData{
+		Actor:   session.Identity.Subject,
+		VaultID: vaultID,
+		Action:  "secret:undelete",
+		Outcome: "success",
+		Details: map[string]any{"secret_path": outcome.SecretPath, "version": outcome.Version, "status": outcome.Status},
+	})
+	writeJSON(w, http.StatusOK, outcome)
+}
+
+func (s *Server) destroySecret(w http.ResponseWriter, r *http.Request) {
+	vaultID := r.PathValue("vault")
+	if !s.vault(w, r, vaultID) || !s.sameOrigin(w, r) {
+		return
+	}
+	session := s.requireSession(w, r)
+	if session == nil {
+		return
+	}
+	var body lifecycleActionBody
+	if !decodeBody(w, r, &body) {
+		return
+	}
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
+	outcome, err := s.runtime.secrets.DestroySecretVersion(ctx, secrets.DestroyRequest{
+		VaultID:                vaultID,
+		SecretPath:             body.SecretPath,
+		Version:                body.Version,
+		Owner:                  ownerFor(session.Identity),
+		Identity:               session.Identity,
+		ExplicitOperatorAction: body.ExplicitOperatorAction,
+		Confirmation:           body.Confirmation,
+	})
+	if err != nil {
+		s.domainError(w, err)
+		return
+	}
+	_ = s.runtime.record(audit.EventSecretVersionCreated, outcome.SecretPath, audit.AuditData{
+		Actor:   session.Identity.Subject,
+		VaultID: vaultID,
+		Action:  "secret:destroy",
+		Outcome: "success",
+		Details: map[string]any{"secret_path": outcome.SecretPath, "version": outcome.Version, "status": outcome.Status},
+	})
+	writeJSON(w, http.StatusOK, outcome)
 }
 
 type revealBody struct {
@@ -530,6 +670,7 @@ func (s *Server) revealSecret(w http.ResponseWriter, r *http.Request) {
 			"&return_to=" + url.QueryEscape(safeReturn(vaultReturn(vaultID)))
 		writeJSON(w, http.StatusUnauthorized, map[string]any{
 			"error":         "step_up_required",
+			"code":          "step_up_required",
 			"message":       "Fresh step-up reauthentication is required before this secret can be revealed.",
 			"authorize_url": authorize,
 		})
@@ -537,32 +678,59 @@ func (s *Server) revealSecret(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
 	defer cancel()
-	response, err := s.runtime.secrets.RevealSecret(ctx, secrets.RevealRequest{
-		VaultID:       vaultID,
-		SecretPath:    canonical,
-		Owner:         owner,
-		Identity:      session.Identity,
-		Session:       session,
-		StepUpManager: s.runtime.stepUp,
-		StepUpToken:   token.Plaintext(),
-		Headers:       r.Header,
+	defer s.runtime.clearElevation(session.ID)
+
+	var response *secrets.RevealResponse
+	var content secrets.RevealAuditContent
+	plaintext, err := s.runtime.monitor.ExecuteStrictAuditedReveal(ctx, func() ([]byte, error) {
+		revResp, revErr := s.runtime.secrets.RevealSecret(ctx, secrets.RevealRequest{
+			VaultID:       vaultID,
+			SecretPath:    canonical,
+			Owner:         owner,
+			Identity:      session.Identity,
+			Session:       session,
+			StepUpManager: s.runtime.stepUp,
+			StepUpToken:   token.Plaintext(),
+			Headers:       r.Header,
+		})
+		if revErr != nil {
+			return nil, revErr
+		}
+		response = revResp
+		content = revResp.AuditContent()
+		raw := append([]byte(nil), revResp.Plaintext().Plaintext()...)
+		revResp.Destroy()
+		return raw, nil
+	}, func(outcome string) error {
+		actor := session.Identity.Subject
+		secretPath := canonical
+		version := int64(0)
+		if content.Actor != "" {
+			actor = content.Actor
+		}
+		if content.SecretPath != "" {
+			secretPath = content.SecretPath
+		}
+		if content.Version > 0 {
+			version = content.Version
+		}
+		return s.runtime.record(audit.EventSecretRevealed, session.Identity.Subject, audit.AuditData{
+			Actor:   actor,
+			VaultID: vaultID,
+			Action:  "secret:reveal",
+			Outcome: outcome,
+			Details: map[string]any{"secret_path": secretPath, "version": version},
+		})
 	})
 	if err != nil {
-		s.runtime.clearElevation(session.ID)
 		s.domainError(w, err)
 		return
 	}
-	plaintext := append([]byte(nil), response.Plaintext()...)
-	content := response.AuditContent()
-	response.Destroy()
-	s.runtime.clearElevation(session.ID)
-	s.runtime.record(audit.EventSecretRevealed, session.Identity.Subject, audit.AuditData{
-		Actor:   content.Actor,
-		VaultID: content.VaultID,
-		Action:  content.Action,
-		Outcome: content.Outcome,
-		Details: map[string]any{"secret_path": content.SecretPath, "version": content.Version},
-	})
+	defer func() {
+		for i := range plaintext {
+			plaintext[i] = 0
+		}
+	}()
 	writeJSON(w, http.StatusOK, map[string]any{
 		"vault_id":           response.VaultID,
 		"secret_path":        response.SecretPath,
@@ -685,6 +853,7 @@ func (s *Server) stepUpRequired(w http.ResponseWriter, action, resource string) 
 		"&resource=" + url.QueryEscape(resource) + "&return_to=" + url.QueryEscape("/#access")
 	writeJSON(w, http.StatusUnauthorized, map[string]any{
 		"error":         "step_up_required",
+		"code":          "step_up_required",
 		"message":       "Fresh step-up reauthentication is required for this policy change.",
 		"authorize_url": authorize,
 	})
@@ -712,10 +881,21 @@ func (s *Server) revokeGrant(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
+
+	var targetPrincipal string
+	for _, g := range s.runtime.grants.List(vaultID) {
+		if g.ID == grantID {
+			targetPrincipal = g.PrincipalID
+			break
+		}
+	}
+	memberSession := s.runtime.revokeMemberElevations(ctx, targetPrincipal)
+
 	err := s.runtime.grants.RevokeGrant(ctx, grants.RevokeGrantRequest{
 		GrantID:       grantID,
 		OperatorIdent: session.Identity,
 		Session:       session,
+		MemberSession: memberSession,
 		StepUpManager: s.runtime.stepUp,
 		StepUpToken:   token.Plaintext(),
 	})
@@ -727,29 +907,228 @@ func (s *Server) revokeGrant(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"grant_id": grantID, "status": "REVOKED"})
 }
 
+func rotationDTO(job rotation.RotationJob) map[string]any {
+	completed := 0
+	checkpointSecret := ""
+	for _, item := range job.Items {
+		if item.Rewrapped && item.Verified {
+			completed++
+		} else if checkpointSecret == "" {
+			checkpointSecret = item.SecretPath
+		}
+	}
+	targetKEKVersion := job.TargetKEKVersion
+	if targetKEKVersion == "" {
+		targetKEKVersion = "v1"
+	}
+	var completedAt any
+	if job.State == rotation.StateComplete {
+		completedAt = job.UpdatedAt
+	}
+	return map[string]any{
+		"job_id":                   job.ID,
+		"vault_id":                 job.VaultID,
+		"prior_kek_id":             job.SourceKEKID,
+		"target_kek_id":            job.TargetKEKID,
+		"target_kek_version":       targetKEKVersion,
+		"state":                    string(job.State),
+		"status":                   string(job.State),
+		"total_secrets":            len(job.Items),
+		"rewrapped_secrets":        completed,
+		"total_items":              len(job.Items),
+		"completed_items":          completed,
+		"checkpoint_secret":        checkpointSecret,
+		"prior_kek_retirable":      job.RetirePriorKEKAllowed,
+		"retire_prior_kek_allowed": job.RetirePriorKEKAllowed,
+		"started_at":               job.CreatedAt,
+		"completed_at":             completedAt,
+		"created_at":               job.CreatedAt,
+		"updated_at":               job.UpdatedAt,
+		"last_error":               job.LastFailureCode,
+		"last_error_code":          job.LastFailureCode,
+	}
+}
+
 func (s *Server) listRotations(w http.ResponseWriter, r *http.Request) {
 	vaultID := r.PathValue("vault")
 	if !s.vault(w, r, vaultID) {
 		return
 	}
-	if s.requireSession(w, r) == nil {
+	session := s.requireSession(w, r)
+	if session == nil {
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"vault_id": vaultID, "rotations": []any{}})
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+	jobs, err := s.runtime.rotation.ListJobs(ctx, ownerFor(session.Identity), vaultID)
+	if err != nil {
+		s.domainError(w, err)
+		return
+	}
+	items := make([]map[string]any, 0, len(jobs))
+	for _, job := range jobs {
+		items = append(items, rotationDTO(job))
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"vault_id": vaultID, "rotations": items})
 }
 
-func (s *Server) resumeRotation(w http.ResponseWriter, r *http.Request) {
+type startRotationBody struct {
+	JobID            string   `json:"job_id"`
+	TargetKEKID      string   `json:"target_kek_id"`
+	TargetKEKVersion string   `json:"target_kek_version"`
+	SecretPaths      []string `json:"secret_paths"`
+}
+
+func (s *Server) startRotation(w http.ResponseWriter, r *http.Request) {
 	vaultID := r.PathValue("vault")
 	if !s.vault(w, r, vaultID) || !s.sameOrigin(w, r) {
 		return
 	}
+	session := s.requireSession(w, r)
+	if session == nil {
+		return
+	}
+	if !isAdmin(session.Identity) {
+		writeError(w, http.StatusForbidden, "access_denied", "Only the vault administrator can start key rotations.")
+		return
+	}
+	var body startRotationBody
+	if !decodeBody(w, r, &body) {
+		return
+	}
+	resource := "vault/" + vaultID + "/rotations"
+	token, elevated := s.runtime.elevationFor(session.ID, auth.ActionPolicyChange, resource)
+	if !elevated {
+		s.stepUpRequired(w, "rotation:start", resource)
+		return
+	}
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
+	owner := ownerFor(session.Identity)
+	secretPaths := body.SecretPaths
+	if len(secretPaths) == 0 {
+		if lister, ok := any(s.runtime.store).(storage.Lister); ok {
+			if recs, err := lister.List(ctx, storage.ListRequest{Owner: owner, Scope: vaultID}); err == nil {
+				for _, rec := range recs {
+					if _, decErr := contracts.DecodeSecret(ctx, rec.Metadata); decErr == nil {
+						secretPaths = append(secretPaths, rec.Name)
+					}
+				}
+			}
+		}
+	}
+	targetKEK := strings.TrimSpace(body.TargetKEKID)
+	if targetKEK == "" {
+		targetKEK = s.runtime.config.OpenBao.KEKID
+	}
+	targetKEKVersion := strings.TrimSpace(body.TargetKEKVersion)
+	if targetKEKVersion == "" {
+		targetKEKVersion = "v2"
+	}
+	jobID := strings.TrimSpace(body.JobID)
+	if jobID == "" {
+		state, _ := randomState()
+		jobID = "rot-" + state[:12]
+	}
+	job, err := s.runtime.rotation.StartOrResumeRotation(ctx, rotation.StartOrResumeRequest{
+		JobID:            jobID,
+		VaultID:          vaultID,
+		Owner:            owner,
+		SourceKEKID:      s.runtime.config.OpenBao.KEKID,
+		TargetKEKID:      targetKEK,
+		TargetKEKVersion: targetKEKVersion,
+		SecretPaths:      secretPaths,
+		OperatorIdent:    session.Identity,
+		Session:          session,
+		StepUpManager:    s.runtime.stepUp,
+		StepUpToken:      token.Plaintext(),
+	})
+	if err != nil {
+		s.domainError(w, err)
+		return
+	}
+	s.runtime.clearElevation(session.ID)
+	writeJSON(w, http.StatusCreated, rotationDTO(*job))
+}
+
+func (s *Server) resumeRotation(w http.ResponseWriter, r *http.Request) {
+	vaultID := r.PathValue("vault")
+	jobID := r.PathValue("job")
+	if !s.vault(w, r, vaultID) || !s.sameOrigin(w, r) {
+		return
+	}
+	session := s.requireSession(w, r)
+	if session == nil {
+		return
+	}
+	if !isAdmin(session.Identity) {
+		writeError(w, http.StatusForbidden, "access_denied", "Only the vault administrator can resume key rotations.")
+		return
+	}
+	resource := "vault/" + vaultID + "/rotations"
+	token, elevated := s.runtime.elevationFor(session.ID, auth.ActionPolicyChange, resource)
+	if !elevated {
+		s.stepUpRequired(w, "rotation:resume", resource)
+		return
+	}
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
+	owner := ownerFor(session.Identity)
+	existing, err := s.runtime.rotation.GetJob(ctx, owner, vaultID, jobID)
+	if err != nil {
+		s.domainError(w, err)
+		return
+	}
+	targetKEKVersion := existing.TargetKEKVersion
+	if targetKEKVersion == "" {
+		targetKEKVersion = "v2"
+	}
+	job, err := s.runtime.rotation.StartOrResumeRotation(ctx, rotation.StartOrResumeRequest{
+		JobID:            existing.ID,
+		VaultID:          existing.VaultID,
+		Owner:            owner,
+		SourceKEKID:      existing.SourceKEKID,
+		TargetKEKID:      existing.TargetKEKID,
+		TargetKEKVersion: targetKEKVersion,
+		OperatorIdent:    session.Identity,
+		Session:          session,
+		StepUpManager:    s.runtime.stepUp,
+		StepUpToken:      token.Plaintext(),
+	})
+	if err != nil {
+		s.domainError(w, err)
+		return
+	}
+	s.runtime.clearElevation(session.ID)
+	writeJSON(w, http.StatusOK, rotationDTO(*job))
+}
+
+func (s *Server) verifyCheckpoint(w http.ResponseWriter, r *http.Request) {
 	if s.requireSession(w, r) == nil {
 		return
 	}
-	writeError(w, http.StatusNotFound, "rotation_not_found", "No rotation job exists for this identifier.")
+	checkpointID := strings.TrimSpace(r.PathValue("id"))
+	if checkpointID == "" {
+		writeError(w, http.StatusBadRequest, "invalid_input", "checkpoint id is required.")
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{
+		"checkpoint_id": checkpointID,
+		"status":        string(audit.StatusUnavailable),
+		"verified":      false,
+	})
 }
 
 func (s *Server) domainError(w http.ResponseWriter, err error) {
+	var healthErr *health.Error
+	if errors.As(err, &healthErr) {
+		if healthErr.Err != nil {
+			s.domainError(w, healthErr.Err)
+			return
+		}
+		writeError(w, http.StatusServiceUnavailable, strings.ToLower(string(healthErr.Code)), healthErr.Message)
+		return
+	}
 	var authErr *auth.Error
 	if errors.As(err, &authErr) {
 		switch authErr.Code {
@@ -802,6 +1181,32 @@ func (s *Server) domainError(w http.ResponseWriter, err error) {
 		writeError(w, http.StatusInternalServerError, "reveal_failed", "The secret could not be revealed.")
 		return
 	}
+	var delErr *secrets.DeletionError
+	if errors.As(err, &delErr) {
+		switch delErr.Code {
+		case secrets.CodeVersionDestroyed, secrets.CodeIllegalTransition, secrets.CodeRetentionExpired:
+			writeError(w, http.StatusConflict, strings.ToLower(delErr.Code), delErr.Message)
+		case secrets.CodeExplicitActionRequired:
+			writeError(w, http.StatusBadRequest, strings.ToLower(delErr.Code), delErr.Message)
+		default:
+			writeError(w, http.StatusBadRequest, "lifecycle_failed", delErr.Message)
+		}
+		return
+	}
+	var rotErr *rotation.Error
+	if errors.As(err, &rotErr) {
+		switch rotErr.Code {
+		case rotation.CodeRotationNotFound:
+			writeError(w, http.StatusNotFound, "rotation_not_found", rotErr.Message)
+		case rotation.CodeUnauthorized:
+			writeError(w, http.StatusForbidden, "access_denied", rotErr.Message)
+		case rotation.CodeRotationIncomplete:
+			writeError(w, http.StatusConflict, "rotation_incomplete", rotErr.Message)
+		default:
+			writeError(w, http.StatusBadRequest, strings.ToLower(rotErr.Code), rotErr.Message)
+		}
+		return
+	}
 	var grantErr *grants.Error
 	if errors.As(err, &grantErr) {
 		switch grantErr.Code {
@@ -849,5 +1254,17 @@ func writeJSON(w http.ResponseWriter, status int, value any) {
 }
 
 func writeError(w http.ResponseWriter, status int, code, message string) {
-	writeJSON(w, status, map[string]any{"error": code, "message": message})
+	reqID, _ := randomState()
+	if len(reqID) > 16 {
+		reqID = "req-" + reqID[:16]
+	} else if reqID == "" {
+		reqID = "req-local"
+	}
+	writeJSON(w, status, map[string]any{
+		"error":      code,
+		"code":       code,
+		"message":    message,
+		"request_id": reqID,
+	})
 }
+

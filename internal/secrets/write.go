@@ -10,7 +10,6 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha256"
-	"crypto/subtle"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -320,42 +319,6 @@ func (s *Service) reconcilePayloadWrite(ctx context.Context, cause error, owner,
 }
 
 func (s *Service) isAuthorized(identity *auth.Identity, targetOwner string, canonicalPath string) bool {
-	if identity.ExpiresAt > 0 && time.Now().Unix() > identity.ExpiresAt {
-		return false
-	}
-	// Check owner authorization
-	ownerAuthorized := false
-	if identity.Email != "" && subtle.ConstantTimeCompare([]byte(identity.Email), []byte(targetOwner)) == 1 {
-		ownerAuthorized = true
-	} else if identity.Subject != "" && subtle.ConstantTimeCompare([]byte(identity.Subject), []byte(targetOwner)) == 1 {
-		ownerAuthorized = true
-	} else {
-		for _, allowed := range identity.AllowedOwners {
-			if subtle.ConstantTimeCompare([]byte(allowed), []byte(targetOwner)) == 1 {
-				ownerAuthorized = true
-				break
-			}
-		}
-	}
-	if !ownerAuthorized {
-		return false
-	}
-
-	// Check path-level scopes
-	hasPathRestrictions := false
-	pathMatched := false
-	for _, sc := range identity.AllowedScopes {
-		if strings.Contains(sc, "/") {
-			hasPathRestrictions = true
-			if auth.MatchPathScope(sc, canonicalPath) {
-				pathMatched = true
-				break
-			}
-		}
-	}
-	if hasPathRestrictions && !pathMatched {
-		return false
-	}
-
-	return true
+	return auth.IsOwnerAuthorized(identity, targetOwner) && auth.IsPathScopeAuthorized(identity, canonicalPath)
 }
+

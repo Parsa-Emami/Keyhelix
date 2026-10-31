@@ -9,8 +9,11 @@ const lock = JSON.parse(readFileSync(new URL('../docs/engineering/toolchain-lock
 const goVersion = lock.resources.find(resource => resource.id === 'go-toolchain').version;
 const podmanVersion = lock.resources.find(resource => resource.id === 'podman-provider').version;
 
+const localGoBin = resolve(root, '.local-data/oss/bin/go/bin');
+
 export const goEnvironment = {
   ...process.env,
+  PATH: `${localGoBin}:${process.env.PATH ?? ''}`,
   GOTOOLCHAIN: `go${goVersion}`,
   GOSUMDB: 'sum.golang.org',
   GOPROXY: 'https://proxy.golang.org|direct'

@@ -21,11 +21,11 @@ Distribution: `provider-backed-private`. Domain/application layer owns invariant
 
 | Store | Ownership |
 |---|---|
-| OpenBao | secret bytes, versions, leases and provider authorization; durable backend, never dev mode |
-| SQLite | optional UI metadata and session fingerprints only; never secret values |
-| Separate audit sink | provider audit and signed checkpoints where independently configured |
+| OpenBao | secret bytes (KV v2 sealed payloads), wrapped DEKs (Transit KEK), and provider authorization; durable backend, never dev mode |
+| Local Storage Port (`internal/storage`) | single-writer atomic file store (`manifests/`, `blobs/`, `operations/`, `LOCK`) for secret metadata, grants, rotation checkpoints, and lifecycle records per ADR-0003; never secret values |
+| Separate audit sink | provider audit and Ed25519-signed checkpoints (`internal/audit`) where independently configured |
 
-Removed compulsory services: Laravel, PostgreSQL application DB, Valkey, custom application encryption layer. No hidden substitution with a self-built SQL server or full distributed event store. SQLite where present has no separate DB daemon, but durable disk, backup, schema evolution and correct constraints still matter. Optional external providers retain their own operational state and may increase total overhead.
+Removed compulsory services: Laravel, PostgreSQL application DB, Valkey, custom application encryption layer. No hidden substitution with a self-built SQL server or full distributed event store. The local file storage port (`internal/storage`) requires no separate DB daemon while enforcing atomic fsync, SHA-256 digest verification, and optimistic CAS constraints. Optional external providers retain their own operational state and may increase total overhead.
 
 ## Initial capacity contract — targets, not measured
 

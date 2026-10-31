@@ -303,29 +303,47 @@ func (s *Service) RevokeGrant(ctx context.Context, req RevokeGrantRequest) error
 	}
 
 	now := time.Now().UTC()
+	updatedGrant := *grant
+	updatedGrant.RevokedAt = &now
+	updatedGrant.RevokedBy = req.OperatorIdent.Email
+	s.mu.Unlock()
+
+	// 2. Persist revocation record fail-closed before committing in-memory state
+	if s.store != nil {
+		expectedVersion := int64(1)
+		owner := req.OperatorIdent.Email
+		if existingRec, readErr := s.store.Read(ctx, storage.ReadRequest{
+			Owner: owner,
+			Scope: "grants",
+			Name:  req.GrantID,
+		}); readErr == nil && existingRec.EntityVersion > 0 {
+			expectedVersion = existingRec.EntityVersion
+		}
+		grantBytes, err := json.Marshal(&updatedGrant)
+		if err != nil {
+			return &Error{Code: CodeInvalidInput, Message: "failed to encode revoked grant", Err: err}
+		}
+		if _, err := s.store.Write(ctx, storage.WriteRequest{
+			OperationID:     fmt.Sprintf("op-revoke-%s-v%d", req.GrantID, expectedVersion+1),
+			Owner:           owner,
+			Scope:           "grants",
+			Name:            req.GrantID,
+			ExpectedVersion: expectedVersion,
+			Metadata:        grantBytes,
+		}); err != nil {
+			return &Error{Code: "STORAGE_WRITE_FAILED", Message: "failed to persist grant revocation", Err: err}
+		}
+	}
+
+	s.mu.Lock()
 	grant.RevokedAt = &now
 	grant.RevokedBy = req.OperatorIdent.Email
 	s.mu.Unlock()
 
-	// 2. Immediate privilege reduction: Invalidate step-up grants associated with member session
-	// to ensure the very next sensitive request fails closed.
-	if req.MemberSession != nil {
-		req.StepUpManager.RevokeAllForSession(ctx, req.MemberSession.ID)
-	} else {
-		req.StepUpManager.RevokeAllForSession(ctx, req.Session.ID)
-	}
-
-	// 3. Persist revocation record
-	if s.store != nil {
-		grantBytes, _ := json.Marshal(grant)
-		_, _ = s.store.Write(ctx, storage.WriteRequest{
-			OperationID:     "op-revoke-" + req.GrantID,
-			Owner:           req.OperatorIdent.Email,
-			Scope:           "grants",
-			Name:            req.GrantID,
-			ExpectedVersion: 1,
-			Metadata:        grantBytes,
-		})
+	// 3. Immediate privilege reduction: Invalidate step-up grants associated with member session
+	// to ensure the very next sensitive request fails closed (never revoking the operator's own session unless identical).
+	if req.MemberSession != nil && req.StepUpManager != nil {
+		_, _ = req.StepUpManager.RevokeAllForSession(ctx, req.MemberSession.ID)
 	}
 
 	// 4. Emit attributable audit event
@@ -345,7 +363,9 @@ func (s *Service) RevokeGrant(ctx context.Context, req RevokeGrantRequest) error
 			},
 		)
 		if evtErr == nil {
-			_ = s.recorder.Record(ctx, evt)
+			if recErr := s.recorder.Record(ctx, evt); recErr != nil {
+				return &Error{Code: "AUDIT_RECORD_FAILED", Message: "failed to record grant revocation audit event", Err: recErr}
+			}
 		}
 	}
 

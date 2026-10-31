@@ -348,9 +348,9 @@
   "web_progress": "plans/web-roadmap.json",
   "existing_source_review": {
     "base_commit": "e336e555af32533cc89661ab36c12a189df6a95b",
-    "backend": null,
-    "backend_tests": "not_implemented"
+    "backend": "go-1.26-bff",
+    "backend_tests": "implemented"
   },
   "roadmap_contract": "clone-to-run-oss-v1",
-  "current_core_ready": false
+  "current_core_ready": true
 }

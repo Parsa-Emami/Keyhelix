@@ -9,6 +9,9 @@ export interface SecretSummary {
   created_at: string;
   metadata_digest: string;
   status?: string;
+  deleted_at?: string;
+  retain_until?: string;
+  destroyed_at?: string;
 }
 
 export interface VaultsProps {
@@ -33,6 +36,8 @@ export function Vaults({ vaultId = 'vault-prod', onSelectSecret, onLogout }: Vau
   const [draftClassification, setDraftClassification] = useState('restricted');
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState('');
+  const [lifecycleBusy, setLifecycleBusy] = useState<string | null>(null);
+  const [confirmDestroyPath, setConfirmDestroyPath] = useState<string | null>(null);
 
   const loadMetadata = useCallback(async () => {
     setLoading(true);
@@ -123,6 +128,48 @@ export function Vaults({ vaultId = 'vault-prod', onSelectSecret, onLogout }: Vau
     }
   }
 
+  async function handleLifecycleAction(secretPath: string, version: number, action: 'delete' | 'undelete' | 'destroy') {
+    setError('');
+    setNotice('');
+    setLifecycleBusy(`${action}:${secretPath}`);
+    try {
+      const payload: Record<string, unknown> = {
+        secret_path: secretPath,
+        version
+      };
+      if (action === 'delete') {
+        payload.retention_duration_seconds = 30 * 24 * 3600;
+      } else if (action === 'destroy') {
+        payload.explicit_operator_action = true;
+        payload.confirmation = 'DESTROY';
+      }
+      const response = await fetch(`/api/vaults/${encodeURIComponent(vaultId)}/secrets/${action}`, {
+        method: 'POST',
+        cache: 'no-store',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.message || `Failed to ${action} secret version.`);
+      }
+      setConfirmDestroyPath(null);
+      setNotice(
+        action === 'delete'
+          ? `Soft-deleted ${secretPath} v${version} (retained until ${data.retain_until || 'retention window'}).`
+          : action === 'undelete'
+            ? `Restored ${secretPath} v${version} to ACTIVE.`
+            : `Permanently destroyed ${secretPath} v${version} payload.`
+      );
+      await loadMetadata();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : `Unable to ${action} secret.`);
+    } finally {
+      setLifecycleBusy(null);
+    }
+  }
+
   const statuses = [...new Set(secrets.map(secret => (secret.status || 'ACTIVE').toLowerCase()))].sort();
 
   const filteredSecrets = secrets.filter(secret => {
@@ -150,22 +197,29 @@ export function Vaults({ vaultId = 'vault-prod', onSelectSecret, onLogout }: Vau
       )}
 
       {error && (
-        <section className="notice" role="alert" aria-live="assertive">
-          <span className="dot" style={{ background: '#ff6b6b' }} />
+        <section id="vaults-error-alert" className="notice" role="alert" aria-live="assertive">
+          <span className="dot dot-error" />
           {error}
         </section>
       )}
 
       {notice && <p role="status" className="muted">{notice}</p>}
 
-      <form className="panel" onSubmit={writeSecret} aria-label="Write a versioned secret" style={{ marginBottom: '20px' }}>
+      <form className="panel form-panel" onSubmit={writeSecret} aria-label="Write a versioned secret">
         <div className="eyebrow">Scoped write</div>
         <h3>Create or add a new secret version</h3>
         <p className="muted">The engine seals the value with a fresh DEK, stores the wrapped key in OpenBao and writes only metadata here.</p>
         <div className="filters">
           <label>
             Secret path
-            <input value={draftPath} onChange={event => setDraftPath(event.target.value)} aria-label="Secret path" placeholder="app/prod/database-url" />
+            <input
+              value={draftPath}
+              onChange={event => setDraftPath(event.target.value)}
+              aria-label="Secret path"
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? 'vaults-error-alert' : undefined}
+              placeholder="app/prod/database-url"
+            />
           </label>
           <label>
             Classification
@@ -176,9 +230,18 @@ export function Vaults({ vaultId = 'vault-prod', onSelectSecret, onLogout }: Vau
             </select>
           </label>
         </div>
-        <label style={{ display: 'block', marginTop: '10px' }}>
+        <label className="textarea-label">
           Secret value
-          <textarea value={draftValue} onChange={event => setDraftValue(event.target.value)} aria-label="Secret value" rows={3} placeholder="Synthetic value only in this local workspace" style={{ width: '100%', marginTop: '6px' }} />
+          <textarea
+            className="textarea-field"
+            value={draftValue}
+            onChange={event => setDraftValue(event.target.value)}
+            aria-label="Secret value"
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? 'vaults-error-alert' : undefined}
+            rows={3}
+            placeholder="Synthetic value only in this local workspace"
+          />
         </label>
         <p className="muted">{existing ? `Updating existing version ${existing.version}; the next version is ${existing.version + 1}.` : 'This path does not exist yet; the write creates version 1.'}</p>
         <button type="submit" className="file-button" disabled={saving || needsSignIn} data-testid="write-secret-btn">
@@ -220,29 +283,90 @@ export function Vaults({ vaultId = 'vault-prod', onSelectSecret, onLogout }: Vau
       <ol className="tasks secrets-list" aria-label="Secret metadata entries">
         {filteredSecrets.map(secret => {
           const status = secret.status || 'ACTIVE';
+          const isDeleted = status === 'DELETED' || status === 'SOFT_DELETED';
+          const isDestroyed = status === 'DESTROYED';
           return (
             <li key={secret.secret_path} className="secret-item" data-testid={`secret-${secret.secret_path}`}>
               <div className="task-line">
                 <span className="task-id">v{secret.version}</span>
                 <h2><code>{secret.secret_path}</code></h2>
-                <span className={`state ${status.toLowerCase()}`}>{status}</span>
+                <span className={`state ${status.toLowerCase()}`} data-testid={`secret-status-${secret.secret_path}`}>{status}</span>
                 <span className="badge">{secret.classification}</span>
               </div>
               <p className="muted">
                 Created: {new Date(secret.created_at).toLocaleString()} · Digest: <code>{secret.metadata_digest.slice(0, 16)}…</code>
+                {secret.retain_until && ` · Retain until: ${new Date(secret.retain_until).toLocaleString()}`}
+                {secret.destroyed_at && ` · Destroyed: ${new Date(secret.destroyed_at).toLocaleString()}`}
               </p>
-              <button
-                type="button"
-                className="file-button"
-                style={{ marginTop: '8px' }}
-                data-testid={`reveal-btn-${secret.secret_path}`}
-                onClick={() => {
-                  setActiveRevealSecret(secret.secret_path);
-                  if (onSelectSecret) onSelectSecret(secret.secret_path);
-                }}
-              >
-                Inspect / Request Reveal
-              </button>
+              <div className="inline-actions">
+                {!isDeleted && !isDestroyed && (
+                  <button
+                    type="button"
+                    className="file-button"
+                    data-testid={`reveal-btn-${secret.secret_path}`}
+                    onClick={() => {
+                      setActiveRevealSecret(secret.secret_path);
+                      if (onSelectSecret) onSelectSecret(secret.secret_path);
+                    }}
+                  >
+                    Inspect / Request Reveal
+                  </button>
+                )}
+                {!isDeleted && !isDestroyed && (
+                  <button
+                    type="button"
+                    className="btn-secondary btn-compact"
+                    data-testid={`delete-btn-${secret.secret_path}`}
+                    disabled={lifecycleBusy !== null}
+                    onClick={() => void handleLifecycleAction(secret.secret_path, secret.version, 'delete')}
+                  >
+                    {lifecycleBusy === `delete:${secret.secret_path}` ? 'Deleting…' : 'Soft Delete'}
+                  </button>
+                )}
+                {isDeleted && (
+                  <button
+                    type="button"
+                    className="file-button btn-compact"
+                    data-testid={`undelete-btn-${secret.secret_path}`}
+                    disabled={lifecycleBusy !== null}
+                    onClick={() => void handleLifecycleAction(secret.secret_path, secret.version, 'undelete')}
+                  >
+                    {lifecycleBusy === `undelete:${secret.secret_path}` ? 'Restoring…' : 'Restore Version'}
+                  </button>
+                )}
+                {!isDestroyed && (
+                  confirmDestroyPath === secret.secret_path ? (
+                    <>
+                      <button
+                        type="button"
+                        className="btn-danger btn-compact"
+                        data-testid={`confirm-destroy-btn-${secret.secret_path}`}
+                        disabled={lifecycleBusy !== null}
+                        onClick={() => void handleLifecycleAction(secret.secret_path, secret.version, 'destroy')}
+                      >
+                        {lifecycleBusy === `destroy:${secret.secret_path}` ? 'Destroying…' : 'Confirm Irreversible Destroy'}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-secondary btn-compact"
+                        onClick={() => setConfirmDestroyPath(null)}
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn-danger btn-compact"
+                      data-testid={`destroy-btn-${secret.secret_path}`}
+                      disabled={lifecycleBusy !== null}
+                      onClick={() => setConfirmDestroyPath(secret.secret_path)}
+                    >
+                      Destroy Version
+                    </button>
+                  )
+                )}
+              </div>
             </li>
           );
         })}

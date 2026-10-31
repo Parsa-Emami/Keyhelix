@@ -50,6 +50,10 @@ export function Reveal({ vaultId, secretPath, onClose, onLogout }: RevealProps) 
   const [copied, setCopied] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const copiedRef = useRef(false);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const closeBtnRef = useRef<HTMLButtonElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const clearPlaintextState = useCallback(() => {
     if (timerRef.current) {
@@ -59,6 +63,16 @@ export function Reveal({ vaultId, secretPath, onClose, onLogout }: RevealProps) 
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
+    }
+    if (copiedRef.current) {
+      copiedRef.current = false;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          void navigator.clipboard.writeText('').catch(() => {});
+        }
+      } catch {
+        // Ignore clipboard errors on background or non-focused document
+      }
     }
     setRevealedData(null);
     setPlaintext('');
@@ -77,11 +91,39 @@ export function Reveal({ vaultId, secretPath, onClose, onLogout }: RevealProps) 
     else onClose();
   }, [clearPlaintextState, onLogout, onClose]);
 
-  useEffect(() => () => clearPlaintextState(), [clearPlaintextState]);
+  useEffect(() => {
+    previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    closeBtnRef.current?.focus();
+    return () => {
+      clearPlaintextState();
+      previousFocusRef.current?.focus();
+    };
+  }, [clearPlaintextState]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') handleClose();
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        handleClose();
+        return;
+      }
+      if (event.key === 'Tab' && dialogRef.current) {
+        const focusable = Array.from(
+          dialogRef.current.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          )
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -177,7 +219,10 @@ export function Reveal({ vaultId, secretPath, onClose, onLogout }: RevealProps) 
   const copyPlaintext = async () => {
     if (!plaintext) return;
     try {
-      if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(plaintext);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(plaintext);
+      }
+      copiedRef.current = true;
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -188,26 +233,34 @@ export function Reveal({ vaultId, secretPath, onClose, onLogout }: RevealProps) 
   return (
     <div
       className="reveal-backdrop"
-      style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(10, 15, 25, 0.85)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="reveal-dialog-title"
       data-testid="reveal-dialog"
     >
-      <div className="panel" style={{ width: '100%', maxWidth: '560px', boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)', border: '1px solid #3a4b66' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+      <div className="panel reveal-modal" ref={dialogRef}>
+        <div className="reveal-header">
           <div className="eyebrow">Transient Secret Reveal</div>
-          <button type="button" className="badge" onClick={handleClose} aria-label="Close reveal dialog" data-testid="reveal-close-btn" style={{ cursor: 'pointer', background: 'transparent' }}>✕ Close</button>
+          <button
+            ref={closeBtnRef}
+            type="button"
+            className="badge reveal-close-btn"
+            onClick={handleClose}
+            aria-label="Close reveal dialog"
+            data-testid="reveal-close-btn"
+          >
+            ✕ Close
+          </button>
         </div>
 
-        <h2 id="reveal-dialog-title" style={{ marginTop: 0 }}>Secret: <code>{secretPath}</code></h2>
-        <p className="intro" style={{ fontSize: '14px', marginBottom: '16px' }}>
+        <h2 id="reveal-dialog-title" className="reveal-title">Secret: <code>{secretPath}</code></h2>
+        <p className="intro reveal-intro">
           Vault: <code>{vaultId}</code>. The provider owns the sealed bytes; plaintext is decrypted on demand and cleared on close or timeout.
         </p>
 
         {error && (
-          <section className="notice" role="alert" aria-live="assertive" style={{ margin: '14px 0' }}>
-            <span className="dot" style={{ background: '#ff6b6b' }} />
+          <section className="notice reveal-alert" role="alert" aria-live="assertive">
+            <span className="dot dot-error" />
             <span data-testid="reveal-error-msg">{error}</span>
           </section>
         )}
@@ -217,7 +270,7 @@ export function Reveal({ vaultId, secretPath, onClose, onLogout }: RevealProps) 
             <p className="muted">
               {elevated === null ? 'Checking session elevation…' : elevated ? 'Fresh step-up is active for this path.' : 'A fresh step-up reauthentication is required before the provider will decrypt this version.'}
             </p>
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <div className="inline-actions">
               <button type="button" className="file-button" onClick={elevated ? requestReveal : startStepUp} disabled={loading || elevated === null} data-testid="request-reveal-btn">
                 {loading ? 'Decrypting transient payload…' : elevated ? 'Reveal Secret' : 'Re-authenticate & Reveal'}
               </button>
@@ -226,25 +279,25 @@ export function Reveal({ vaultId, secretPath, onClose, onLogout }: RevealProps) 
                   Continue with the identity provider
                 </a>
               )}
-              <button type="button" onClick={handleClose} style={{ background: 'transparent', color: '#b8c4d5', border: '1px solid #3a4860', borderRadius: '9px', padding: '11px 18px' }}>
+              <button type="button" className="btn-secondary" onClick={handleClose}>
                 Cancel
               </button>
             </div>
           </div>
         ) : (
-          <div data-testid="revealed-payload-container" style={{ marginTop: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#162338', borderRadius: '8px', marginBottom: '12px' }}>
+          <div data-testid="revealed-payload-container" className="reveal-payload">
+            <div className="reveal-status-bar">
               <span className="state active">Decrypted · v{revealedData.version} · {revealedData.classification}</span>
-              <span className="task-id" data-testid="reveal-countdown" style={{ fontWeight: 'bold' }}>Auto-clearing in {countdown}s</span>
+              <span className="task-id reveal-countdown" data-testid="reveal-countdown">Auto-clearing in {countdown}s</span>
             </div>
-            <div style={{ background: '#050a14', border: '1px solid #2d3f5d', borderRadius: '8px', padding: '14px', fontFamily: 'ui-monospace, monospace', fontSize: '15px', color: '#80e6c4', wordBreak: 'break-all', marginBottom: '16px' }} data-testid="plaintext-display">
+            <div className="plaintext-box" data-testid="plaintext-display">
               {plaintext}
             </div>
             <p className="muted">Algorithm: {revealedData.algorithm} · No-store · Digest {revealedData.metadata_digest.slice(0, 16)}…</p>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div className="inline-actions">
               <button type="button" className="file-button" onClick={copyPlaintext} data-testid="copy-plaintext-btn">{copied ? 'Copied to Clipboard!' : 'Copy Plaintext'}</button>
-              <button type="button" onClick={handleClose} data-testid="close-and-clear-btn" style={{ background: '#2b1b1b', color: '#ff9999', border: '1px solid #5a3030', borderRadius: '9px', padding: '11px 18px' }}>Close &amp; Zero Plaintext</button>
-              <button type="button" onClick={handleLogout} data-testid="logout-and-purge-btn" style={{ background: 'transparent', color: '#94a5bc', border: '1px solid #3a4860', borderRadius: '9px', padding: '11px 18px', marginLeft: 'auto' }}>Logout Session</button>
+              <button type="button" className="btn-danger" onClick={handleClose} data-testid="close-and-clear-btn">Close &amp; Zero Plaintext</button>
+              <button type="button" className="btn-logout" onClick={handleLogout} data-testid="logout-and-purge-btn">Logout Session</button>
             </div>
           </div>
         )}

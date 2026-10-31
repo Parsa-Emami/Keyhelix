@@ -2,7 +2,7 @@
 
 ## 1. System Overview & Scope
 
-KeyHelix is an open-source, local-first secret management and cryptographic authorization platform designed according to [ADR-0003](file:///home/amirreza/Desktop/Projects/Keyhelix/docs/architecture/ADR-0003-open-source-local-first.md). It delivers zero-plaintext storage, hardware-backed envelope encryption, and verifiable cryptographic auditability without requiring paid cloud subscriptions or proprietary vendor lock-in.
+KeyHelix is an open-source, local-first secret management and cryptographic authorization platform designed according to [ADR-0003](../architecture/ADR-0003-open-source-local-first.md). It delivers zero-plaintext storage, hardware-backed envelope encryption, and verifiable cryptographic auditability without requiring paid cloud subscriptions or proprietary vendor lock-in.
 
 This threat model defines the system trust boundaries, adversary model, STRIDE threat catalog, and security controls for the supported **KeyHelix Linux Local-First Profile** (Linux x86_64, Go 1.26, Node 24.19, React 19).
 
@@ -19,30 +19,30 @@ flowchart TD
     subgraph HostBoundary ["Trust Boundary 2 & 3: Local Host & Server Shell"]
         NodeShell["Node.js Shell (port 4173)\nStatic Assets & Reverse Proxy"]
         GoEngine["Go Engine Core Service\n(Domain Invariants, Auth, Cryptography)"]
-        NodeShell <-->|HTTP /api| GoEngine
+        NodeShell <-->|Loopback HTTP /api| GoEngine
     end
 
     subgraph StorageBoundary ["Trust Boundary 4: Local Storage Port"]
         StoreRoot["Local Filesystem Root"]
-        Blobs["blobs/ (Immutable Ciphertext & Digests)"]
+        Blobs["blobs/ (Immutable Metadata Digests)"]
         Manifests["manifests/ (Versioned State Manifests)"]
-        Staging["staging/ (Atomic Temp Writes)"]
-        StoreLock["Exclusive Flock (.keyhelix.lock)"]
+        Operations["operations/ (Idempotent Operation Log)"]
+        StoreLock["Single-Writer Lockfile (LOCK)"]
         StoreRoot --- Blobs
         StoreRoot --- Manifests
-        StoreRoot --- Staging
+        StoreRoot --- Operations
         StoreRoot --- StoreLock
     end
 
     subgraph ExternalBoundary ["Trust Boundary 5 & 6: Cryptographic & Identity Providers"]
-        OpenBao["Upstream KMS / OpenBao\n(Transit Engine / KEK Custody)"]
-        Keycloak["OIDC / Keycloak\n(Identity & MFA Step-Up)"]
+        OpenBao["Upstream KMS / OpenBao\n(Transit Engine & KV v2 Sealed Bytes)"]
+        Keycloak["OIDC / Keycloak\n(Identity & Step-Up Reauthentication)"]
     end
 
-    UserBrowser <-->|HTTPS / No-Store| NodeShell
+    UserBrowser <-->|Same-Origin Loopback / No-Store| NodeShell
     GoEngine <-->|Atomic Fsync & Manifest IO| StoreRoot
-    GoEngine <-->|mTLS / Transit Wrapped DEK| OpenBao
-    GoEngine <-->|JWKS Token Validation| Keycloak
+    GoEngine <-->|Scoped Token / Wrapped DEK & Sealed Bytes| OpenBao
+    GoEngine <-->|OIDC PKCE & JWKS Token Validation| Keycloak
 ```
 
 ---
@@ -144,6 +144,6 @@ KeyHelix models three distinct classes of threat actors:
 
 The security guarantees defined herein apply to the supported **KeyHelix Open-Source Local Delivery Profile**:
 - Host OS: Linux x86_64 (kernel 5.15+)
-- Engine: Single-host Go 1.26 binary managing exclusive storage lockfile (`.keyhelix.lock`).
-- Network: Local loopback interface (`127.0.0.1`) with mTLS to self-hosted OpenBao and Keycloak.
-- Deployments on public multi-tenant clouds or unsupported operating systems require separate validation per [ADR-0003](file:///home/amirreza/Desktop/Projects/Keyhelix/docs/architecture/ADR-0003-open-source-local-first.md).
+- Engine: Single-host Go 1.26 binary managing exclusive storage lockfile (`LOCK`).
+- Network: Local loopback interface (`127.0.0.1` / `localhost`) to self-hosted OpenBao and Keycloak in the local profile (or TLS/mTLS behind a reverse proxy in private host deployments).
+- Deployments on public multi-tenant clouds or unsupported operating systems require separate validation per [ADR-0003](../architecture/ADR-0003-open-source-local-first.md).

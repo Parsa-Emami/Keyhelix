@@ -553,3 +553,71 @@ func AuthorizeAction(identity *Identity, targetOwner string, targetScope string)
 
 	return nil
 }
+
+// IsOwnerAuthorized verifies that the authenticated identity is unexpired and authorized to act on the given owner partition.
+func IsOwnerAuthorized(identity *Identity, owner string) bool {
+	if identity == nil || strings.TrimSpace(owner) == "" {
+		return false
+	}
+	if identity.ExpiresAt > 0 && time.Now().Unix() > identity.ExpiresAt {
+		return false
+	}
+	if identity.Email != "" && subtle.ConstantTimeCompare([]byte(identity.Email), []byte(owner)) == 1 {
+		return true
+	}
+	if identity.Subject != "" && subtle.ConstantTimeCompare([]byte(identity.Subject), []byte(owner)) == 1 {
+		return true
+	}
+	for _, allowed := range identity.AllowedOwners {
+		if allowed == "*" || subtle.ConstantTimeCompare([]byte(allowed), []byte(owner)) == 1 {
+			return true
+		}
+	}
+	return false
+}
+
+// IsPathScopeAuthorized verifies path-level scope restrictions on an identity.
+// If the identity carries any path-pattern scopes (containing '/'), canonicalPath must match at least one.
+// Otherwise, if requiredActionScopes are provided, the identity must hold at least one of them (or '*'/'secret:*').
+func IsPathScopeAuthorized(identity *Identity, canonicalPath string, requiredActionScopes ...string) bool {
+	if identity == nil {
+		return false
+	}
+	if identity.ExpiresAt > 0 && time.Now().Unix() > identity.ExpiresAt {
+		return false
+	}
+	hasPathRestrictions := false
+	pathMatched := false
+	for _, sc := range identity.AllowedScopes {
+		if strings.Contains(sc, "/") {
+			hasPathRestrictions = true
+			if MatchPathScope(sc, canonicalPath) {
+				pathMatched = true
+				break
+			}
+		} else if sc == "*" || sc == "secret:*" {
+			if !hasPathRestrictions {
+				return true
+			}
+		}
+	}
+	if hasPathRestrictions {
+		return pathMatched
+	}
+	if len(requiredActionScopes) == 0 {
+		return true
+	}
+	for _, sc := range identity.AllowedScopes {
+		if sc == "*" || sc == "secret:*" {
+			return true
+		}
+		for _, req := range requiredActionScopes {
+			if sc == req {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+
