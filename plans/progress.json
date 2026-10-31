@@ -348,10 +348,12 @@
     },
     {
       "id": "C39",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C39.json"
+      ],
+      "source_identity": "sha256:fb5f9e838c543cef21bb578c8023a04128241c9b68fdf6ccd6b235f66eb18cd3",
+      "notes": "Verified evidence-backed open-source v1 release readiness gate across C01-C38, full clone-to-value, complete source/engine packaging, dependency/fixture licenses, and supported-profile security/recovery (Requirement N39). Enforced fail-closed rejection (exit 2) for planning templates, missing proofs, wrong-source evidence, and restricted licenses in scripts/roadmap.mjs, docs/evidence/v1-gate.json, plans/release-gates.json, and .github/workflows/release-gate.yml; verified storage crash recovery, replay idempotency, quota bounds, and provider secret-byte ownership in tests/release_gate_test.go and tests/web/release-gate.test.mjs."
     },
     {
       "id": "C40",

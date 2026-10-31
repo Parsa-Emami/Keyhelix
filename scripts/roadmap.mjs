@@ -3,7 +3,10 @@ import { fileURLToPath } from 'node:url';
 import { resolve, isAbsolute } from 'node:path';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const read = async path => JSON.parse(await readFile(resolve(root, path), 'utf8'));
+const readText = async path => readFile(resolve(root, path), 'utf8');
 const safe = path => typeof path === 'string' && path.length > 0 && !isAbsolute(path) && !path.split(/[\\/]/).includes('..');
+const DEFAULT_ALLOWED_LICENSES = new Set(['Apache-2.0', 'MIT', 'BSD-2-Clause', 'BSD-3-Clause', 'ISC', 'Artistic-2.0', 'MPL-2.0', '0BSD', 'CC0-1.0']);
+
 export function validate(plan, progress, requirements, gates) {
   const errors = []; const seen = new Set(); const covered = new Set();
   const states = new Map(progress.commits.map(task => [task.id, task]));
@@ -35,6 +38,115 @@ export function validate(plan, progress, requirements, gates) {
   if (gates.core_ready && progress.commits.slice(0, 30).some(t => t.status !== 'verified')) errors.push('Core readiness requires C01-C30 proof');
   return errors;
 }
+
+export async function releaseCheck(plan, progress, gates, options = {}) {
+  const readJson = options.readJson ?? read;
+  const readRaw = options.readText ?? readText;
+  const failures = [];
+  const allowedLicenses = new Set(gates.allowed_licenses ?? [...DEFAULT_ALLOWED_LICENSES]);
+  if (!gates.core_ready) failures.push('core_ready must be true');
+  const prereqs = Array.isArray(gates.release_prerequisites) && gates.release_prerequisites.length === 38
+    ? gates.release_prerequisites
+    : Array.from({ length: 38 }, (_, i) => 'C' + String(i + 1).padStart(2, '0'));
+  const states = new Map(progress.commits.map(t => [t.id, t]));
+  const missing = prereqs.filter(id => states.get(id)?.status !== 'verified');
+  if (missing.length) failures.push('Missing verified prerequisites: ' + missing.join(', '));
+
+  for (const id of prereqs) {
+    const state = states.get(id);
+    if (!state || state.status !== 'verified') continue;
+    if (!state.source_identity || !String(state.source_identity).startsWith('sha256:')) {
+      failures.push(id + ': missing sha256 source_identity');
+      continue;
+    }
+    if (!Array.isArray(state.evidence) || !state.evidence.length) {
+      failures.push(id + ': missing evidence path');
+      continue;
+    }
+    for (const path of state.evidence) {
+      if (!safe(path)) { failures.push(id + ': unsafe evidence path ' + path); continue; }
+      try {
+        const proof = await readJson(path);
+        if (proof.planning_template === true) failures.push(id + ': planning_template evidence rejected');
+        if (proof.passed !== true) failures.push(id + ': evidence passed !== true');
+        if (proof.commit_id !== id) failures.push(id + ': commit_id mismatch in ' + path);
+        if (proof.source_identity !== state.source_identity) failures.push(id + ': wrong source_identity in ' + path);
+        if (!Array.isArray(proof.commands) || !proof.commands.length || proof.commands.some(c => c.exit_code !== 0)) {
+          failures.push(id + ': missing or failed verification commands in ' + path);
+        }
+        if (proof.fixtures?.license && !allowedLicenses.has(proof.fixtures.license)) {
+          failures.push(id + ': restricted or unknown fixture license ' + proof.fixtures.license);
+        }
+      } catch {
+        failures.push(id + ': missing or unreadable evidence ' + path);
+      }
+    }
+  }
+
+  const gateEvidencePath = gates.v1_gate_evidence ?? 'docs/evidence/v1-gate.json';
+  if (!safe(gateEvidencePath)) {
+    failures.push('Unsafe v1_gate_evidence path');
+  } else {
+    try {
+      const v1Gate = await readJson(gateEvidencePath);
+      if (v1Gate.planning_template === true) failures.push('v1-gate: planning_template rejected');
+      if (v1Gate.passed !== true) failures.push('v1-gate: passed !== true');
+      if (v1Gate.project !== plan.project) failures.push('v1-gate: project mismatch');
+      if (!v1Gate.clone_to_value?.verified) failures.push('v1-gate: clone_to_value not verified');
+      if (!v1Gate.packaging_and_signing?.verified) failures.push('v1-gate: packaging_and_signing not verified');
+      if (!v1Gate.licenses_and_provenance?.verified) failures.push('v1-gate: licenses_and_provenance not verified');
+      if (!v1Gate.security_and_recovery?.verified) failures.push('v1-gate: security_and_recovery not verified');
+      if (v1Gate.security_and_recovery?.invariants?.provider_owns_secret_bytes !== true) {
+        failures.push('v1-gate: provider_owns_secret_bytes invariant not verified');
+      }
+      for (const res of v1Gate.licenses_and_provenance?.shipped_resources ?? []) {
+        if (!res.license || !allowedLicenses.has(res.license)) {
+          failures.push('v1-gate: restricted or unknown shipped resource license ' + (res.license ?? res.id));
+        }
+      }
+      for (const id of prereqs) {
+        const state = states.get(id);
+        if (state?.status === 'verified' && v1Gate.verified_commits?.[id] !== state.source_identity) {
+          failures.push('v1-gate: source_identity mismatch for ' + id);
+        }
+      }
+    } catch {
+      failures.push('v1-gate: missing or unreadable ' + gateEvidencePath);
+    }
+  }
+
+  try {
+    const lock = await readJson('docs/engineering/toolchain-lock.json');
+    for (const res of lock.resources ?? []) {
+      if (!res.license || !allowedLicenses.has(res.license)) {
+        failures.push('toolchain-lock: restricted or unknown license for ' + res.id);
+      }
+      if (!res.integrity?.expected || res.integrity.expected !== res.integrity.observed) {
+        failures.push('toolchain-lock: unverified integrity for ' + res.id);
+      }
+    }
+  } catch {
+    failures.push('toolchain-lock: missing or unreadable docs/engineering/toolchain-lock.json');
+  }
+
+  for (const reqFile of gates.gate_checks?.required_files ?? ['LICENSE', 'THIRD_PARTY_NOTICES.md', 'docs/engineering/toolchain-lock.json']) {
+    if (!safe(reqFile)) { failures.push('Unsafe required file path ' + reqFile); continue; }
+    try {
+      const content = await readRaw(reqFile);
+      if (!content || !content.trim().length) failures.push('Empty required file: ' + reqFile);
+    } catch {
+      failures.push('Missing required file: ' + reqFile);
+    }
+  }
+
+  return {
+    ready: failures.length === 0,
+    exit_code: failures.length === 0 ? 0 : 2,
+    verified_prerequisites: prereqs.length - missing.length,
+    failures
+  };
+}
+
 export async function load() {
   const [plan, progress, requirements, gates, web] = await Promise.all(['plans/roadmap.json', 'plans/progress.json', 'plans/requirements.json', 'plans/release-gates.json', 'plans/web-roadmap.json'].map(read));
   const errors = validate(plan, progress, requirements, gates);
@@ -53,6 +165,7 @@ export async function load() {
   }
   return { plan, progress, gates, errors };
 }
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) try {
   const { plan, progress, gates, errors } = await load(); if (errors.length) throw new Error(errors.join('\n'));
   const command = process.argv[2] ?? 'status';
@@ -64,7 +177,17 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     if (!task) throw new Error('No matching/dependency-ready task; inspect blockers.');
     console.log(JSON.stringify({ task, progress: states.get(task.id) }, null, 2));
   } else if (command === 'release-check') {
-    const missing = progress.commits.slice(0, 38).filter(t => t.status !== 'verified').map(t => t.id);
-    if (missing.length || !gates.core_ready) { console.error('NOT RELEASE READY: actual C01-C38 and complete clone-to-value evidence required. Missing: ' + missing.join(', ')); process.exitCode = 2; }
+    const result = await releaseCheck(plan, progress, gates);
+    if (!result.ready) {
+      console.error('NOT RELEASE READY: actual C01-C38 and complete clone-to-value evidence required. ' + result.failures.join('; '));
+      process.exitCode = 2;
+    } else {
+      console.log(JSON.stringify({
+        status: 'RELEASE_GATE_PASSED',
+        project: plan.project,
+        verified_prerequisites: result.verified_prerequisites,
+        v1_gate: gates.v1_gate_evidence ?? 'docs/evidence/v1-gate.json'
+      }));
+    }
   } else throw new Error('Usage: npm run plan -- [validate|status|next|show C07|release-check]');
 } catch (error) { console.error(error.message); process.exitCode = 1; }

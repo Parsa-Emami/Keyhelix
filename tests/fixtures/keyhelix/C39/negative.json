@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "task": "C39",
+  "requirement": "N39",
+  "provenance": "Repository-authored synthetic negative release gate, template rejection, missing proof, wrong-source identity, license restriction, and storage/provider boundary scenarios; contains no real credential, provider state or plaintext secret.",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "case": "planning-template-evidence",
+      "description": "Evidence file marked with planning_template: true is rejected by the v1 release gate with exit code 2",
+      "expected_status": 2,
+      "expected_code": "planning_template_rejected",
+      "expected_plaintext": null
+    },
+    {
+      "case": "missing-prerequisite-proof",
+      "description": "Any missing or unverified C01-C38 prerequisite task or missing evidence file fails the release gate",
+      "expected_status": 2,
+      "expected_code": "missing_prerequisite_proof",
+      "expected_plaintext": null
+    },
+    {
+      "case": "wrong-source-identity",
+      "description": "Mismatch between evidence source_identity and progress.json recorded source_identity fails the release gate",
+      "expected_status": 2,
+      "expected_code": "source_identity_mismatch",
+      "expected_plaintext": null
+    },
+    {
+      "case": "restricted-or-unknown-license",
+      "description": "Unknown, unpinned, or restricted upstream resource/fixture license blocks the v1 release gate",
+      "expected_status": 2,
+      "expected_code": "restricted_license_blocked",
+      "expected_plaintext": null
+    },
+    {
+      "case": "staged-byte-writer-crash",
+      "description": "Killing the writer at the staged-byte/manifest boundary leaves authoritative prior state intact and purges uncommitted staging files on restart",
+      "expected_status": null,
+      "expected_code": "atomic_manifest_preserved",
+      "expected_plaintext": null
+    },
+    {
+      "case": "operation-replay-and-quota",
+      "description": "Replaying an accepted operation_id produces no duplicate side effect, and writes exceeding the 1 MiB quota fail closed",
+      "expected_status": null,
+      "expected_code": "idempotent_and_bounded",
+      "expected_plaintext": null
+    },
+    {
+      "case": "provider-owns-secret-bytes",
+      "description": "Provider owns secret bytes; engine metadata storage contains zero occurrences of plaintext secret sentinels",
+      "expected_status": null,
+      "expected_code": "zero_plaintext_at_rest",
+      "expected_plaintext": null
+    }
+  ]
+}

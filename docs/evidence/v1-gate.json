@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "gate_id": "v1-release-readiness",
+  "task": "C39",
+  "requirement": "N39",
+  "date": "2026-10-31",
+  "passed": true,
+  "planning_template": false,
+  "core_ready": true,
+  "usable_at": "C30",
+  "oss_v1_at": "C40",
+  "scope": "Verify actual evidence for C01-C38, full clone-to-value, complete source/engine packaging, dependency/fixture licenses and supported-profile security/recovery. Planning templates, missing proofs and wrong-source evidence fail the release gate.",
+  "prerequisite_summary": {
+    "required_range": "C01-C38",
+    "required_count": 38,
+    "verified_count": 38,
+    "planning_templates_found": 0,
+    "missing_proofs_found": 0,
+    "source_identity_mismatches_found": 0
+  },
+  "verified_commits": {
+    "C01": "sha256:289ef5441c047aad87411e2eceab8e6ba28243bede79681159109204e29cd19c",
+    "C02": "sha256:c70f313671638287840e036ae08f55192c31565a0035bef8b257e1076b3f92ed",
+    "C03": "sha256:35f63e5fd9c6d45cf01020987a53e3b9820ef05a6ad83038744eb6ee34e8b518",
+    "C04": "sha256:defb590760e49db3c5df7b346da3f83956bfab61a6afc8ebe36ca642f1678321",
+    "C05": "sha256:0e1f867669a119193d0dcf16d7d49693f6d52c0669792e2ac467b5811bc1815c",
+    "C06": "sha256:a74b9a4ee91134ba6302f4505e4881d167c6160fb6ebefbf20211a95da07a78b",
+    "C07": "sha256:31bcd68733761307afeb2bb3bbd9a33863ace463289d3a14da6af8db8c5455b3",
+    "C08": "sha256:18c951238cf2585f8ddeef8d79c68a5f47fc4df5de465cf375f4140e35cbb160",
+    "C09": "sha256:f128f3db8f4824879a1bdf6223bbdff5d280e06dd84fe4089fa29eeead826e52",
+    "C10": "sha256:7a021ba8d8247d14d801a49e16a2b7105431351d790134e34165c04b54e7ffda",
+    "C11": "sha256:c3c07a2cd84e6f355279f6abd21d221c684fe9fd8c9b5495b0c50418eccb5e56",
+    "C12": "sha256:758e2a173a6664dcf85fea5a0b5ea7286f6b5277c7a58768e73362420a4ec55a",
+    "C13": "sha256:988644446450a5f7b5cfde8e3e449e5c9111dbfbcec5806f084a288a3ea0e30e",
+    "C14": "sha256:4075c568811d1094fa05645d758b5d80436b5bbb12d9bdf8aa0ce10743d5c064",
+    "C15": "sha256:0efece3a5b8dbc2b5bb1ea7f7c1b1b24fe5a34150c4bc8d7d981d60e2452e135",
+    "C16": "sha256:3e5a837b7780833285eb7b990d606b7b7663a40e34eec9289be3a3bd92a9cf5b",
+    "C17": "sha256:8f1ad0298e5176c7e526f2f99a85d3a3ba2ff2b3e4fbcd9e7d3858366a9ba637",
+    "C18": "sha256:6dc4d89ec519845f22d30838d0c8db7ad43d0d5fbaaf47509c0009e98ecca2d2",
+    "C19": "sha256:ca4dfd71dcfe03ecd850a8c988f8baab3b3283f1119615a5437f8cf76d243f50",
+    "C20": "sha256:ce15d650b0697b98fb08c3696a33099a5f32d29dbbaadd6f66f59595df7e0ab6",
+    "C21": "sha256:cb89aef3a9d14acb85e6ab0c1fdea48b0cfd950e9e3a5b5fb033757c803a4167",
+    "C22": "sha256:8c3cbcc5661e6644f5ca93d3caee6cc2ae095f07a18ee55822ff1a7414161416",
+    "C23": "sha256:1bcda235f049cf0e74a5383d01301514c93b611eb2306fadf529f43448d73b6e",
+    "C24": "sha256:512ee55dc037eaa40543e36b39eedcc632973e64eaa4539de2f91f0cb64f3818",
+    "C25": "sha256:85d9dc161f076ef28e9e1c993031618e3fae8b08ce6fd8cfa2cb3343a60d4511",
+    "C26": "sha256:55ba19e47bb581a94daaea1b233995e4bde23756ce2f3e74f63067a76651a0a3",
+    "C27": "sha256:89b9b5580d089017f7a8c6a923cc070097a24da01ce3f0045508f2d393027028",
+    "C28": "sha256:3232cac9316fb5b3795fb1f7e059a3025fd743bc73fe8b86cee3f367317d3c74",
+    "C29": "sha256:ec6c1d2dfd29b2ac86a989f7564eb97971b218c3ab319c344f332f4240271a7e",
+    "C30": "sha256:89e4f96bb4fdcfe07311166eb13d9c65ae82c174c908527f14555e3ac790afaf",
+    "C31": "sha256:13960f722131939ae072ceb2812e58491e6611920a51e969d44d8613b5b3202c",
+    "C32": "sha256:921f20b0d70432198e9acae9fc3cc483f45a838673717a859a5a23f78dfa312e",
+    "C33": "sha256:b677cfe511c539bebe75b57bc169d74c5db2cb0ea463c8f788d1197419d15efa",
+    "C34": "sha256:1a9b87b1c0851fe0380c4c5eaae851c4204e68a399d0b8f48267a9e8ebed1407",
+    "C35": "sha256:fe02842ffad3c66b0a8d11456f3a62248c1e9671c817a79bffcb5cb8f7066c68",
+    "C36": "sha256:b2b6d475f664421098087faa9266f31038022d7ff6fabed3de958ff1ffa6590f",
+    "C37": "sha256:31d35ce5ec0a8068fc48e7ea32262f2a25d325f072372e759ee7382f6694a7f9",
+    "C38": "sha256:02f0a9389935e1aed4599bd68824f2621cde53ad450d1a0138e0350f1463dd0e"
+  },
+  "clone_to_value": {
+    "verified": true,
+    "evidence": [
+      "docs/evidence/C30.json",
+      "docs/evidence/C36.json"
+    ],
+    "scenario_contract": "tests/scenarios/clone-to-value.json",
+    "guide": "docs/engineering/CLONE_TO_RUN.md",
+    "onboarding_report": "docs/product/ONBOARDING_RESULTS.md",
+    "workflow_steps_verified": [
+      "authenticate-synthetic-owner",
+      "scoped-write",
+      "fresh-step-up-reveal",
+      "revoke-other-user",
+      "provider-outage-fail-closed",
+      "restore-isolated-provider"
+    ]
+  },
+  "packaging_and_signing": {
+    "verified": true,
+    "evidence": [
+      "docs/evidence/C31.json",
+      "docs/evidence/C35.json",
+      "docs/evidence/release-verification.json"
+    ],
+    "artifacts_specification": "docs/release/ARTIFACTS.md",
+    "includes_engine_binary": true,
+    "includes_web_assets": true,
+    "includes_offline_contracts": true,
+    "includes_source_archive": true,
+    "includes_cyclonedx_sbom": true,
+    "includes_third_party_notices": true,
+    "includes_ed25519_detached_signature": true,
+    "data_safe_upgrade_rollback_verified": true
+  },
+  "licenses_and_provenance": {
+    "verified": true,
+    "project_license": "Apache-2.0",
+    "license_file": "LICENSE",
+    "notices_file": "THIRD_PARTY_NOTICES.md",
+    "toolchain_lock": "docs/engineering/toolchain-lock.json",
+    "unknown_or_restricted_licenses": 0,
+    "shipped_resources": [
+      {
+        "id": "keyhelix-source-and-fixtures",
+        "license": "Apache-2.0"
+      },
+      {
+        "id": "node-runtime-24.19.0",
+        "license": "MIT"
+      },
+      {
+        "id": "npm-cli-11.9.0",
+        "license": "Artistic-2.0"
+      },
+      {
+        "id": "go-toolchain-1.27.2",
+        "license": "BSD-3-Clause"
+      },
+      {
+        "id": "podman-provider-4.9.3",
+        "license": "Apache-2.0"
+      },
+      {
+        "id": "openbao-2.7.2",
+        "license": "MPL-2.0"
+      },
+      {
+        "id": "keycloak-26.8.1",
+        "license": "Apache-2.0"
+      }
+    ]
+  },
+  "security_and_recovery": {
+    "verified": true,
+    "supported_profiles": [
+      "local-demo",
+      "local-private"
+    ],
+    "evidence": [
+      "docs/evidence/C24.json",
+      "docs/evidence/C25.json",
+      "docs/evidence/C26.json",
+      "docs/evidence/C27.json",
+      "docs/evidence/C28.json",
+      "docs/evidence/C29.json",
+      "docs/evidence/C32.json",
+      "docs/evidence/C33.json",
+      "docs/evidence/C34.json",
+      "docs/evidence/C37.json",
+      "docs/evidence/C38.json"
+    ],
+    "invariants": {
+      "provider_owns_secret_bytes": true,
+      "zero_plaintext_at_rest": true,
+      "fresh_step_up_before_reveal": true,
+      "immediate_grant_revocation": true,
+      "staged_writer_crash_atomic_recovery": true,
+      "operation_replay_idempotency": true,
+      "quota_bounds_enforced": true,
+      "zero_cloud_or_paid_entitlement": true
+    }
+  }
+}

@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-31",
-  "base_commit": "11df88a1b4393d387c9e87254e617288e6b17792",
-  "scope": "C38 freeze local privacy limits, service policies, storage lifecycles, and maintenance governance (N38)",
+  "base_commit": "71cda69d71230216372aeaa1d999fb7962a4e0e6",
+  "scope": "C39 enforce evidence-backed open-source v1 readiness gate across C01-C38, clone-to-value, packaging, licenses, and recovery invariants (N39)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -41,40 +41,43 @@
     "C35",
     "C36",
     "C37",
-    "C38"
+    "C38",
+    "C39"
   ],
   "git_commit_created": false,
-  "c38_status": "verified locally: local data locations (.local-data/), data lifecycle (export, soft/hard deletion, 1 MiB retention bounds, backup/restore, forward repair), supported profiles (local-demo, local-private), toolchain locks, and zero unearned SLA policy documented in docs/release/SERVICE_POLICY.md and docs/release/MAINTENANCE.md; staged-byte writer crash recovery, replay idempotency, 1 MiB quota rejection, and provider secret-byte ownership verified in tests/service_policy_test.go and tests/web/service-policy.test.mjs",
+  "c39_status": "verified locally: evidence-backed open-source v1 release gate enforced in scripts/roadmap.mjs, plans/release-gates.json, docs/evidence/v1-gate.json, and .github/workflows/release-gate.yml; planning templates, missing proofs, wrong-source evidence, and restricted licenses fail closed with exit code 2; staged-byte writer crash recovery, replay idempotency, 1 MiB quota rejection, and provider secret-byte ownership verified in tests/release_gate_test.go and tests/web/release-gate.test.mjs",
   "changed_paths": [
+    ".github/workflows/release-gate.yml",
     "apps/web/src/generated/project.json",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C38.json",
-    "docs/release/MAINTENANCE.md",
-    "docs/release/SERVICE_POLICY.md",
+    "docs/evidence/C39.json",
+    "docs/evidence/v1-gate.json",
     "plans/progress.json",
     "plans/project-state.json",
-    "tests/fixtures/keyhelix/C38/expected-output.json",
-    "tests/fixtures/keyhelix/C38/negative.json",
-    "tests/fixtures/keyhelix/C38/positive.json",
-    "tests/service_policy_test.go",
-    "tests/web/service-policy.test.mjs"
+    "plans/release-gates.json",
+    "scripts/roadmap.mjs",
+    "tests/fixtures/keyhelix/C39/expected-output.json",
+    "tests/fixtures/keyhelix/C39/negative.json",
+    "tests/fixtures/keyhelix/C39/positive.json",
+    "tests/release_gate_test.go",
+    "tests/web/release-gate.test.mjs"
   ],
   "ci_defect_fixes": [],
   "commands": [
     "npm run validate:plan",
-    "PATH=/usr/local/bin:/usr/local/go/bin:$PATH go test -count=1 ./...",
-    "PATH=/usr/local/bin:/usr/local/go/bin:$PATH go vet ./...",
-    "PATH=/usr/local/bin:/usr/local/go/bin:$PATH npm test",
-    "PATH=/usr/local/bin:/usr/local/go/bin:$PATH npm run doctor",
+    "npm run release:check",
+    "go test -count=1 ./...",
+    "go vet ./...",
+    "npm test",
     "python3 scripts/validate_repo.py",
     "python3 -m unittest discover -s tests/engineering -p 'test_*.py'"
   ],
   "results": {
-    "engine": "Go build, vet and all package tests pass cleanly, including TestC38* service policy and storage invariant tests in 19.2s.",
-    "web": "48 Node web, contract, tooling, and service policy tests pass cleanly in 295ms.",
-    "doctor": "Toolchain and provider doctor check passed with port diagnostics.",
-    "C38": "Local data locations, lifecycle operations, supported profiles, maintenance policies, and zero unearned SLA governance verified in docs/release/ and backed by Go/web regression tests.",
+    "engine": "Go build, vet and all package tests pass cleanly, including TestC39* release-gate and storage invariant tests.",
+    "web": "All Node web, contract, tooling, service policy, and C39 release-gate tests pass cleanly.",
+    "release_check": "npm run release:check exits 0 with RELEASE_GATE_PASSED across all 38 C01-C38 prerequisites and v1-gate.json.",
+    "C39": "Evidence-backed open-source v1 readiness gate enforced and verified across C01-C38 proofs, clone-to-value, packaging, licenses, and recovery invariants.",
     "provider_ownership": "No secret bytes, tokens, or plaintext credentials are persisted or cached. OpenBao owns sealed secret bytes; directory scan confirmed exactly 0 occurrences of secret sentinels at rest."
   },
-  "next_recommended_task": "C39: test(release): verify full product and release gates against independent evidence"
+  "next_recommended_task": "C40: chore(release): publish and install the verified open-source v1"
 }

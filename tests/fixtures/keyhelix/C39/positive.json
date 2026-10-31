@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "task": "C39",
+  "requirement": "N39",
+  "provenance": "Repository-authored synthetic v1 release gate, C01-C38 evidence verification, clone-to-value, packaging, license, and recovery readiness fixture; contains no real credential, provider state or plaintext secret.",
+  "license": "Apache-2.0",
+  "gate": {
+    "project": "KeyHelix",
+    "core_ready": true,
+    "usable_at": "C30",
+    "oss_v1_at": "C40",
+    "prerequisite_range": "C01-C38",
+    "prerequisite_count": 38,
+    "planning_templates_allowed": false,
+    "missing_proofs_allowed": false,
+    "wrong_source_identity_allowed": false
+  },
+  "verifications": {
+    "clone_to_value": {
+      "verified": true,
+      "evidence": [
+        "docs/evidence/C30.json",
+        "docs/evidence/C36.json"
+      ],
+      "scenario_contract": "tests/scenarios/clone-to-value.json"
+    },
+    "source_and_engine_packaging": {
+      "verified": true,
+      "evidence": [
+        "docs/evidence/C31.json",
+        "docs/evidence/C35.json"
+      ],
+      "artifacts_doc": "docs/release/ARTIFACTS.md",
+      "release_verification": "docs/evidence/release-verification.json"
+    },
+    "licenses_and_provenance": {
+      "verified": true,
+      "project_license": "Apache-2.0",
+      "allowed_licenses": [
+        "Apache-2.0",
+        "MIT",
+        "BSD-2-Clause",
+        "BSD-3-Clause",
+        "ISC",
+        "Artistic-2.0",
+        "MPL-2.0",
+        "0BSD",
+        "CC0-1.0"
+      ],
+      "toolchain_lock": "docs/engineering/toolchain-lock.json",
+      "notices_file": "THIRD_PARTY_NOTICES.md"
+    },
+    "security_and_recovery": {
+      "verified": true,
+      "supported_profiles": [
+        "local-demo",
+        "local-private"
+      ],
+      "evidence": [
+        "docs/evidence/C24.json",
+        "docs/evidence/C25.json",
+        "docs/evidence/C26.json",
+        "docs/evidence/C27.json",
+        "docs/evidence/C28.json",
+        "docs/evidence/C29.json",
+        "docs/evidence/C32.json",
+        "docs/evidence/C33.json",
+        "docs/evidence/C34.json",
+        "docs/evidence/C37.json",
+        "docs/evidence/C38.json"
+      ],
+      "provider_owns_secret_bytes": true,
+      "zero_plaintext_at_rest": true,
+      "atomic_manifest_recovery": true,
+      "replay_idempotency": true
+    }
+  }
+}

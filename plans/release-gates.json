@@ -86,5 +86,49 @@
     "sibling clone",
     "customer pilot count",
     "app-store launch"
-  ]
+  ],
+  "v1_gate_evidence": "docs/evidence/v1-gate.json",
+  "allowed_licenses": [
+    "Apache-2.0",
+    "MIT",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Artistic-2.0",
+    "MPL-2.0",
+    "0BSD",
+    "CC0-1.0"
+  ],
+  "gate_checks": {
+    "clone_to_value": [
+      "C30",
+      "C36"
+    ],
+    "packaging_and_signing": [
+      "C31",
+      "C35"
+    ],
+    "security_and_recovery": [
+      "C24",
+      "C25",
+      "C26",
+      "C27",
+      "C28",
+      "C29",
+      "C32",
+      "C33",
+      "C34",
+      "C37",
+      "C38"
+    ],
+    "required_files": [
+      "LICENSE",
+      "THIRD_PARTY_NOTICES.md",
+      "docs/engineering/toolchain-lock.json",
+      "docs/release/ARTIFACTS.md",
+      "docs/release/SERVICE_POLICY.md",
+      "docs/release/MAINTENANCE.md",
+      "tests/scenarios/clone-to-value.json"
+    ]
+  }
 }

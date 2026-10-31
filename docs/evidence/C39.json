@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C39",
+  "date": "2026-10-31",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Verify actual evidence for C01-C38, full clone-to-value, complete source/engine packaging, dependency/fixture licenses and supported-profile security/recovery. Planning templates, missing proofs and wrong-source evidence fail the release gate (Requirement N39).",
+  "commit_id": "C39",
+  "base_commit": "71cda69d71230216372aeaa1d999fb7962a4e0e6",
+  "git_commit_created": false,
+  "source_identity": "sha256:fb5f9e838c543cef21bb578c8023a04128241c9b68fdf6ccd6b235f66eb18cd3",
+  "source_identity_method": "SHA-256 over sorted C39-owned implementation, test, fixture, workflow, and gate paths; each file contributes its path, a NUL separator and its own binary SHA-256. Excludes plans/progress.json, plans/project-state.json, docs/agents/SESSION_HANDOFF.json, and docs/evidence/C39.json to avoid recursive self-reference. Historical evidence remains bound to its original source.",
+  "source_identity_files": {
+    ".github/workflows/release-gate.yml": "0f0e6c481e68b9c3fbe936bdfb995cc8fabc79461a736baa6c3dda447f0bb79a",
+    "docs/evidence/v1-gate.json": "06538bf3fd21cfba19923e9a7028b7b4346f3d90180cbb10571df38a3e399adc",
+    "plans/release-gates.json": "ce38e0773d62dcacc1519bc22b1b5b1c21e9ae2bda1c1f335dadb9514c8de2fd",
+    "scripts/roadmap.mjs": "8f1a01dbfc79981ed5fdc2f98f20c4c849329a299b02a463df3dc3452e8eeba5",
+    "tests/fixtures/keyhelix/C39/expected-output.json": "4ee69d6844945676500a3c57c2fa172b06cd584307105b90eca005adad41df83",
+    "tests/fixtures/keyhelix/C39/negative.json": "5aeb26a57fe913b4c6a7949b94711c68264b14849d4ad63603bfdabbb7c5b4ad",
+    "tests/fixtures/keyhelix/C39/positive.json": "0b308f07ad28f7e5e2dbeca6bc2fd1370864ad5bf9331c5e82807b89c51ad1fd",
+    "tests/release_gate_test.go": "b8dfbdaf639b1a0ff862991c732141410c59bc91533d0bc5c5f4a2e7b79c3492",
+    "tests/web/release-gate.test.mjs": "141d9183d4feb87da70a9eb25f50842820adfdcde6a8d7896af46eb4011a4041"
+  },
+  "environment": {
+    "os": "Linux amd64",
+    "node": "v24.19.0",
+    "go_driver": "go version go1.26.2 linux/amd64",
+    "engine_toolchain": "go1.27.2",
+    "hardware": {
+      "vcpu": 4,
+      "ram_mib": 8192,
+      "free_disk_mib": 20480,
+      "required_profile": "4 vCPU / 8192 MiB RAM / 20480 MiB free disk"
+    },
+    "providers": [
+      {
+        "id": "openbao",
+        "image": "quay.io/openbao/openbao:2.7.2",
+        "license": "MPL-2.0",
+        "role": "self-hosted secret-byte custody provider verified in C07-C38"
+      },
+      {
+        "id": "keycloak",
+        "image": "quay.io/keycloak/keycloak:26.8.1",
+        "license": "Apache-2.0",
+        "role": "self-hosted OIDC identity and step-up provider verified in C08-C38"
+      }
+    ]
+  },
+  "fixtures": {
+    "path": "tests/fixtures/keyhelix/C39/",
+    "positive": "tests/fixtures/keyhelix/C39/positive.json",
+    "negative": "tests/fixtures/keyhelix/C39/negative.json",
+    "expected_output": "tests/fixtures/keyhelix/C39/expected-output.json",
+    "provenance": "Repository-authored synthetic C39 v1 release gate, C01-C38 evidence verification, license inventory, and storage/provider boundary fixture; contains no real credential, provider state or plaintext secret.",
+    "license": "Apache-2.0",
+    "hashes": {
+      "positive.json": "0b308f07ad28f7e5e2dbeca6bc2fd1370864ad5bf9331c5e82807b89c51ad1fd",
+      "negative.json": "5aeb26a57fe913b4c6a7949b94711c68264b14849d4ad63603bfdabbb7c5b4ad",
+      "expected_output.json": "4ee69d6844945676500a3c57c2fa172b06cd584307105b90eca005adad41df83"
+    }
+  },
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "summary": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "npm run release:check",
+      "exit_code": 0,
+      "summary": "RELEASE_GATE_PASSED with all 38 C01-C38 prerequisites, v1-gate.json, clone-to-value, packaging, licenses, and recovery invariants verified."
+    },
+    {
+      "command": "go test -count=1 ./...",
+      "exit_code": 0,
+      "summary": "All Go engine packages and integration tests passed, including TestC39* release gate and storage invariant tests."
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "summary": "Go static analysis passed with zero warnings across all packages."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "All Node web, contract, tooling, service policy, and C39 release-gate tests passed cleanly."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "summary": "Validated all JSON files, OpenAPI/AsyncAPI contracts, and repository contract invariants."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py'",
+      "exit_code": 0,
+      "summary": "6 CI source integrity regression tests passed."
+    }
+  ],
+  "results": {
+    "requirement": "N39",
+    "acceptance": "Verify actual evidence for C01-C38, full clone-to-value, complete source/engine packaging, dependency/fixture licenses and supported-profile security/recovery. Planning templates, missing proofs and wrong-source evidence fail the release gate.",
+    "status": "passed",
+    "c01_through_c38_verified": true,
+    "clone_to_value_verified": true,
+    "source_and_engine_packaging_verified": true,
+    "dependency_and_fixture_licenses_verified": true,
+    "supported_profile_security_and_recovery_verified": true,
+    "planning_templates_rejected": true,
+    "missing_proofs_rejected": true,
+    "wrong_source_evidence_rejected": true,
+    "staged_writer_crash_recovers_authoritative": true,
+    "operation_replay_is_idempotent": true,
+    "quota_bounds_enforced": true,
+    "provider_owns_secret_bytes": true
+  },
+  "invariants_verified": {
+    "evidence_backed_release_gate": "Enforced; npm run release:check verifies C01-C38 evidence files, source_identity bindings, command exit codes, v1-gate.json, and toolchain/fixture licenses.",
+    "fail_closed_gate_rejection": "Enforced; planning templates, missing prerequisite proofs, mismatched source_identity hashes, and restricted/unknown licenses exit with code 2.",
+    "atomic_manifest_publication": "Enforced; interrupted writers at the staged-byte/manifest boundary leave authoritative state intact and purge orphan staging files on open.",
+    "replay_idempotency_and_quota": "Enforced; duplicate operation_id replays are idempotent and >1 MiB metadata writes fail closed.",
+    "provider_ownership": "Enforced; OpenBao owns secret bytes and engine storage directory walk confirms zero plaintext secret sentinels at rest."
+  },
+  "next_task": "C40"
+}

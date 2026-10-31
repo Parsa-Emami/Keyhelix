@@ -1,6 +1,6 @@
 {
   "project": "KeyHelix",
-  "reviewed_commit": "11df88a1b4393d387c9e87254e617288e6b17792",
+  "reviewed_commit": "71cda69d71230216372aeaa1d999fb7962a4e0e6",
   "readiness": "CORE_READY",
   "core_ready": true,
   "implemented": [
@@ -20,10 +20,11 @@
     "detached Ed25519 release signature verification, data-safe install/upgrade/rollback preserving newer accepted data, and verified source-build alternative (C35)",
     "independent clean-host repetition of the reference clone-to-value workflow from public guides with measured effort and zero cloud/paid prerequisites (C36)",
     "observed blockers resolved and audited with targeted regressions across provider outage, grant revocation privilege reduction, tampered auth tags, and port conflict detection (C37)",
-    "local service policy, storage locations, lifecycle bounds, supported profiles, and maintenance governance verified (C38)"
+    "local service policy, storage locations, lifecycle bounds, supported profiles, and maintenance governance verified (C38)",
+    "evidence-backed open-source v1 release readiness gate enforcing C01-C38 proofs, clone-to-value, packaging, licenses, and recovery invariants (C39)"
   ],
-  "engine": "implemented locally and fully verified against real local providers with clean-host acceptance certified; complete release packaging verified at C31; network boundaries hardened at C32; UX viewports, keyboard accessibility, and failure states verified at C33; complete OSS user, contribution, and security guides verified at C34; signed artifacts, data-safe upgrades/rollbacks, and source-build alternative verified at C35; independent clone-to-value onboarding repeat verified from public guide at C36; observed installation and workflow blockers audited and verified with targeted regressions at C37; local service policy, storage lifecycle, and maintenance governance verified at C38",
-  "next_task": "C39",
+  "engine": "implemented locally and fully verified against real local providers with clean-host acceptance certified; complete release packaging verified at C31; network boundaries hardened at C32; UX viewports, keyboard accessibility, and failure states verified at C33; complete OSS user, contribution, and security guides verified at C34; signed artifacts, data-safe upgrades/rollbacks, and source-build alternative verified at C35; independent clone-to-value onboarding repeat verified from public guide at C36; observed installation and workflow blockers audited and verified with targeted regressions at C37; local service policy, storage lifecycle, and maintenance governance verified at C38; evidence-backed open-source v1 release gate enforced and verified at C39",
+  "next_task": "C40",
   "next_command": "npm run plan -- next",
   "full_product_endpoint": "C31 complete local artifact; C40 full published OSS v1",
   "open_blockers": []
