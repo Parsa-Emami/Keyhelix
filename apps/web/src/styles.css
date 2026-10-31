@@ -60,7 +60,7 @@ textarea{background:#0a111e;color:#ecf2fa;border:1px solid #3a4860;padding:10px 
 .tasks li{padding:22px 0;border-top:1px solid #2b384e}
 .task-line{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
 .task-line h2{flex:1;font-size:17px;overflow-wrap:anywhere}
-.tasks p{margin:8px 0}
+.tasks p{margin:8px 0;overflow-wrap:anywhere}
 .inline-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .btn-secondary{background:transparent;color:#b8c4d5;border:1px solid #3a4860;border-radius:9px;padding:11px 18px}
 .btn-danger{background:#2b1b1b;color:#ff9999;border:1px solid #5a3030;border-radius:9px;padding:11px 18px}

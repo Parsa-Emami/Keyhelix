@@ -35,38 +35,36 @@
     "C29",
     "C30",
     "C31",
-    "C32"
+    "C32",
+    "C33"
   ],
   "git_commit_created": false,
-  "c32_status": "verified locally: loopback binding, DNS rebinding mitigation, same-origin API enforcement, cache segregation and optional private TLS ingress verified",
+  "c33_status": "verified locally: 360px mobile viewports (zero horizontal overflow), 1440px desktop layouts, skip-to-content focus management, sequential keyboard tab order, modal Escape handling, empty input validation errors, malformed file alerts, 503 provider outages, N-1 backwards compatibility, and advertised platform checks verified across 39 browser tests",
   "changed_paths": [
+    "apps/web/src/styles.css",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/engineering/CLONE_TO_RUN.md",
-    "docs/evidence/C32.json",
-    "docs/evidence/domain.json",
-    "infra/deployment.md",
+    "docs/evidence/C33.json",
+    "docs/evidence/ux.json",
     "plans/progress.json",
     "plans/project-state.json",
-    "scripts/package-web.mjs",
-    "scripts/serve-web.mjs",
-    "tests/fixtures/keyhelix/C32/expected-output.json",
-    "tests/fixtures/keyhelix/C32/negative.json",
-    "tests/fixtures/keyhelix/C32/positive.json",
-    "tests/web/network-boundaries.test.mjs"
+    "tests/browser/full-workflow-accessibility.spec.ts",
+    "tests/fixtures/keyhelix/C33/expected-output.json",
+    "tests/fixtures/keyhelix/C33/negative.json",
+    "tests/fixtures/keyhelix/C33/positive.json"
   ],
   "ci_defect_fixes": [],
   "commands": [
     "npm run validate:plan",
+    "npm run test:browser",
     "npm test",
     "PATH=/usr/local/go/bin:$PATH go test ./...",
-    "python3 scripts/validate_repo.py",
-    "npm run test:release"
+    "python3 scripts/validate_repo.py"
   ],
   "results": {
     "engine": "Go build, vet and all package tests pass. The engine binds strictly to ephemeral loopback and communicates only via the supervised Node proxy.",
-    "web": "35 Node web/contract tests pass. The web server serves /, /healthz and /readyz, returns 400 for foreign Host headers (DNS rebinding defense), returns 403 for untrusted cross-origin /api requests, enforces no-store and pragma no-cache on sensitive routes, and serves fingerprinted assets as immutable.",
-    "C32": "Network boundaries and local launch hardening verified. Zero owned public domain is required. Loopback isolation, DNS rebinding defense, same-origin API enforcement, cache control segregation, and optional private TLS ingress via Nginx documented with complete versioned fixtures and evidence.",
+    "web": "35 Node web/contract tests pass and 39 Playwright browser tests pass across 7 parallel workers. Zero horizontal overflow at 360px mobile viewport, complete desktop layout at 1440px, skip-link focus management, and modal Escape handling verified.",
+    "C33": "Complete reference UX workflow verified with keyboard navigation, 360px mobile viewports, failure states (empty inputs, malformed files, provider 503s), N-1 metadata backwards compatibility, and strictly observed advertised platforms.",
     "provider_ownership": "No secret bytes, tokens, or plaintext credentials are persisted or cached. OpenBao owns sealed secret bytes; Keycloak manages identities; engine stores encrypted metadata envelopes and digests; provider outage fails closed with 503."
   },
-  "next_recommended_task": "C33: test(ux): verify keyboard mobile failures and compatible updates"
+  "next_recommended_task": "C34: test(concurrency): verify simultaneous worker mutations and leases"
 }

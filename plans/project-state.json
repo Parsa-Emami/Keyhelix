@@ -14,10 +14,11 @@
     "readiness, composite diagnostics and redacted logs",
     "real end-to-end reference workflow, restart and provider restore from a cloned checkout",
     "complete reproducible release artifact with engine, web UI, offline resources, source archive, SBOM, notices, checksums and provenance",
-    "hardened loopback, origin, cache boundaries and optional private ingress without public domain requirement (C32)"
+    "hardened loopback, origin, cache boundaries and optional private ingress without public domain requirement (C32)",
+    "verified reference UX across 360px/1440px viewports, keyboard skip-link/tab navigation, failure states, and N-1 metadata compatibility (C33)"
   ],
-  "engine": "implemented locally and fully verified against real local providers with clean-host acceptance certified; complete release packaging verified at C31; network boundaries hardened at C32",
-  "next_task": "C33",
+  "engine": "implemented locally and fully verified against real local providers with clean-host acceptance certified; complete release packaging verified at C31; network boundaries hardened at C32; UX viewports, keyboard accessibility, and failure states verified at C33",
+  "next_task": "C34",
   "next_command": "npm run plan -- next",
   "full_product_endpoint": "C31 complete local artifact; C40 full published OSS v1",
   "open_blockers": []

@@ -294,10 +294,12 @@
     },
     {
       "id": "C33",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C33.json"
+      ],
+      "source_identity": "sha256:54f43f08d45493f84bda167a44e9be5f5a3c932e65219da6f5fe8eb4f5287288",
+      "notes": "UX viewports, keyboard accessibility, failure states, and N-1 backwards compatibility verified: 360px mobile viewports (zero horizontal overflow across all routes), 1440px desktop layouts, skip-to-content focus management, sequential tab order, modal Escape handling, client validation errors, malformed document inspection alerts, 503 provider outages, N-1 legacy metadata fallbacks, and strictly observed advertised platforms."
     },
     {
       "id": "C34",

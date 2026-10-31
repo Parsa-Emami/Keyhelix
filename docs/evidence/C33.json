@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C33",
+  "date": "2026-10-31",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Complete the actual reference workflow with keyboard/table equivalents at 360px and 1440px, invalid/empty/interrupted/provider-outage cases and N-1 data/export fixtures. Advertise only observed supported platforms (Requirement N33).",
+  "commit_id": "C33",
+  "base_commit": "15bc8b6d9fc82985d34943dd7c6a53c9fd2eb9c3",
+  "git_commit_created": false,
+  "source_identity": "sha256:54f43f08d45493f84bda167a44e9be5f5a3c932e65219da6f5fe8eb4f5287288",
+  "source_identity_method": "SHA-256 over sorted C33-owned implementation, test, fixture, and ux-evidence paths; each file contributes its path, a NUL separator and its own binary SHA-256. Excludes plans/, docs/agents/SESSION_HANDOFF.json, status-only README/START_HERE/DEFINITION_OF_DONE and docs/evidence/ to avoid recursive self-reference. Historical evidence remains bound to its original source.",
+  "source_identity_files": {
+    "apps/web/src/styles.css": "3f8def71d11f5da94190b7545b86590f89f8c7c25661de8347664b5167910801",
+    "docs/evidence/ux.json": "1fe42267f9e51e11dded7dbb19677b10544a9e8e4795ee031e34f5563c62178e",
+    "tests/browser/full-workflow-accessibility.spec.ts": "8e589344bfd7d152b24bc58a017dcbefe0fd4d23d93c8982a1404e43da5cac85",
+    "tests/fixtures/keyhelix/C33/expected-output.json": "ea141afc80821cfed6189ea29bc806809b3ea8cf9b0508a347342f0df18a79ae",
+    "tests/fixtures/keyhelix/C33/negative.json": "d2b27eb8dbd2fac7f7e3ea7642c7e23da20351a2bc8629fb146ae8a7985ca741",
+    "tests/fixtures/keyhelix/C33/positive.json": "6e852de4d5db2aea6748d13fc43b63467c796cbfa17fdb1e4d33a8e2ce8219a2"
+  },
+  "environment": {
+    "os": "Ubuntu 24.04.5 LTS, Linux 7.0.0-38-generic x86_64",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (toolchain lock pins npm 11.9.0; the executing npm reports 11.17.0)",
+    "go_driver": "go version go1.26.2 linux/amd64",
+    "engine_toolchain": "go1.27.2 (recorded by the packaged engine --version)",
+    "podman": "podman version 4.9.3",
+    "hardware": {
+      "vcpu": 16,
+      "ram_mib": 31341,
+      "free_disk_mib": 97580,
+      "required_profile": "4 vCPU / 8192 MiB RAM / 20480 MiB free disk"
+    }
+  },
+  "fixtures": {
+    "path": "tests/fixtures/keyhelix/C33/",
+    "positive": "tests/fixtures/keyhelix/C33/positive.json",
+    "negative": "tests/fixtures/keyhelix/C33/negative.json",
+    "expected_output": "tests/fixtures/keyhelix/C33/expected-output.json",
+    "provenance": "Repository-authored synthetic reference UX workflow fixtures, failure states, legacy N-1 metadata schemas and expected output contracts; contains no real credential, provider state or plaintext secret.",
+    "license": "Apache-2.0",
+    "hashes": {
+      "positive.json": "6e852de4d5db2aea6748d13fc43b63467c796cbfa17fdb1e4d33a8e2ce8219a2",
+      "negative.json": "d2b27eb8dbd2fac7f7e3ea7642c7e23da20351a2bc8629fb146ae8a7985ca741",
+      "expected-output.json": "ea141afc80821cfed6189ea29bc806809b3ea8cf9b0508a347342f0df18a79ae"
+    }
+  },
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "summary": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "npm run test:browser",
+      "exit_code": 0,
+      "summary": "39 Playwright tests passed across 7 parallel workers, including 360px mobile viewports, 1440px desktop layouts, skip links, keyboard tab navigation, modal Escape handling, empty input validation, malformed file alerts, 503 provider outages, N-1 backwards compatibility, and advertised platform checks."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "35 web and contract tests passed, verifying web foundation, runtime health, preview bounds, security headers, and release fixtures."
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test ./...",
+      "exit_code": 0,
+      "summary": "All Go engine packages passed; lifecycle, internal auth, vaults, storage, and domain integration tests passed."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "summary": "Validated 327 JSON files, OpenAPI schemas, and repository invariants."
+    }
+  ],
+  "results": {
+    "requirement": "N33",
+    "acceptance": "Complete the actual reference workflow with keyboard/table equivalents at 360px and 1440px, invalid/empty/interrupted/provider-outage cases and N-1 data/export fixtures. Advertise only observed supported platforms.",
+    "status": "passed",
+    "viewport_360px_verified": true,
+    "viewport_1440px_verified": true,
+    "keyboard_accessibility_verified": true,
+    "failure_cases_verified": true,
+    "n_minus_1_compatibility_verified": true,
+    "advertised_platforms_verified": true,
+    "provider_owns_secret_bytes": true
+  },
+  "invariants_verified": {
+    "viewports": "Enforced; zero horizontal scroll overflow at 360px mobile viewport across all routes; clean desktop grid/panel layout at 1440px.",
+    "keyboard_navigation": "Enforced; skip link focuses #content; sequential tab order across interactive controls; Escape dismisses modal dialogues and clears transient secret plaintext.",
+    "failure_handling": "Enforced; empty input displays inline validation error and suppresses network dispatch; malformed file inspection displays explicit alert; 503 provider outage fails closed with zero plaintext exposure.",
+    "backward_compatibility": "Enforced; N-1 legacy secret metadata omitting newer lifecycle fields safely defaults to ACTIVE status without error.",
+    "platform_scope": "Enforced; packages and documentation advertise strictly observed platforms (linux-x86_64); unobserved architectures are omitted.",
+    "provider_ownership": "Enforced; OpenBao retains seal and ownership of secret bytes; Keycloak governs user identity and step-up auth; provider outage fails closed."
+  },
+  "next_task": "C34"
+}

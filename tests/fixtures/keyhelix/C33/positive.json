@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic UX accessibility, viewport boundaries and N-1 compatibility contract; contains no real credential, provider state or plaintext secret.",
+  "license": "Apache-2.0",
+  "requirement": "N33",
+  "task": "C33",
+  "viewports": [
+    {
+      "id": "mobile",
+      "width": 360,
+      "height": 800,
+      "label": "Mobile 360px viewport"
+    },
+    {
+      "id": "desktop",
+      "width": 1440,
+      "height": 900,
+      "label": "Desktop 1440px viewport"
+    }
+  ],
+  "accessibility": {
+    "skip_link": {
+      "selector": "a.skip",
+      "target": "#content"
+    },
+    "focus_management": {
+      "outline": "3px solid #e9c86c",
+      "outline_offset": "4px"
+    },
+    "modal_escape": true
+  },
+  "n_minus_1_metadata": {
+    "version": "n-1",
+    "description": "Legacy secret metadata fixture lacking newer lifecycle properties (retain_until, destroyed_at, status). Forward reader defaults to ACTIVE safely.",
+    "secrets": [
+      {
+        "vault_id": "vault-prod",
+        "secret_path": "legacy/v0/app-config-key",
+        "version": 1,
+        "classification": "confidential",
+        "created_at": "2026-10-25T12:00:00Z",
+        "metadata_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "vault_id": "vault-prod",
+        "secret_path": "legacy/v0/db-credentials",
+        "version": 2,
+        "classification": "restricted",
+        "created_at": "2026-10-26T14:30:00Z",
+        "metadata_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    ]
+  },
+  "observed_supported_platforms": [
+    "linux-x86_64"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic expected results for C33 UX accessibility, failures, and N-1 compatibility.",
+  "license": "Apache-2.0",
+  "requirement": "N33",
+  "task": "C33",
+  "results": {
+    "viewport_mobile_360": {
+      "width": 360,
+      "height": 800,
+      "horizontal_scroll_overflow": false,
+      "elements_wrapped": true
+    },
+    "viewport_desktop_1440": {
+      "width": 1440,
+      "height": 900,
+      "grid_rendered": true
+    },
+    "keyboard_navigation": {
+      "skip_link_focused_on_first_tab": true,
+      "main_focused_on_skip_link_click": true,
+      "modal_closed_on_escape": true,
+      "transient_plaintext_cleared": true
+    },
+    "empty_form_error": {
+      "alert_text": "A canonical path and a non-empty value are required.",
+      "request_sent": false
+    },
+    "malformed_json_error": {
+      "alert_text": "valid JSON"
+    },
+    "provider_outage_messages": {
+      "health_banner": "Engine runtime unavailable.",
+      "vault_error": "Vault runtime unavailable: the engine or a required provider is down.",
+      "write_error": "Provider unavailable: the write failed closed."
+    },
+    "n_minus_1_compat": {
+      "records_rendered": 2,
+      "default_status": "ACTIVE",
+      "missing_fields_no_crash": true
+    }
+  }
+}

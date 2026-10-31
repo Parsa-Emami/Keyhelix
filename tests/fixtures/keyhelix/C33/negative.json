@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic negative UX scenarios for C33; contains no real credential, provider state or plaintext secret.",
+  "license": "Apache-2.0",
+  "requirement": "N33",
+  "task": "C33",
+  "cases": {
+    "tampered_n_minus_1_fixture": {
+      "modified_byte": true,
+      "expected_error": "checksum_mismatch",
+      "trusted_success_allowed": false
+    },
+    "missing_evidence_or_untrusted_signer": {
+      "evidence_present": false,
+      "trusted_signer": false,
+      "expected_error": "untrusted_authority",
+      "trusted_success_allowed": false
+    },
+    "stale_replayed_revision": {
+      "replayed_version": 0,
+      "current_version": 1,
+      "expected_error": "conflict_stale_revision",
+      "replaces_authority": false
+    },
+    "empty_form_submission": {
+      "secret_path": "",
+      "plaintext": "",
+      "expected_error": "A canonical path and a non-empty value are required."
+    },
+    "malformed_json_upload": {
+      "payload": "{unclosed-json",
+      "expected_error": "valid JSON"
+    },
+    "provider_outage_fail_closed": {
+      "engine_health_status": 503,
+      "vault_metadata_status": 503,
+      "cached_plaintext_returned": false,
+      "expected_error": "Vault runtime unavailable: the engine or a required provider is down."
+    },
+    "provider_owns_secret_bytes": {
+      "client_persists_plaintext": false,
+      "cache_retains_plaintext": false,
+      "plaintext_cleared_on_modal_close": true
+    }
+  }
+}
