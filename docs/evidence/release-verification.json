@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C35",
+  "date": "2026-10-31",
+  "requirement": "N35",
+  "passed": true,
+  "scope": "Verify integrity and authenticity against independently trusted release identity/key. Install, upgrade and roll back on supported hosts without discarding newer accepted data; maintain the documented source-build alternative.",
+  "trusted_release_authority": {
+    "algorithm": "Ed25519",
+    "signer_id": "keyhelix-release-authority@keyhelix.local",
+    "key_id": "khx-ed25519-2026-01",
+    "public_key_hex": "ff694c65da986e44e73523695865a06be9d8ad3bbc510fa01cd87d3fd58e60cc",
+    "independent_trust_root": true,
+    "attestation_file": "RELEASE.sig"
+  },
+  "lifecycle_verification": {
+    "install": {
+      "slot": "v1",
+      "version": "0.0.1",
+      "revision": 1,
+      "manifest_version_after_write": 1,
+      "records": 1,
+      "engine_health_status": 200
+    },
+    "upgrade": {
+      "slot": "v2",
+      "version": "0.0.2",
+      "revision": 2,
+      "manifest_version_after_writes": 3,
+      "records": 2,
+      "engine_health_status": 200
+    },
+    "rollback": {
+      "slot": "v1",
+      "binary_version": "0.0.1",
+      "binary_revision": 1,
+      "highest_accepted_revision": 2,
+      "preserved_manifest_version": 3,
+      "preserved_records": 2,
+      "newer_accepted_data_preserved": true,
+      "engine_health_status": 200
+    },
+    "source_build_alternative": {
+      "archive_verified": true,
+      "compiled_from_source": true,
+      "version_probe_passed": true
+    }
+  },
+  "negative_cases": {
+    "modified_byte_rejected": "CHECKSUM_MISMATCH",
+    "modified_manifest_rejected": "SIGNATURE_INVALID",
+    "missing_evidence_rejected": "MISSING_SIGNATURE_EVIDENCE",
+    "untrusted_signer_rejected": "UNTRUSTED_SIGNER",
+    "expired_attestation_rejected": "EXPIRED_ATTESTATION",
+    "stale_revision_rejected": "STALE_REVISION_REJECTED",
+    "stale_data_overwrite_rejected": "STALE_DATA_REJECTED",
+    "stale_entity_version_rejected": "STALE_VERSION",
+    "provider_owns_secret_bytes": true,
+    "plaintext_canary_occurrences": 0
+  },
+  "verification": {
+    "script": "scripts/verify-release.mjs",
+    "release_suite": "tests/release/upgrade-recovery.mjs",
+    "engine_suite": "tests/upgrade_recovery_test.go",
+    "fixtures": "tests/fixtures/keyhelix/C35/",
+    "result": "passed"
+  }
+}

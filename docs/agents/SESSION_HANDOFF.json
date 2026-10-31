@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-31",
-  "base_commit": "47bec4d17205ea30601c2ba96ddb7dfa75e5bfa8",
-  "scope": "C34 complete installation, usage, contribution, support, and security guides with zero cloud or paid entitlements (N34)",
+  "base_commit": "0d4850c220ec184314e82770459e8cbf091732cd",
+  "scope": "C35 verify signed artifacts, data-safe host install/upgrade/rollback preserving newer accepted data, and documented source-build alternative (N35)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -37,39 +37,44 @@
     "C31",
     "C32",
     "C33",
-    "C34"
+    "C34",
+    "C35"
   ],
   "git_commit_created": false,
-  "c34_status": "verified locally: fresh reader complete reference workflow, Go engine and web source builds, reproducible packaging, Apache-2.0 and upstream licenses, data limits (1 MiB, 32 depth, 20k keys), zero-telemetry privacy, disaster recovery and forward repair, confirmed 48h SLA private vulnerability disclosure route via GitHub Security Advisories and dedicated email, HTML/script sentinel inertness, 360px mobile failure states, provider secret byte ownership, and zero paid or cloud entitlement requirements verified across 39 unit/contract tests, 39 browser tests, and all Go engine tests",
+  "c35_status": "verified locally: detached Ed25519 release signature verification against independent trusted release authority, full SHA256SUMS.txt tree validation, data-safe install (v1) -> upgrade (v2) -> binary rollback (v1) preserving newer accepted durable records (ManifestVersion 3), source-build alternative extraction and compilation from source/keyhelix-<short>.tar.gz, and negative rejection of 1-byte modifications, missing signature evidence, untrusted signers, expired attestations, stale/replayed revisions, and stale data overwrites",
   "changed_paths": [
-    "CONTRIBUTING.md",
-    "OPEN_SOURCE.md",
-    "README.md",
-    "SECURITY.md",
+    "START_HERE.md",
+    "apps/web/src/generated/project.json",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/engineering/CLONE_TO_RUN.md",
-    "docs/evidence/C34.json",
-    "docs/release/USER_GUIDE.md",
+    "docs/evidence/C35.json",
+    "docs/evidence/release-verification.json",
+    "docs/release/ARTIFACTS.md",
+    "docs/release/DEFINITION_OF_DONE.md",
+    "package.json",
     "plans/progress.json",
     "plans/project-state.json",
-    "tests/fixtures/keyhelix/C34/expected-output.json",
-    "tests/fixtures/keyhelix/C34/negative.json",
-    "tests/fixtures/keyhelix/C34/positive.json",
-    "tests/web/oss-guides.test.mjs"
+    "scripts/verify-release.mjs",
+    "tests/fixtures/keyhelix/C35/expected-output.json",
+    "tests/fixtures/keyhelix/C35/negative.json",
+    "tests/fixtures/keyhelix/C35/positive.json",
+    "tests/release/upgrade-recovery.mjs",
+    "tests/upgrade_recovery_test.go"
   ],
   "ci_defect_fixes": [],
   "commands": [
     "npm run validate:plan",
-    "npm test",
-    "PATH=/usr/local/go/bin:$PATH go test ./...",
-    "npm run test:browser",
-    "python3 scripts/validate_repo.py"
+    "PATH=/usr/local/bin:/usr/local/go/bin:$PATH go test -count=1 ./...",
+    "PATH=/usr/local/bin:/usr/local/go/bin:$PATH go vet ./...",
+    "PATH=/usr/local/bin:/usr/local/go/bin:$PATH npm test",
+    "PATH=/usr/local/bin:/usr/local/go/bin:$PATH npm run test:release",
+    "python3 scripts/validate_repo.py",
+    "python3 -m unittest discover -s tests/engineering -p 'test_*.py'"
   ],
   "results": {
-    "engine": "Go build, vet and all package tests pass. The engine binds strictly to ephemeral loopback and communicates only via the supervised Node proxy.",
-    "web": "39 Node web/contract tests pass and 39 Playwright browser tests pass across 7 parallel workers. Complete public documentation and contract verification for open-source installation, usage, contribution, and security disclosure verified.",
-    "C34": "A fresh reader completes the core task from public instructions. Source builds, licenses, data limits, privacy, recovery, support, confirmed vulnerability reporting route, sentinel inertness, 360px mobile failure states, and provider ownership verified without mandatory cloud or paid entitlements.",
-    "provider_ownership": "No secret bytes, tokens, or plaintext credentials are persisted or cached. OpenBao owns sealed secret bytes; Keycloak manages identities; engine stores encrypted metadata envelopes and digests; provider outage fails closed with 503."
+    "engine": "Go build, vet and all package tests pass, including TestC35SignedArtifactsAndDataSafeUpgradesN35.",
+    "web": "39 Node web/contract tests pass and 7 release packaging/upgrade tests pass across package-release.test.mjs and upgrade-recovery.mjs.",
+    "C35": "Release integrity and authenticity verified against independently trusted Ed25519 release identity/key. Host install, upgrade, and rollback preserve newer accepted data without regression; documented source-build alternative verified.",
+    "provider_ownership": "No secret bytes, tokens, or plaintext credentials are persisted or cached. OpenBao owns sealed secret bytes; engine stores metadata digests; zero canary occurrences in release artifacts or durable storage."
   },
-  "next_recommended_task": "C35: test(distribution): verify signed artifacts and data-safe upgrades"
+  "next_recommended_task": "C36: test(onboarding): repeat clone-to-value independently"
 }

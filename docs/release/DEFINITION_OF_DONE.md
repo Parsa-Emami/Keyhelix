@@ -1,6 +1,6 @@
 # KeyHelix: completion endpoint
 
-Current: C01–C31 verified (`core_ready: true`); C32–C40 OSS publication and installed-host proof pending.
+Current: C01–C35 verified (`core_ready: true`); C36–C40 OSS publication and installed-host proof pending.
 
 ## C30: locally usable (Verified)
 

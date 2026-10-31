@@ -74,7 +74,8 @@ directory instead of writing state into the artifact tree.
 ```sh
 cd dist/release
 sha256sum -c SHA256SUMS.txt
-node dist/engine/keyhelix --version
+node scripts/verify-release.mjs --release-dir . --trusted-authority ../../tests/fixtures/keyhelix/C35/positive.json
+./dist/engine/keyhelix --version
 ```
 
 `RELEASE.json` records the source commit, dirty/clean state, source tree digest,
@@ -83,12 +84,22 @@ image digests, SBOM/notices/resource digests and explicit capability flags.
 `artifact.webOnly` must be `false`, `artifact.engineIncluded` must be `true`, and
 `artifact.providerOwnedSecretBytes` must be `true`.
 
+`RELEASE.sig` (produced and verified by `scripts/verify-release.mjs`) binds
+`RELEASE.json`, `SHA256SUMS.txt`, the source archive digest, the monotonic
+release revision, and the validity window to an independently trusted Ed25519
+release authority (`signer_id`, `key_id`, `public_key_hex`). Verification fails
+closed on any 1-byte file modification (`CHECKSUM_MISMATCH`), manifest or
+signature tampering (`SIGNATURE_INVALID`), missing evidence
+(`MISSING_SIGNATURE_EVIDENCE`), untrusted signer (`UNTRUSTED_SIGNER`), expired
+attestation (`EXPIRED_ATTESTATION`), or stale/replayed revision
+(`STALE_REVISION_REJECTED`).
+
 `npm run test:release` exercises the packaged engine and web server, verifies all
-checksums and inventories, proves the secret/provider exclusion, and repeats the
-build for byte-for-byte reproducibility on the recorded host. It also kills the
-writer before publication, exhausts a real file-size limit, replays the build and
-runs two writers concurrently; the prior or new release must always remain
-complete and no partial artifact may be published.
+checksums and inventories, proves the secret/provider exclusion, repeats the
+build for byte-for-byte reproducibility on the recorded host, and runs
+`tests/release/upgrade-recovery.mjs` to verify detached Ed25519 signatures,
+data-safe `v1 -> v2 -> rollback v1` upgrades without discarding newer accepted
+data, and the documented source-build alternative from `source/keyhelix-<short>.tar.gz`.
 
 ## SBOM and notices
 
@@ -123,8 +134,8 @@ wall-clock/VCS variability. It contains the tracked/untracked source and build
 recipes, but excludes dependency/build/cache/runtime directories, secret-named
 files and `docs/evidence/` release records, so evidence can be written after a
 release without rewriting the artifact. Two consecutive package runs from the same source
-and toolchain produce identical checksums. Cross-host byte identity, code
-signing and publication are not claimed by C31.
+and toolchain produce identical checksums. Cross-host byte identity and public
+registry publication are not claimed by C31/C35.
 
 A source tree with uncommitted changes is recorded as `dirty: true`; the tree
 digest remains authoritative for that build. Rebuild from a clean commit before
@@ -132,17 +143,20 @@ publishing. `RELEASE.json` never hides a dirty tree.
 
 ## Update and rollback
 
-Build and test from the intended source commit, verify every checksum, copy the
-new release to an immutable directory, then switch the service path and restart.
-Check `/healthz` and `/readyz`. If either fails, restore the previous immutable
-directory and restart. A frontend rollback does not roll back provider or
-metadata state; verify OpenBao recovery material and the storage port before any
-update that touches durable data.
+Build and test from the intended source commit, verify every checksum and the
+detached Ed25519 release attestation (`scripts/verify-release.mjs`), install the
+new release into an immutable versioned slot (`releases/v2`), switch the active
+slot, and restart. Check `/healthz` and `/readyz`. If either fails, roll back the
+active binary slot to the previous verified release (`releases/v1`) and restart.
+Operator metadata (`manifests/` and `blobs/`) and OpenBao provider state remain
+outside the release directory; binary rollback never overwrites newer accepted
+records (`STALE_DATA_REJECTED`) and never accepts an older release revision as a
+forward upgrade (`STALE_REVISION_REJECTED`).
 
 ## Not performed here
 
-- No public domain, signature, registry publication or artifact upload is made.
+- No public domain, registry publication or external artifact upload is made.
 - No host service is installed, no Nginx/systemd unit is enabled, and no
-  provider workflow is run from an installed artifact; C40 owns that proof.
+  provider workflow is run from an installed host service; C40 owns that proof.
 - Cross-host reproducibility and multi-tenant/public runtime admission are
   outside this local profile.

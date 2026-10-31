@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "task": "C35",
+  "requirement": "N35",
+  "provenance": "Repository-authored synthetic release signature, upgrade, rollback, and source-build verification fixture; contains no real private key, credential, or plaintext secret.",
+  "license": "Apache-2.0",
+  "trusted_authority": {
+    "signer_id": "keyhelix-release-authority@keyhelix.local",
+    "key_id": "khx-ed25519-2026-01",
+    "algorithm": "Ed25519",
+    "seed_hex": "7f4e3d2c1b0a9f8e7d6c5b4a39281706f5e4d3c2b1a09f8e7d6c5b4a39281706",
+    "public_key_hex": "ff694c65da986e44e73523695865a06be9d8ad3bbc510fa01cd87d3fd58e60cc"
+  },
+  "releases": {
+    "initial": {
+      "slot": "v1",
+      "version": "0.0.1",
+      "revision": 1,
+      "issued_at": "2026-10-31T00:00:00Z",
+      "expires_at": "2027-10-31T00:00:00Z"
+    },
+    "upgrade": {
+      "slot": "v2",
+      "version": "0.0.2",
+      "revision": 2,
+      "issued_at": "2026-10-31T01:00:00Z",
+      "expires_at": "2027-10-31T01:00:00Z"
+    }
+  },
+  "vault": {
+    "vault_id": "vault-c35-prod",
+    "kek_id": "kek-c35-main",
+    "mount": "kv",
+    "role": "vault-owner"
+  },
+  "identity": {
+    "subject": "sub-owner-c35",
+    "email": "owner-c35@keyhelix.local",
+    "vault_role": "vault-owner",
+    "allowed_owners": [
+      "owner-c35@keyhelix.local"
+    ],
+    "allowed_scopes": [
+      "vault-c35-prod",
+      "grants"
+    ]
+  },
+  "workflow_records": [
+    {
+      "phase": "install_v1",
+      "operation_id": "op-c35-install-001",
+      "secret_path": "payments/signing-key",
+      "classification": "restricted",
+      "expected_version": 0,
+      "entity_version": 1,
+      "manifest_version": 1,
+      "plaintext_canary": "c35-synthetic-canary-v1-alpha-9102"
+    },
+    {
+      "phase": "upgrade_v2",
+      "operation_id": "op-c35-upgrade-002",
+      "secret_path": "payments/signing-key",
+      "classification": "restricted",
+      "expected_version": 1,
+      "entity_version": 2,
+      "manifest_version": 2,
+      "plaintext_canary": "c35-synthetic-canary-v2-bravo-9103"
+    },
+    {
+      "phase": "post_upgrade_new_secret",
+      "operation_id": "op-c35-upgrade-003",
+      "secret_path": "treasury/settlement-token",
+      "classification": "confidential",
+      "expected_version": 0,
+      "entity_version": 1,
+      "manifest_version": 3,
+      "plaintext_canary": "c35-synthetic-canary-v2-charlie-9104"
+    }
+  ],
+  "source_build": {
+    "archive_prefix": "source/keyhelix-",
+    "build_command": "go build -buildvcs=false -o keyhelix-from-source ./cmd/keyhelix",
+    "required_files": [
+      "go.mod",
+      "cmd/keyhelix/main.go",
+      "internal/storage/adapter.go",
+      "scripts/package.sh",
+      "docs/release/ARTIFACTS.md"
+    ]
+  }
+}

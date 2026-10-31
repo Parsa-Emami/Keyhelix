@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C35",
+  "date": "2026-10-31",
+  "passed": true,
+  "planning_template": false,
+  "scope": "Verify integrity and authenticity against independently trusted release identity/key. Install, upgrade and roll back on supported hosts without discarding newer accepted data; maintain the documented source-build alternative (Requirement N35).",
+  "commit_id": "C35",
+  "base_commit": "0d4850c220ec184314e82770459e8cbf091732cd",
+  "git_commit_created": false,
+  "source_identity": "sha256:fe02842ffad3c66b0a8d11456f3a62248c1e9671c817a79bffcb5cb8f7066c68",
+  "source_identity_method": "SHA-256 over sorted C35-owned implementation, test, fixture, and documentation paths; each file contributes its path, a NUL separator and its own binary SHA-256. Excludes plans/, docs/agents/SESSION_HANDOFF.json, status-only START_HERE/DEFINITION_OF_DONE and docs/evidence/C35.json to avoid recursive self-reference. Historical evidence remains bound to its original source.",
+  "source_identity_files": {
+    "docs/evidence/release-verification.json": "9c8c3911c700282ea5e3cebdcd3aee7801d005a0821a935b69a16521790eb71c",
+    "docs/release/ARTIFACTS.md": "6ec54b99b33df75eeb6635fdb9112779c9182c43741554e89b335a36831a5223",
+    "package.json": "1445c66fd65fdf392c7379b6082969ad24a4fff98690462fd7484a8c397ac812",
+    "scripts/verify-release.mjs": "37f3fa1bc73c7fc6106e3dd8ad2ee4c830234a5eb844c33d7e30a06f6bd48d07",
+    "tests/fixtures/keyhelix/C35/expected-output.json": "751ac611c462ca3c64853dde55441a015078519878956018dfd627f380131d0d",
+    "tests/fixtures/keyhelix/C35/negative.json": "381a8cc679ef8ef601d3003ec78db6d72e648d3d3d3be5e1db6cc436ea6466bf",
+    "tests/fixtures/keyhelix/C35/positive.json": "492320958be5079604c02067b457944faa28698378eeb895bbc28c8baec37d41",
+    "tests/release/upgrade-recovery.mjs": "3ef9540f4056164f5b14ad0e1357b2d48f939bfbac02101737014c93ca3dd2bb",
+    "tests/upgrade_recovery_test.go": "89c28a1f51ea008c27dc05a3b2942b4d914550168301b570bcbbf51d5214c218"
+  },
+  "environment": {
+    "os": "Linux x86_64",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (toolchain lock pins npm 11.9.0; the executing npm reports 11.17.0)",
+    "go_driver": "go version go1.26.2 linux/amd64",
+    "engine_toolchain": "go1.27.2 (recorded by the packaged engine --version)",
+    "hardware": {
+      "required_profile": "4 vCPU / 8192 MiB RAM / 20480 MiB free disk"
+    }
+  },
+  "fixtures": {
+    "path": "tests/fixtures/keyhelix/C35/",
+    "positive": "tests/fixtures/keyhelix/C35/positive.json",
+    "negative": "tests/fixtures/keyhelix/C35/negative.json",
+    "expected_output": "tests/fixtures/keyhelix/C35/expected-output.json",
+    "provenance": "Repository-authored synthetic release signature, upgrade, rollback, and source-build verification fixture; contains no real private key, credential, or plaintext secret.",
+    "license": "Apache-2.0",
+    "hashes": {
+      "positive.json": "492320958be5079604c02067b457944faa28698378eeb895bbc28c8baec37d41",
+      "negative.json": "381a8cc679ef8ef601d3003ec78db6d72e648d3d3d3be5e1db6cc436ea6466bf",
+      "expected_output.json": "751ac611c462ca3c64853dde55441a015078519878956018dfd627f380131d0d"
+    }
+  },
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "summary": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "PATH=/usr/local/bin:/usr/local/go/bin:$PATH go test -count=1 ./...",
+      "exit_code": 0,
+      "summary": "All Go engine packages and integration tests passed, including TestC35SignedArtifactsAndDataSafeUpgradesN35."
+    },
+    {
+      "command": "PATH=/usr/local/bin:/usr/local/go/bin:$PATH go vet ./...",
+      "exit_code": 0,
+      "summary": "Go static analysis passed with zero warnings across all packages."
+    },
+    {
+      "command": "PATH=/usr/local/bin:/usr/local/go/bin:$PATH npm test",
+      "exit_code": 0,
+      "summary": "39 Node web and contract tests passed."
+    },
+    {
+      "command": "PATH=/usr/local/bin:/usr/local/go/bin:$PATH npm run test:release",
+      "exit_code": 0,
+      "summary": "5 packaging tests in package-release.test.mjs and 2 signed upgrade/rollback/source-build tests in upgrade-recovery.mjs passed."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "summary": "Validated all JSON files and repository contract invariants."
+    },
+    {
+      "command": "python3 -m unittest discover -s tests/engineering -p 'test_*.py'",
+      "exit_code": 0,
+      "summary": "6 CI source integrity regression tests passed."
+    }
+  ],
+  "results": {
+    "requirement": "N35",
+    "acceptance": "Verify integrity and authenticity against independently trusted release identity/key. Install, upgrade and roll back on supported hosts without discarding newer accepted data; maintain the documented source-build alternative.",
+    "status": "passed",
+    "signature_verified": true,
+    "independent_trust_root": true,
+    "initial_install_revision": 1,
+    "upgraded_revision": 2,
+    "post_upgrade_manifest_version": 3,
+    "post_upgrade_records": 2,
+    "rollback_binary_revision": 1,
+    "post_rollback_manifest_version": 3,
+    "post_rollback_records": 2,
+    "newer_accepted_data_preserved": true,
+    "source_build_alternative_verified": true,
+    "modified_byte_rejected": true,
+    "modified_manifest_rejected": true,
+    "missing_evidence_rejected": true,
+    "untrusted_signer_rejected": true,
+    "expired_attestation_rejected": true,
+    "stale_revision_rejected": true,
+    "stale_data_overwrite_rejected": true,
+    "provider_owns_secret_bytes": true,
+    "plaintext_canary_occurrences": 0
+  },
+  "invariants_verified": {
+    "independent_signature_verification": "Enforced; scripts/verify-release.mjs and TestC35 verify detached Ed25519 signatures over RELEASE.json, SHA256SUMS.txt, and source archive digests against an out-of-band trusted release identity and public key.",
+    "tamper_and_signer_rejection": "Enforced; 1-byte modifications in engine binary or manifest, missing signature/checksum files, and untrusted signers fail closed with CHECKSUM_MISMATCH, SIGNATURE_INVALID, MISSING_SIGNATURE_EVIDENCE, or UNTRUSTED_SIGNER.",
+    "monotonic_authority_and_data_safety": "Enforced; host install (v1) -> upgrade (v2) -> binary rollback (v1) preserves all newer accepted records (ManifestVersion 3) and rejects expired, stale, or replayed revisions (EXPIRED_ATTESTATION, STALE_REVISION_REJECTED, STALE_DATA_REJECTED, STALE_VERSION).",
+    "source_build_alternative": "Enforced; source/keyhelix-<short>.tar.gz is verified by digest, extracted, and compiled via go build ./cmd/keyhelix to produce a working runnable engine binary.",
+    "provider_ownership": "Enforced; OpenBao owns sealed secret bytes and zero plaintext canary bytes appear in release artifacts or durable local metadata."
+  },
+  "next_task": "C36"
+}

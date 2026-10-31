@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task": "C35",
+  "requirement": "N35",
+  "acceptance": "Verify integrity and authenticity against independently trusted release identity/key. Install, upgrade and roll back on supported hosts without discarding newer accepted data; maintain the documented source-build alternative.",
+  "status": "passed",
+  "expected": {
+    "signature_verified": true,
+    "independent_trust_root": true,
+    "initial_install_revision": 1,
+    "upgraded_revision": 2,
+    "post_upgrade_manifest_version": 3,
+    "post_upgrade_records": 2,
+    "rollback_binary_revision": 1,
+    "post_rollback_manifest_version": 3,
+    "post_rollback_records": 2,
+    "newer_accepted_data_preserved": true,
+    "source_build_alternative_verified": true,
+    "provider_owns_secret_bytes": true,
+    "plaintext_canary_occurrences": 0,
+    "error_codes": {
+      "modified_byte": "CHECKSUM_MISMATCH",
+      "modified_manifest": "SIGNATURE_INVALID",
+      "missing_evidence": "MISSING_SIGNATURE_EVIDENCE",
+      "untrusted_signer": "UNTRUSTED_SIGNER",
+      "expired_revision": "EXPIRED_ATTESTATION",
+      "stale_revision": "STALE_REVISION_REJECTED",
+      "stale_data_overwrite": "STALE_DATA_REJECTED",
+      "provider_secret_ownership": "PROVIDER_OWNS_SECRET_BYTES"
+    }
+  }
+}

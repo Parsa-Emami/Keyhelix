@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "task": "C35",
+  "requirement": "N35",
+  "provenance": "Repository-authored synthetic negative test vectors for release signature tampering, untrusted signers, missing evidence, stale/replayed revisions, and provider secret ownership.",
+  "license": "Apache-2.0",
+  "untrusted_authority": {
+    "signer_id": "untrusted-BuildBot@external.invalid",
+    "key_id": "khx-ed25519-untrusted-99",
+    "algorithm": "Ed25519",
+    "seed_hex": "11223344556677889900aabbccddeeff0011223344556677889900aabbccddee",
+    "public_key_hex": "959ff3f70c23182fc3addb5502bd1627bbaedef38dea6d525556ad7dd4a3be44"
+  },
+  "canary": "c35-forbidden-plaintext-sentinel-778899",
+  "cases": [
+    {
+      "id": "modified-engine-byte",
+      "kind": "modified_byte",
+      "target": "dist/engine/keyhelix",
+      "expected_code": "CHECKSUM_MISMATCH",
+      "description": "Flipping one byte in the packaged Go engine binary must fail SHA-256 verification and block activation."
+    },
+    {
+      "id": "modified-manifest-byte",
+      "kind": "modified_manifest",
+      "target": "RELEASE.json",
+      "expected_code": "SIGNATURE_INVALID",
+      "description": "Modifying one byte in RELEASE.json must invalidate the signed release attestation."
+    },
+    {
+      "id": "missing-signature-evidence",
+      "kind": "missing_evidence",
+      "target": "RELEASE.sig",
+      "expected_code": "MISSING_SIGNATURE_EVIDENCE",
+      "description": "Removing RELEASE.sig or SHA256SUMS.txt must fail closed before installation or upgrade."
+    },
+    {
+      "id": "untrusted-signer-key",
+      "kind": "untrusted_signer",
+      "target": "RELEASE.sig",
+      "expected_code": "UNTRUSTED_SIGNER",
+      "description": "An artifact signed by a wrong or untrusted Ed25519 key or signer identity must be rejected."
+    },
+    {
+      "id": "expired-attestation",
+      "kind": "expired_revision",
+      "target": "RELEASE.sig",
+      "expected_code": "EXPIRED_ATTESTATION",
+      "description": "An expired release signature attestation cannot replace the accepted authority."
+    },
+    {
+      "id": "stale-release-revision",
+      "kind": "stale_revision",
+      "target": "RELEASE.sig",
+      "expected_code": "STALE_REVISION_REJECTED",
+      "description": "An older or replayed release revision cannot replace a newer accepted authority during upgrade."
+    },
+    {
+      "id": "stale-data-overwrite",
+      "kind": "stale_data_overwrite",
+      "target": "manifests/manifest-00000000000000000001.json",
+      "expected_code": "STALE_DATA_REJECTED",
+      "description": "Rolling back the binary or replaying an older backup must never overwrite or discard newer accepted metadata records."
+    },
+    {
+      "id": "provider-ownership",
+      "kind": "provider_secret_ownership",
+      "target": "dist/release",
+      "expected_code": "PROVIDER_OWNS_SECRET_BYTES",
+      "embedded_provider_state": false,
+      "description": "Secret bytes remain sealed inside OpenBao; neither release artifacts nor local metadata stores contain plaintext secret bytes."
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Continue KeyHelix
 
-Current: C01–C31 core domain engine, OpenBao/Keycloak local provider integration, React web workspace and complete reproducible release artifact implemented (`core_ready: true`). Tasks C32–C40 remain for OSS v1 publication and installed-host proof.
+Current: C01–C35 core domain engine, OpenBao/Keycloak local provider integration, React web workspace, reproducible release artifact, network hardening, UX accessibility, OSS documentation, and signed data-safe upgrade verification implemented (`core_ready: true`). Tasks C36–C40 remain for OSS v1 publication and installed-host proof.
 
 ```sh
 npm run setup
