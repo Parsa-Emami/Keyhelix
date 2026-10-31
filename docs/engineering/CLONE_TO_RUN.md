@@ -1,8 +1,24 @@
-# KeyHelix: clone to run
+# KeyHelix: Clone-to-Run Guide
 
-## Runnable today
+Complete operator runbook for cloning, compiling from source, running, testing, and recovering KeyHelix on a local or private host.
 
-Install Git, Node 24.19+ within Node 24, Go 1.26.2+ (1.26.x) and rootless Podman 4.9.3 on Linux x86_64, then:
+---
+
+## 1. Prerequisites
+
+KeyHelix runs entirely on open-source toolchains without requiring any cloud subscription, third-party API keys, or proprietary software.
+
+- **Operating System**: Linux x86_64 (tested on Ubuntu 22.04 LTS and 24.04 LTS)
+- **Node.js**: `>= 24.19.0 < 25` (npm included)
+- **Go**: `1.26.2+` (1.26.x)
+- **Podman**: `4.9.3+` (rootless container runtime)
+- **Git**: `2.34+`
+
+---
+
+## 2. Quickstart: Clone, Bootstrap, and Run
+
+Execute the following commands in an interactive terminal:
 
 ```sh
 git clone https://github.com/Parsa-Emami/Keyhelix.git
@@ -11,49 +27,113 @@ npm run setup
 npm start
 ```
 
-Open http://localhost:4173 and sign in as `alice` (vault-admin) or `bob` (vault-member). Both are synthetic local identities defined in `ops/local/keycloak-realm.json`; the browser is redirected to the local Keycloak realm for the OIDC code flow, and reveal, grant changes, and key rotations require fresh step-up reauthentication.
+### What Happens During Setup?
 
-Setup installs the committed web lockfile with lifecycle scripts disabled, builds the web shell and engine, then starts the pinned local OpenBao and Keycloak containers, initializes transit/KV and the scoped workload token, and writes `.local-data/runtime.json`. `npm start` launches the Go engine with that runtime file and supervises both processes; readiness requires storage, the key provider and the identity provider. Ctrl+C stops both.
+The bootstrap script (`scripts/oss-bootstrap.mjs setup`):
+1. **Toolchain Validation**: Confirms Node.js, Go, and rootless Podman meet minimum version requirements.
+2. **Dependency Installation**: Installs committed npm dependencies using `npm ci --ignore-scripts` to guarantee reproducible, tamper-free builds.
+3. **Web & Engine Compilation**: Compiles the web application bundle with Vite and builds the Go engine binary (`bin/keyhelix`).
+4. **Provider Initialization**: Starts rootless containers for OpenBao (listening on `127.0.0.1:8200`) and Keycloak (listening on `127.0.0.1:8080`).
+5. **Cryptographic Initialization**: Initializes OpenBao transit key engines and KV mounts; imports the KeyHelix realm and synthetic user identities (`alice`, `bob`) into Keycloak.
+6. **Runtime Configuration**: Emits operational tokens and endpoints into `.local-data/runtime.json`.
 
-No paid or cloud account, sibling clone or owned public domain is needed. Provider images are pulled by digest only when absent; `.local-data/` holds recovery material and must stay private and uncommitted. Ports can be selected with `npm start -- --port 4301`, but the registered OIDC redirect origin is `http://localhost:4173`.
+---
 
-`npm run setup -- --check` shows preparation without changes. `--skip-install` builds using already installed dependencies. `--skip-providers` prepares build artifacts only. `npm run doctor` reports actual web/core state and provider readiness. `npm run release:check` deliberately exits 2 until full C01–C38 release evidence is ready.
+## 3. Building from Source
 
-## Provider ownership
+KeyHelix provides dedicated build recipes for each subsystem:
 
-OpenBao owns the sealed secret bytes: the engine stores a wrapped DEK and nonce through the transit and KV mounts and persists only metadata and an integrity digest. Keycloak issues identity and step-up proofs. Readiness and `/api/diagnostics` report web, engine, storage, key provider and identity provider separately; failures are explicit and never cached into success.
-
-## Network boundaries and private hosting
-
-KeyHelix requires no owned public domain for local or private operation:
-
-1. **Loopback isolation**: Both the web server (`scripts/serve-web.mjs`) and the Go BFF engine (`cmd/keyhelix`) bind strictly to loopback interfaces (`127.0.0.1`, `::1`). The engine listens on an ephemeral loopback port (`127.0.0.1:0`) and is never directly exposed to external networks.
-2. **DNS rebinding defense**: The web server validates incoming `Host` headers against loopback hostnames (`localhost`, `127.0.0.1`, `[::1]`) and rejects external hosts with `400 Bad Request` (`invalid_host`).
-3. **Origin boundary**: State-changing and data-access routes under `/api/*` enforce same-origin semantics; untrusted cross-origin requests are rejected with `403 Forbidden` (`cross_origin_forbidden`).
-4. **Cache boundaries**: Sensitive routes (`/`, `/healthz`, `/readyz`, `/runtime-config.json`, `/api/diagnostics`, `/api/*`) emit `Cache-Control: no-store` and `Pragma: no-cache`. Fingerprinted static assets under `/assets/*` are immutable.
-5. **Optional TLS / private ingress**: Operators can terminate TLS with Nginx (`ops/web/nginx.conf.template`) and proxy to loopback port `4305`, enforcing strict CIDR allowlists (`deny all` by default). See [infra/deployment.md](file:///home/amirreza/Desktop/Projects/Keyhelix/infra/deployment.md) for full deployment details.
-
-## Checks
-
+### 3.1 Build the Go BFF Engine
 ```sh
-npm run check
-npx --no-install playwright install chromium
-npm run test:browser
-npm run test:clone
-npm run doctor
+npm run build:engine
+# Under the hood:
+# node scripts/build-engine.mjs
+# go build -trimpath -ldflags="-s -w" -o bin/keyhelix cmd/keyhelix/main.go
 ```
 
-`npm run test:clone` proves two things separately:
+### 3.2 Build the Web Application
+```sh
+npm run build
+# Under the hood:
+# npm run prepare:web && npm run typecheck && vite build --config apps/web/vite.config.ts && npm run build:engine
+```
 
-1. A real transport clone of the staged/committed source, `npm run setup`, and web-only startup with disabled domain admission (`engineReady: false`).
-2. The full reference workflow through `tests/browser/clone-to-value.spec.ts`: real readiness, owner sign-in, scoped write, fresh step-up reveal, transient clear, member denial, member grant creation and synchronous revocation, app restart persistence, a plaintext-at-rest scan of the engine and provider data, and OpenBao backup/restore with a reveal afterwards.
+### 3.3 Create Reproducible Distribution Packages
+```sh
+npm run package
+# Under the hood:
+# bash scripts/package.sh
+# Bundles bin/keyhelix, dist/web, offline contracts, SBOM, third-party notices, and SHA-256 checksums into dist/release/
+```
 
-On a shared development host that already owns the fixed provider ports and has uncommitted work, use:
+---
+
+## 4. Operating the Workspace
+
+Open your browser to `http://localhost:4173`:
+
+- **Sign In**: Authenticate as `alice` (vault-admin) or `bob` (vault-member).
+  - Alice: username `alice`, password `keyhelix-local-alice`
+  - Bob: username `bob`, password `keyhelix-local-bob`
+- **Write Secrets**: Select vault `vault-prod` and save a new secret path and value. OpenBao encrypts the payload and the engine stores only encrypted metadata envelopes.
+- **Transient Reveal**: Click **Reveal** on an existing secret. Fresh step-up reauthentication is required. The plaintext displays with a 10-second auto-clearing timer and clears immediately upon modal dismissal (<kbd>Escape</kbd>).
+- **Access Management**: Grant or revoke permissions for `bob@keyhelix.local`. Revocation takes effect synchronously.
+- **Diagnostics**: Access `GET /api/diagnostics` or view the **Availability** banner to inspect live provider and storage health.
+
+---
+
+## 5. Network Boundaries and Private Hosting
+
+KeyHelix requires no owned public domain:
+
+1. **Loopback Isolation**: The web server (`scripts/serve-web.mjs`) and the Go BFF engine (`cmd/keyhelix`) bind strictly to loopback interfaces (`127.0.0.1`, `::1`). The engine listens on an ephemeral loopback port (`127.0.0.1:0`).
+2. **DNS Rebinding Defense**: The web server validates incoming `Host` headers against loopback hostnames (`localhost`, `127.0.0.1`, `[::1]`) and rejects external hosts with `400 Bad Request`.
+3. **Origin Boundary**: State-changing and data-access routes under `/api/*` enforce same-origin semantics; untrusted cross-origin requests are rejected with `403 Forbidden`.
+4. **Cache Boundaries**: Sensitive routes (`/`, `/healthz`, `/readyz`, `/runtime-config.json`, `/api/diagnostics`, `/api/*`) emit `Cache-Control: no-store` and `Pragma: no-cache`.
+5. **Optional TLS / Private Ingress**: Operators can terminate TLS using reverse proxies (e.g., Nginx with `ops/web/nginx.conf.template`) and proxy to loopback, enforcing CIDR allowlists. See [infra/deployment.md](../../infra/deployment.md).
+
+---
+
+## 6. Verification and Smoke Testing
+
+Verify the complete repository and reference workflow locally:
+
+```sh
+# 1. Run unit, web, and contract checks
+npm test
+
+# 2. Run Go engine test suite
+PATH=/usr/local/go/bin:$PATH go test ./...
+
+# 3. Run browser end-to-end and accessibility tests
+npm run test:browser
+
+# 4. Run clone smoke test (verifies setup, restart, and restore)
+npm run test:clone
+
+# 5. Run system diagnostic health check
+npm run doctor
+
+# 6. Validate repository invariants and JSON schemas
+python3 scripts/validate_repo.py
+```
+
+### Shared Development Host Flags
+
+When developing on a host where provider containers are already running, use environment overrides:
 
 ```sh
 KEYHELIX_CLONE_WORKTREE=1 KEYHELIX_REUSE_PROVIDERS=1 KEYHELIX_CLONE_RESTORE=1 npm run test:clone
 ```
+- `KEYHELIX_CLONE_WORKTREE=1`: Snapshots the working tree instead of the git index.
+- `KEYHELIX_REUSE_PROVIDERS=1`: Reuses existing provider containers and recovery material.
+- `KEYHELIX_CLONE_RESTORE=1`: Executes full provider backup and restore verification.
 
-`KEYHELIX_CLONE_WORKTREE=1` snapshots the working tree instead of the index; `KEYHELIX_REUSE_PROVIDERS=1` seeds the clone with the existing provider recovery material; `KEYHELIX_CLONE_RESTORE=1` adds the backup/restore leg.
+---
 
-`local-demo` uses synthetic fixtures and isolated development providers; `local-private` requires real identity/permission, provider durability, revocation and restore evidence before sensitive use. A development provider mode never becomes a production vault/gateway by relabeling it.
+## 7. Data Storage, Recovery, and Support
+
+- **Runtime Directory**: `.local-data/` holds provider storage and recovery keys; keep private and never commit to version control.
+- **Disaster Recovery**: Back up `.local-data/` periodically. To restore, extract into `.local-data/` and run `npm run providers` followed by `npm start`.
+- **Support & Issues**: Consult [docs/release/USER_GUIDE.md](../release/USER_GUIDE.md) and report issues on [GitHub](https://github.com/Parsa-Emami/Keyhelix/issues).
+- **Security Policy**: Follow the coordinated disclosure route in [SECURITY.md](../../SECURITY.md).

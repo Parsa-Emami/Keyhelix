@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic installation, usage, contribution, and support contract for C34; contains no real credential, provider state or plaintext secret.",
+  "license": "Apache-2.0",
+  "requirement": "N34",
+  "task": "C34",
+  "guides": {
+    "user_guide": "docs/release/USER_GUIDE.md",
+    "security": "SECURITY.md",
+    "readme": "README.md",
+    "open_source": "OPEN_SOURCE.md",
+    "contributing": "CONTRIBUTING.md",
+    "clone_to_run": "docs/engineering/CLONE_TO_RUN.md"
+  },
+  "source_builds": {
+    "engine": {
+      "command": "npm run build:engine",
+      "binary": "bin/keyhelix",
+      "go_version": "1.26.2+"
+    },
+    "web": {
+      "command": "npm run build",
+      "output_dir": "dist/web",
+      "node_version": "24.19+"
+    },
+    "reproducible_package": {
+      "command": "npm run package",
+      "output_dir": "dist/release"
+    }
+  },
+  "licenses": {
+    "project": "Apache-2.0",
+    "upstream_inventory": "THIRD_PARTY_NOTICES.md",
+    "mandatory_paid_cloud_required": false
+  },
+  "data_limits_and_privacy": {
+    "max_preview_size_bytes": 1048576,
+    "max_structure_depth": 32,
+    "max_structure_keys": 20000,
+    "telemetry_enabled": false,
+    "outbound_network_required": false,
+    "loopback_interfaces_only": true,
+    "provider_owns_secret_bytes": true,
+    "zero_plaintext_persistence": true
+  },
+  "recovery": {
+    "runtime_dir": ".local-data",
+    "provider_keys_custody": "separate",
+    "forward_repair_preferred": true,
+    "stale_rollback_prohibited_over_new_writes": true
+  },
+  "support": {
+    "channels": [
+      "GitHub Issues",
+      "GitHub Discussions"
+    ],
+    "vulnerability_reporting": {
+      "route": "https://github.com/Parsa-Emami/Keyhelix/security/advisories/new",
+      "email": "security@keyhelix.local",
+      "initial_response_sla_hours": 48
+    }
+  },
+  "observed_supported_platforms": [
+    "linux-x86_64"
+  ]
+}

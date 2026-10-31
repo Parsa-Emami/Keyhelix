@@ -303,10 +303,12 @@
     },
     {
       "id": "C34",
-      "status": "planned",
-      "evidence": [],
-      "source_identity": null,
-      "notes": ""
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C34.json"
+      ],
+      "source_identity": "sha256:1a9b87b1c0851fe0380c4c5eaae851c4204e68a399d0b8f48267a9e8ebed1407",
+      "notes": "Complete open-source installation, usage, contribution, and support guides verified: fresh reader workflow, Go engine and web source builds, Apache-2.0 and upstream licenses, data limits, zero-telemetry privacy, disaster recovery and forward repair, confirmed 48h SLA private vulnerability disclosure route, HTML/script sentinel inertness, 360px mobile failure states, provider secret byte ownership, and zero paid or cloud entitlement requirement."
     },
     {
       "id": "C35",

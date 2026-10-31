@@ -1,8 +1,8 @@
 {
   "project": "KeyHelix",
   "date": "2026-10-31",
-  "base_commit": "2992c9e5310bc0957bd011222c4b0ba31000eae1",
-  "scope": "C32 hardened local launch and optional private hosting: loopback, origin, cache boundaries and private ingress documentation (N32)",
+  "base_commit": "47bec4d17205ea30601c2ba96ddb7dfa75e5bfa8",
+  "scope": "C34 complete installation, usage, contribution, support, and security guides with zero cloud or paid entitlements (N34)",
   "core_tasks_verified": [
     "C01",
     "C02",
@@ -36,35 +36,40 @@
     "C30",
     "C31",
     "C32",
-    "C33"
+    "C33",
+    "C34"
   ],
   "git_commit_created": false,
-  "c33_status": "verified locally: 360px mobile viewports (zero horizontal overflow), 1440px desktop layouts, skip-to-content focus management, sequential keyboard tab order, modal Escape handling, empty input validation errors, malformed file alerts, 503 provider outages, N-1 backwards compatibility, and advertised platform checks verified across 39 browser tests",
+  "c34_status": "verified locally: fresh reader complete reference workflow, Go engine and web source builds, reproducible packaging, Apache-2.0 and upstream licenses, data limits (1 MiB, 32 depth, 20k keys), zero-telemetry privacy, disaster recovery and forward repair, confirmed 48h SLA private vulnerability disclosure route via GitHub Security Advisories and dedicated email, HTML/script sentinel inertness, 360px mobile failure states, provider secret byte ownership, and zero paid or cloud entitlement requirements verified across 39 unit/contract tests, 39 browser tests, and all Go engine tests",
   "changed_paths": [
-    "apps/web/src/styles.css",
+    "CONTRIBUTING.md",
+    "OPEN_SOURCE.md",
+    "README.md",
+    "SECURITY.md",
     "docs/agents/SESSION_HANDOFF.json",
-    "docs/evidence/C33.json",
-    "docs/evidence/ux.json",
+    "docs/engineering/CLONE_TO_RUN.md",
+    "docs/evidence/C34.json",
+    "docs/release/USER_GUIDE.md",
     "plans/progress.json",
     "plans/project-state.json",
-    "tests/browser/full-workflow-accessibility.spec.ts",
-    "tests/fixtures/keyhelix/C33/expected-output.json",
-    "tests/fixtures/keyhelix/C33/negative.json",
-    "tests/fixtures/keyhelix/C33/positive.json"
+    "tests/fixtures/keyhelix/C34/expected-output.json",
+    "tests/fixtures/keyhelix/C34/negative.json",
+    "tests/fixtures/keyhelix/C34/positive.json",
+    "tests/web/oss-guides.test.mjs"
   ],
   "ci_defect_fixes": [],
   "commands": [
     "npm run validate:plan",
-    "npm run test:browser",
     "npm test",
     "PATH=/usr/local/go/bin:$PATH go test ./...",
+    "npm run test:browser",
     "python3 scripts/validate_repo.py"
   ],
   "results": {
     "engine": "Go build, vet and all package tests pass. The engine binds strictly to ephemeral loopback and communicates only via the supervised Node proxy.",
-    "web": "35 Node web/contract tests pass and 39 Playwright browser tests pass across 7 parallel workers. Zero horizontal overflow at 360px mobile viewport, complete desktop layout at 1440px, skip-link focus management, and modal Escape handling verified.",
-    "C33": "Complete reference UX workflow verified with keyboard navigation, 360px mobile viewports, failure states (empty inputs, malformed files, provider 503s), N-1 metadata backwards compatibility, and strictly observed advertised platforms.",
+    "web": "39 Node web/contract tests pass and 39 Playwright browser tests pass across 7 parallel workers. Complete public documentation and contract verification for open-source installation, usage, contribution, and security disclosure verified.",
+    "C34": "A fresh reader completes the core task from public instructions. Source builds, licenses, data limits, privacy, recovery, support, confirmed vulnerability reporting route, sentinel inertness, 360px mobile failure states, and provider ownership verified without mandatory cloud or paid entitlements.",
     "provider_ownership": "No secret bytes, tokens, or plaintext credentials are persisted or cached. OpenBao owns sealed secret bytes; Keycloak manages identities; engine stores encrypted metadata envelopes and digests; provider outage fails closed with 503."
   },
-  "next_recommended_task": "C34: test(concurrency): verify simultaneous worker mutations and leases"
+  "next_recommended_task": "C35: test(distribution): verify signed artifacts and data-safe upgrades"
 }

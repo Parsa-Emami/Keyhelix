@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "project": "KeyHelix",
+  "task": "C34",
+  "date": "2026-10-31",
+  "passed": true,
+  "planning_template": false,
+  "scope": "A fresh reader completes the core task from public instructions. Document source builds, licenses, data/limits/privacy/recovery/support and a confirmed vulnerability reporting route without mandatory cloud or paid entitlements (Requirement N34).",
+  "commit_id": "C34",
+  "base_commit": "47bec4d17205ea30601c2ba96ddb7dfa75e5bfa8",
+  "git_commit_created": false,
+  "source_identity": "sha256:1a9b87b1c0851fe0380c4c5eaae851c4204e68a399d0b8f48267a9e8ebed1407",
+  "source_identity_method": "SHA-256 over sorted C34-owned implementation, test, fixture, and documentation paths; each file contributes its path, a NUL separator and its own binary SHA-256. Excludes plans/, docs/agents/SESSION_HANDOFF.json, status-only README/START_HERE/DEFINITION_OF_DONE and docs/evidence/ to avoid recursive self-reference. Historical evidence remains bound to its original source.",
+  "source_identity_files": {
+    "CONTRIBUTING.md": "5643311ed0279668c345b97318550db154eeae4df2670eeb507c55ec1ed68dec",
+    "OPEN_SOURCE.md": "68175f3e6b6aebbc50337ef1300855ba59894d0037de2802b6898867d06d7307",
+    "SECURITY.md": "fd01c68d364f31517d5be6c13c19db6d38725a672bce3ef0602577739cae2586",
+    "docs/engineering/CLONE_TO_RUN.md": "5ee8dd7cfe4197c9f7f3f666784cbd15ed939472a2ddfd3f074b53ee6b9fff52",
+    "docs/release/USER_GUIDE.md": "84a244cdfb52118f4fb8f9197f3682d18b460841480eb05e48bf3cbe30d962fc",
+    "tests/fixtures/keyhelix/C34/expected-output.json": "712010ca8fec155134d48440733167f9e7abe3a31555335d92f946cf1ff09b83",
+    "tests/fixtures/keyhelix/C34/negative.json": "929364b0280f4b084f3110236169572825a251d3692a07c769bf9cd4a8d3bb17",
+    "tests/fixtures/keyhelix/C34/positive.json": "eeec9974ebfbe4ea7ce9a2b101431965246ec06069e36bffa5b745c559ba9008",
+    "tests/web/oss-guides.test.mjs": "05751c4b4c9326938b284079dea1ff749ab38977a744d1ff1c48dae6ff18dc10"
+  },
+  "environment": {
+    "os": "Ubuntu 24.04.5 LTS, Linux 7.0.0-38-generic x86_64",
+    "node": "v24.19.0",
+    "npm": "11.17.0 (toolchain lock pins npm 11.9.0; the executing npm reports 11.17.0)",
+    "go_driver": "go version go1.26.2 linux/amd64",
+    "engine_toolchain": "go1.27.2 (recorded by the packaged engine --version)",
+    "podman": "podman version 4.9.3",
+    "hardware": {
+      "vcpu": 16,
+      "ram_mib": 31341,
+      "free_disk_mib": 97580,
+      "required_profile": "4 vCPU / 8192 MiB RAM / 20480 MiB free disk"
+    }
+  },
+  "fixtures": {
+    "path": "tests/fixtures/keyhelix/C34/",
+    "positive": "tests/fixtures/keyhelix/C34/positive.json",
+    "negative": "tests/fixtures/keyhelix/C34/negative.json",
+    "expected_output": "tests/fixtures/keyhelix/C34/expected-output.json",
+    "provenance": "Repository-authored synthetic installation, usage, contribution, and support contract and negative scenarios; contains no real credential, provider state or plaintext secret.",
+    "license": "Apache-2.0",
+    "hashes": {
+      "positive.json": "eeec9974ebfbe4ea7ce9a2b101431965246ec06069e36bffa5b745c559ba9008",
+      "negative.json": "929364b0280f4b084f3110236169572825a251d3692a07c769bf9cd4a8d3bb17",
+      "expected-output.json": "712010ca8fec155134d48440733167f9e7abe3a31555335d92f946cf1ff09b83"
+    }
+  },
+  "commands": [
+    {
+      "command": "npm run validate:plan",
+      "exit_code": 0,
+      "summary": "Validated 40 detailed tasks, resources, references and progress; no runtime capability inferred."
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "summary": "39 web and contract tests passed, including C34 OSS deliverables verification, negative invariants, sentinels, and offline zero-cloud assertions."
+    },
+    {
+      "command": "PATH=/usr/local/go/bin:$PATH go test ./...",
+      "exit_code": 0,
+      "summary": "All Go engine packages passed; lifecycle, internal auth, vaults, storage, and domain integration tests passed."
+    },
+    {
+      "command": "npm run test:browser",
+      "exit_code": 0,
+      "summary": "39 Playwright tests passed across 7 parallel workers, including reference workflow, 360px viewport, keyboard navigation, and provider outage handling."
+    },
+    {
+      "command": "python3 scripts/validate_repo.py",
+      "exit_code": 0,
+      "summary": "Validated 331 JSON files and repository contract invariants."
+    }
+  ],
+  "results": {
+    "requirement": "N34",
+    "acceptance": "A fresh reader completes the core task from public instructions. Document source builds, licenses, data/limits/privacy/recovery/support and a confirmed vulnerability reporting route without mandatory cloud or paid entitlements.",
+    "status": "passed",
+    "public_documentation_complete": true,
+    "user_guide_verified": true,
+    "security_policy_verified": true,
+    "readme_verified": true,
+    "open_source_contract_verified": true,
+    "contributing_guide_verified": true,
+    "clone_to_run_verified": true,
+    "source_builds_documented": true,
+    "licenses_and_upstream_documented": true,
+    "data_limits_and_privacy_documented": true,
+    "backup_recovery_and_forward_repair_documented": true,
+    "support_channels_documented": true,
+    "vulnerability_reporting_route_confirmed": true,
+    "zero_cloud_entitlement_verified": true,
+    "script_sentinel_inertness_verified": true,
+    "mobile_360px_failure_states_verified": true,
+    "provider_owns_secret_bytes": true
+  },
+  "invariants_verified": {
+    "fresh_reader_workflow": "Enforced; USER_GUIDE.md and CLONE_TO_RUN.md provide complete, tested instructions to clone, build, configure, run, and verify KeyHelix locally without missing steps.",
+    "source_builds": "Enforced; npm run build:engine, npm run build, and npm run package recipes documented and validated against clean local sources.",
+    "licenses": "Enforced; core licensed under Apache-2.0; upstream dependencies inventoried in THIRD_PARTY_NOTICES.md; zero unknown or proprietary dependencies.",
+    "data_limits_and_privacy": "Enforced; 1 MiB preview limit, 32 depth limit, 20,000 keys limit; strict zero telemetry; no outbound network calls.",
+    "recovery": "Enforced; .local-data custody, OpenBao snapshot restore, and forward repair over stale rollback documented.",
+    "vulnerability_disclosure": "Enforced; confirmed private reporting route via GitHub Security Advisories and dedicated security email; 48-hour response SLA; public issue disclosure prohibited.",
+    "zero_cloud_entitlement": "Enforced; full feature set operates on local loopback without AWS, GCP, Azure, or paid API keys.",
+    "sentinel_inertness": "Enforced; script and HTML sentinels stay inert; required actions navigable via keyboard and structured tables.",
+    "provider_ownership": "Enforced; OpenBao retains sealed ownership of secret bytes; engine stores metadata digests; memory auto-zeroes on modal dismissal."
+  },
+  "next_task": "C35"
+}

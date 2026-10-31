@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "provenance": "Repository-authored synthetic negative documentation, sentinel, failure-state and provider ownership scenarios for C34; contains no real credential, provider state or plaintext secret.",
+  "license": "Apache-2.0",
+  "requirement": "N34",
+  "task": "C34",
+  "cases": {
+    "html_script_sentinel_inertness": {
+      "sentinel": "<script>alert('xss')</script><img src=x onerror=alert(1)>",
+      "rendered_as_inert_text": true,
+      "keyboard_table_action_possible": true,
+      "script_execution_prevented": true
+    },
+    "mobile_360px_failure_states": {
+      "viewport_width": 360,
+      "horizontal_scroll_overflow": false,
+      "empty_input_explicit": true,
+      "invalid_data_explicit": true,
+      "interrupted_state_explicit": true,
+      "provider_503_outage_explicit": true
+    },
+    "provider_owns_secret_bytes": {
+      "client_persists_plaintext": false,
+      "cache_retains_plaintext": false,
+      "engine_persists_plaintext": false,
+      "database_persists_plaintext": false,
+      "provider_outage_fails_closed": true
+    },
+    "mandatory_cloud_entitlement_bypass": {
+      "cloud_credentials_required": false,
+      "paid_api_required": false,
+      "offline_execution_supported": true
+    }
+  }
+}
