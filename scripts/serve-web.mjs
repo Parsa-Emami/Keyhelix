@@ -149,16 +149,17 @@ export function proxyToEngine(engineAddress, req, res) {
 }
 
 export function isAllowedHost(hostHeader, allowedHosts = []) {
-  if (!hostHeader || typeof hostHeader !== 'string') return false;
-  const host = hostHeader.toLowerCase().trim();
+  if (typeof hostHeader !== 'string' || !hostHeader || hostHeader !== hostHeader.trim() || hostHeader.length > 255) return false;
+  const host = hostHeader.toLowerCase();
   let hostname;
-  if (host.startsWith('[')) {
-    const endBracket = host.indexOf(']');
-    hostname = endBracket !== -1 ? host.slice(0, endBracket + 1) : host;
-  } else if (host === '::1') {
+  if (host === '::1') {
     hostname = '::1';
   } else {
-    hostname = host.split(':')[0];
+    const parsed = host.startsWith('[')
+      ? /^(\[[0-9a-f:]+\])(?::([0-9]{1,5}))?$/.exec(host)
+      : /^([a-z0-9.-]+)(?::([0-9]{1,5}))?$/.exec(host);
+    if (!parsed || (parsed[2] !== undefined && (Number(parsed[2]) < 1 || Number(parsed[2]) > 65535))) return false;
+    hostname = parsed[1];
   }
   const defaultAllowed = ['127.0.0.1', 'localhost', '::1', '[::1]'];
   if (defaultAllowed.includes(hostname)) return true;

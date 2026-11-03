@@ -58,7 +58,15 @@ test('isAllowedHost permits loopback hosts and rejects foreign hosts (DNS rebind
     '',
     null,
     undefined,
-    'evil.com:4173'
+    'evil.com:4173',
+    '[::1]evil.example',
+    '[::1]:443.evil',
+    '127.0.0.1:invalid',
+    'localhost:65536',
+    'localhost:0',
+    'localhost:80@evil',
+    ' localhost:4173 ',
+    'private.vault.internal:65536'
   ];
   for (const host of rejected) {
     assert.equal(isAllowedHost(host), false, `Host "${host}" should be rejected`);
@@ -66,6 +74,7 @@ test('isAllowedHost permits loopback hosts and rejects foreign hosts (DNS rebind
 
   assert.equal(isAllowedHost('private.vault.internal:4305', ['private.vault.internal']), true);
   assert.equal(isAllowedHost('other.vault.internal:4305', ['private.vault.internal']), false);
+  assert.equal(isAllowedHost('private.vault.internal:4305@evil.test', ['private.vault.internal']), false);
 });
 
 test('isAllowedOrigin permits same-origin and loopback, and rejects untrusted cross-origin requests', () => {
