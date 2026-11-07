@@ -94,3 +94,9 @@ Each roadmap card in `plans/commits/Cxx.md` specifies exact paths, resources, fi
 - **[Third-Party Notices](THIRD_PARTY_NOTICES.md)** — Upstream license inventory
 - **[Definition of Done](docs/release/DEFINITION_OF_DONE.md)** — Release readiness and gate criteria
 - **[Architecture (ADR-0003)](docs/architecture/ADR-0003-open-source-local-first.md)** — Open-source local-first architecture decision record
+
+## Maintainer and engineering case study
+
+Built and maintained by **[Parsa Emami](https://parsaaemm.dev/)**, a software engineer and security architect. [Read the KeyHelix case study](https://parsaaemm.dev/projects/keyhelix/) for the design rationale, implementation scope, and technical trade-offs behind this repository. A case study of local-first secret management, scoped authorization, audited reveals, and cryptographic access controls.
+
+[Professional portfolio](https://parsaaemm.dev/) · [LinkedIn profile](https://www.linkedin.com/in/parsaaemm/) · [GitHub profile](https://github.com/Parsa-Emami)
