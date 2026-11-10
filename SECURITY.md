@@ -9,46 +9,41 @@ KeyHelix takes the security of its open-source secret management workspace and c
 > [!IMPORTANT]
 > **Do not report security vulnerabilities through public GitHub Issues, pull requests, or public discussions.** Public disclosure risks exposing operators and active secret management infrastructure before a patch is available.
 
-### Preferred Reporting Route: GitHub Security Advisories
+### Private reporting route
 
-Submit a private vulnerability report via GitHub's Coordinated Vulnerability Disclosure (CVD) interface:
-👉 **[Open a Private Security Advisory](https://github.com/Parsa-Emami/Keyhelix/security/advisories/new)**
+If GitHub's **Report a vulnerability** action is enabled under the Security tab,
+submit the report using the [private security advisory form](https://github.com/Parsa-Emami/Keyhelix/security/advisories/new).
 
-### Alternative Reporting Route: Encrypted Email
+The form's availability must be checked before sending sensitive material. This
+document cannot confirm that private vulnerability reporting is enabled. If the
+form is not available, keep the report private and ask the maintainer to enable
+a private reporting channel **without disclosing vulnerability details**.
+There is no verified alternative security mailbox; `.local` email addresses
+are not publicly routable.
 
-If you cannot submit via GitHub Security Advisories, send an email directly to the project security maintainer:
-- **Email**: `security@keyhelix.local` (or direct maintainer contact via GitHub profile: [Parsa-Emami](https://github.com/Parsa-Emami))
-- **Subject**: `[SECURITY VULNERABILITY] KeyHelix - <Brief Description>`
-- **Content**:
-  - Detailed description of the vulnerability.
-  - Step-by-step instructions or proof-of-concept (PoC) to reproduce the issue.
-  - Potential impact, attack vector, and affected component(s).
-  - Any proposed remediations or patches.
+For a private report, include the affected version or commit, exact platform,
+impact, minimal synthetic reproduction steps, and redacted evidence. Never attach
+real secrets, customer data, production credentials or active provider tokens.
 
 ---
 
-## 2. Response Timelines and SLAs
+## 2. Response and disclosure expectations
 
-We adhere to the following response timeline for confirmed vulnerability reports:
-
-| Milestone | Target Response Time | Action |
-| --- | --- | --- |
-| **Initial Acknowledgment** | **Within 48 hours** | Confirm receipt of the report and establish communication. |
-| **Triage & Assessment** | **Within 7 days** | Validate the vulnerability, assign CVSS severity, and determine scope. |
-| **Remediation & Patching** | **Within 14–30 days** | Develop, test, and package an emergency security update. |
-| **Coordinated Disclosure** | **Upon Patch Release** | Publish advisory and credit reporters (unless anonymity is requested). |
+Security maintenance is best effort. There is no guaranteed 48-hour response,
+fixed triage deadline, patch deadline, or on-call support. When a private
+reporting channel is available, the maintainer will assess the affected code
+and coordinate remediation and disclosure with the reporter. Do not assume a
+fix has shipped until a tagged release or source commit is independently verified.
 
 ---
 
 ## 3. Supported Versions
 
-Security updates and patches are provided for the following releases:
-
-| Version Line | Supported | Notes |
-| --- | --- | --- |
-| `main` (trunk) | ✅ Yes | Active development branch; immediate patches applied. |
-| `v0.0.1` (current local profile) | ✅ Yes | Supported release branch for Linux x86_64. |
-| `< 0.0.1` | ❌ No | Historical planning baselines and prototypes. |
+The active maintenance target is the current `main` branch on the documented
+single-operator Linux x86_64 profile. The publicly published `v1.0.0` release
+is a separate tagged artifact; fixes on `main` do not automatically patch its
+downloaded binaries. Release-specific fixes and any backports must be confirmed
+in release notes. No security support window is guaranteed for historical tags.
 
 ---
 
@@ -88,7 +83,7 @@ The following scenarios are considered outside the threat model of the local-fir
 
 ## 6. Coordinated Vulnerability Disclosure Process
 
-1. **Investigation**: We verify the reported vulnerability in an isolated test environment.
-2. **Fix Development**: We prepare a fix on a private security fork.
-3. **Release**: We publish a patch release along with a GitHub Security Advisory detailing the issue, severity, and mitigations.
-4. **Credit**: We acknowledge and credit the reporter in release notes and security advisories.
+1. **Triage**: Review privately submitted, reproducible evidence against the declared local profile.
+2. **Remediation**: Develop and test a bounded fix without exposing embargoed details.
+3. **Disclosure**: Coordinate timing with the reporter; publish verified affected/fixed versions and mitigations when ready.
+4. **Credit**: Follow the reporter's requested disclosure and attribution preferences.
