@@ -1,8 +1,7 @@
 # KeyHelix release artifacts
 
-Status: C31 verified the complete local artifact build and failure semantics.
-Publication, signatures and an installed-host workflow are C39/C40 work; this
-document does not claim that a release has been published.
+C31 verified the complete local artifact build. Public v1 publication and
+installed acceptance are tracked in [the launch record](../evidence/launch.json).
 
 ## Complete artifact, not a web-only shell
 
@@ -69,7 +68,45 @@ The previous complete release is retained as `dist/release.previous` for local
 rollback. Deployments should copy each verified release to an immutable
 directory instead of writing state into the artifact tree.
 
-## Verify
+## Public GitHub release
+
+The [releases page](https://github.com/Parsa-Emami/Keyhelix/releases) supplies a
+Linux x86_64 runtime archive, matching source archive, CycloneDX SBOM, build
+metadata and a checksum manifest. The GitHub-hosted release workflow signs that
+manifest using a GitHub artifact attestation. It builds from an exact main
+commit after the current-source CI checks, installs the candidate on a fresh
+runner, then checks the uploaded draft assets before publishing. A separate
+runner downloads the public files and repeats installed acceptance.
+
+Use a trusted copy of this repository's verifier and verify the intended tag's
+full commit independently. GitHub CLI with artifact attestation support needs
+network access for the online verification below.
+
+```sh
+git fetch --tags origin
+expected_commit=$(git rev-parse 'v1.0.0^{commit}')
+bash scripts/release-assets.sh download /absolute/new-download-directory "$expected_commit"
+bash scripts/release-assets.sh verify /absolute/new-download-directory "$expected_commit" /absolute/new-install-directory
+cd /absolute/new-install-directory
+node scripts/providers.mjs up
+node scripts/start-local.mjs --root web --providers reuse
+```
+
+Use Node 24.19 or newer within Node 24 and the supported rootless Podman
+installation. The launcher binds to loopback. Open http://localhost:4173.
+The provider bootstrap pulls the pinned OpenBao and Keycloak images when they
+are missing and keeps their state and runtime configuration under `.local-data/`.
+For updates, preserve the operator's data and provider recovery material
+according to [the recovery guide](../../ops/provider-recovery.md).
+
+The maintainer can retry from **Actions → publish-v1 → Run workflow** on
+`main`. The exact source still needs its five successful push workflows. If a
+draft or tag already exists, inspect it before retrying. The workflow refuses to
+overwrite it. The installed job's report records whether its assets came from
+the public download. A green candidate install only establishes pre-publication
+acceptance.
+
+## Verify operator-signed local builds
 
 ```sh
 cd dist/release
@@ -153,10 +190,5 @@ outside the release directory; binary rollback never overwrites newer accepted
 records (`STALE_DATA_REJECTED`) and never accepts an older release revision as a
 forward upgrade (`STALE_REVISION_REJECTED`).
 
-## Not performed here
-
-- No public domain, registry publication or external artifact upload is made.
-- No host service is installed, no Nginx/systemd unit is enabled, and no
-  provider workflow is run from an installed host service; C40 owns that proof.
-- Cross-host reproducibility and multi-tenant/public runtime admission are
-  outside this local profile.
+The local profile supports one operator on Linux x86_64. Provider state, a public
+service and cross-host byte identity are outside the artifact scope.

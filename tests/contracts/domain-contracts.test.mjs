@@ -9,6 +9,7 @@ const read = async name => JSON.parse(await readFile(new URL(`../fixtures/keyhel
 const positive = await read('positive');
 const expected = await read('expected-output');
 const invalid = await read('invalid');
+const { version } = JSON.parse(await readFile(new URL('../../package.json', import.meta.url)));
 const wire = await readFile(new URL('../fixtures/keyhelix/C04/valid-secret.txt', import.meta.url));
 
 const run = input => spawnSync(binary, ['--validate-secret'], { input, encoding: 'utf8', timeout: 4000 });
@@ -35,8 +36,9 @@ test('CLI accepts the exact v1 fixture and reports validation without storage au
   const actual = run(wire);
   assert.equal(actual.status, 0, actual.stderr);
   assert.equal(actual.stderr, '');
-  assert.deepEqual(JSON.parse(actual.stdout), expected.output);
-  assert.deepEqual(JSON.parse(run(wire).stdout), expected.output, 'repeat process must preserve deterministic validation output');
+  const expectedOutput = { ...expected.output, engine_version: version };
+  assert.deepEqual(JSON.parse(actual.stdout), expectedOutput);
+  assert.deepEqual(JSON.parse(run(wire).stdout), expectedOutput, 'repeat process must preserve deterministic validation output');
 });
 
 test('real schemas and Go reject every incompatible structural fixture', async () => {

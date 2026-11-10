@@ -7,14 +7,15 @@ import { performance } from 'node:perf_hooks';
 import { signIn, stepUp, api } from './local-auth.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
+const installed = process.env.KEYHELIX_INSTALLED_RELEASE;
 const temp = await mkdtemp(join(tmpdir(), 'oss-clone-'));
 const sentinel = process.env.C36_SENTINEL ?? process.env.C30_SENTINEL ?? 'c30-synthetic-plaintext-sentinel-9f3a';
 const secretPath = process.env.C36_SECRET_PATH ?? process.env.C30_SECRET_PATH ?? `app/prod/c30-clone-${Date.now().toString(36)}`;
 // A clean host creates its own provider containers. On a shared development host
 // the existing provider material is reused instead of fighting over the fixed
 // loopback ports; --restore then reuses the original mounts.
-const reuseProviders = process.env.KEYHELIX_REUSE_PROVIDERS !== '0';
-const verifyRestore = process.env.KEYHELIX_CLONE_RESTORE !== '0';
+const reuseProviders = !installed && process.env.KEYHELIX_REUSE_PROVIDERS !== '0';
+const verifyRestore = Boolean(installed) || process.env.KEYHELIX_CLONE_RESTORE !== '0';
 const servers = new Set();
 const timings = {};
 const overallStart = performance.now();
@@ -30,7 +31,9 @@ function run(command, args, cwd, options = {}) {
 }
 
 async function launch(cwd) {
-  const child = spawn(process.execPath, ['scripts/start-local.mjs'], {
+  const args = ['scripts/start-local.mjs'];
+  if (installed) args.push('--root', 'web', '--providers', 'reuse');
+  const child = spawn(process.execPath, args, {
     cwd, stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env },
   });
   servers.add(child);
@@ -120,6 +123,7 @@ async function revealAfterSignIn(origin, jar) {
 }
 
 let checkout;
+let installedProviders;
 try {
   const cloneStart = performance.now();
   // Default: test the index so contributors can verify a proposed commit before
@@ -131,47 +135,57 @@ try {
     GIT_AUTHOR_NAME: 'Clone smoke', GIT_AUTHOR_EMAIL: 'clone@example.invalid',
     GIT_COMMITTER_NAME: 'Clone smoke', GIT_COMMITTER_EMAIL: 'clone@example.invalid',
   };
-  const tree = fromWorktree ? null : run('git', ['write-tree'], root);
-  let source = join(temp, 'source.git');
-  if (fromWorktree) {
-    const staging = join(temp, 'worktree');
-    await cp(root, staging, {
-      recursive: true,
-      filter: path => !/[\\/](?:\.git|node_modules|dist|\.local-data|test-results|playwright-report)(?:[\\/]|$)/.test(path)
-    });
-    run('git', ['init', '--quiet'], staging);
-    run('git', ['add', '-A'], staging);
-    run('git', ['commit', '--quiet', '-m', 'temporary working tree proof'], staging, { env: identity });
-    run('git', ['clone', '--quiet', '--no-local', staging, source], temp);
-  } else {
-    const commit = run('git', ['commit-tree', tree, '-m', 'temporary staged source proof'], root, { env: identity });
-    // Advertise the snapshot from an isolated repository. No source refs change;
-    // a real transport clone collects every object, even from a shallow checkout.
-    run('git', ['init', '--bare', '--quiet', source], temp);
-    const objects = resolve(root, run('git', ['rev-parse', '--git-path', 'objects'], root));
-    await mkdir(join(source, 'objects', 'info'), { recursive: true });
-    await writeFile(join(source, 'objects', 'info', 'alternates'), objects + '\n');
-    run('git', ['--git-dir=' + source, 'update-ref', 'refs/heads/snapshot', commit], temp);
-  }
+  const tree = installed || fromWorktree ? null : run('git', ['write-tree'], root);
   checkout = join(temp, 'checkout');
-  if (fromWorktree) {
-    run('git', ['clone', '--quiet', '--no-local', source, checkout], temp);
+  if (installed) {
+    for (const name of ['keyhelix-local-openbao', 'keyhelix-local-keycloak']) {
+      const check = spawnSync('podman', ['container', 'exists', name], { timeout: 10000 });
+      if (check.status !== 1) throw new Error('Installed acceptance requires a fresh, working rootless Podman host.');
+    }
+    await cp(resolve(installed), checkout, { recursive: true });
+    installedProviders = await import(pathToFileURL(join(checkout, 'scripts', 'providers.mjs')).href);
+    await installedProviders.ensureProviders({ quiet: true });
   } else {
-    run('git', ['clone', '--quiet', '--no-local', '--branch', 'snapshot', source, checkout], temp);
-    if (run('git', ['rev-parse', 'HEAD^{tree}'], checkout) !== tree) throw new Error('Cloned tree differs from index');
-  }
-  if (!process.env.npm_execpath) throw new Error('Invoke through npm run test:clone.');
-  // Shared development hosts already own the fixed provider ports; seed the
-  // clone with the existing recovery material so setup reuses them.
-  if (reuseProviders) {
-    await mkdir(join(checkout, '.local-data'), { recursive: true, mode: 0o700 });
-    await cp(join(root, '.local-data/providers'), join(checkout, '.local-data/providers'), { recursive: true });
-  }
-  timings.cloneMs = Math.round(performance.now() - cloneStart);
+    let source = join(temp, 'source.git');
+    if (fromWorktree) {
+      const staging = join(temp, 'worktree');
+      await cp(root, staging, {
+        recursive: true,
+        filter: path => !/[\\/](?:\.git|node_modules|dist|\.local-data|test-results|playwright-report)(?:[\\/]|$)/.test(path)
+      });
+      run('git', ['init', '--quiet'], staging);
+      run('git', ['add', '-A'], staging);
+      run('git', ['commit', '--quiet', '-m', 'temporary working tree proof'], staging, { env: identity });
+      run('git', ['clone', '--quiet', '--no-local', staging, source], temp);
+    } else {
+      const commit = run('git', ['commit-tree', tree, '-m', 'temporary staged source proof'], root, { env: identity });
+      // Advertise the snapshot from an isolated repository. No source refs change;
+      // a real transport clone collects every object, even from a shallow checkout.
+      run('git', ['init', '--bare', '--quiet', source], temp);
+      const objects = resolve(root, run('git', ['rev-parse', '--git-path', 'objects'], root));
+      await mkdir(join(source, 'objects', 'info'), { recursive: true });
+      await writeFile(join(source, 'objects', 'info', 'alternates'), objects + '\n');
+      run('git', ['--git-dir=' + source, 'update-ref', 'refs/heads/snapshot', commit], temp);
+    }
+    if (fromWorktree) {
+      run('git', ['clone', '--quiet', '--no-local', source, checkout], temp);
+    } else {
+      run('git', ['clone', '--quiet', '--no-local', '--branch', 'snapshot', source, checkout], temp);
+      if (run('git', ['rev-parse', 'HEAD^{tree}'], checkout) !== tree) throw new Error('Cloned tree differs from index');
+    }
+    if (!process.env.npm_execpath) throw new Error('Invoke through npm run test:clone.');
+    // Shared development hosts already own the fixed provider ports; seed the
+    // clone with the existing recovery material so setup reuses them.
+    if (reuseProviders) {
+      await mkdir(join(checkout, '.local-data'), { recursive: true, mode: 0o700 });
+      await cp(join(root, '.local-data/providers'), join(checkout, '.local-data/providers'), { recursive: true });
+    }
+    timings.cloneMs = Math.round(performance.now() - cloneStart);
 
-  const setupStart = performance.now();
-  run(process.execPath, [process.env.npm_execpath, 'run', 'setup'], checkout, { timeout: 900000 });
-  timings.setupMs = Math.round(performance.now() - setupStart);
+    const setupStart = performance.now();
+    run(process.execPath, [process.env.npm_execpath, 'run', 'setup'], checkout, { timeout: 900000 });
+    timings.setupMs = Math.round(performance.now() - setupStart);
+  }
 
   // --- Phase 1: web-only startup proof, labeled separately. -------------------
   const webStart = performance.now();
@@ -179,7 +193,7 @@ try {
     import { createWebServer } from './scripts/serve-web.mjs';
     import fs from 'node:fs';
     const config = JSON.parse(fs.readFileSync('ops/web/runtime-config.json'));
-    const instance = createWebServer({ root: 'dist/web', config, projectId: config.projectId });
+    const instance = createWebServer({ root: ${JSON.stringify(installed ? 'web' : 'dist/web')}, config, projectId: config.projectId });
     instance.listen(0, '127.0.0.1', () => console.log(instance.address().port));
   `;
   const webOnly = spawn(process.execPath, ['--input-type=module', '-e', launchSource], {
@@ -204,9 +218,16 @@ try {
 
   // --- Phase 2: real workflow through the browser acceptance spec. -----------
   const browserStart = performance.now();
-  const cli = join(checkout, 'node_modules', '@playwright', 'test', 'cli.js');
-  run(process.execPath, [cli, 'test', 'tests/browser/clone-to-value.spec.ts', '--reporter=line'], checkout, {
-    env: { ...process.env, C30_SECRET_PATH: secretPath, C36_SECRET_PATH: secretPath, C36_SENTINEL: sentinel },
+  const testRoot = installed ? root : checkout;
+  const cli = join(testRoot, 'node_modules', '@playwright', 'test', 'cli.js');
+  run(process.execPath, [cli, 'test', 'tests/browser/clone-to-value.spec.ts', '--reporter=line'], testRoot, {
+    env: {
+      ...process.env,
+      ...(installed ? { KEYHELIX_INSTALLED_RELEASE: checkout } : {}),
+      C30_SECRET_PATH: secretPath,
+      C36_SECRET_PATH: secretPath,
+      C36_SENTINEL: sentinel
+    },
     timeout: 900000
   });
   timings.browserWorkflowMs = Math.round(performance.now() - browserStart);
@@ -239,20 +260,19 @@ try {
   const outageStart = performance.now();
   const providers = await import(pathToFileURL(join(reuseProviders ? root : checkout, 'scripts', 'providers.mjs')).href);
   const stopBao = spawnSync('podman', ['stop', '--time', '2', 'keyhelix-local-openbao'], { encoding: 'utf8' });
-  if (stopBao.status === 0) {
-    try {
-      await stepUp({ origin: second.origin, jar: secondJar, action: 'reveal', resource: secretPath, returnTo: '/' });
-      const outageReveal = await api(second.origin, secondJar, '/api/vaults/vault-prod/reveal', { method: 'POST', body: { secret_path: secretPath } });
-      if (outageReveal.status !== 503 || outageReveal.data?.error !== 'provider_unavailable') {
-        throw new Error(`Reveal did not fail closed during provider outage: ${outageReveal.status}`);
-      }
-      if (outageReveal.text.includes(sentinel)) {
-        throw new Error('Sentinel plaintext leaked during provider outage failure response.');
-      }
-    } finally {
-      spawnSync('podman', ['start', 'keyhelix-local-openbao'], { encoding: 'utf8' });
-      await providers.ensureProviders({ quiet: true });
+  if (stopBao.status !== 0) throw new Error('Could not stop OpenBao for the outage check.');
+  try {
+    await stepUp({ origin: second.origin, jar: secondJar, action: 'reveal', resource: secretPath, returnTo: '/' });
+    const outageReveal = await api(second.origin, secondJar, '/api/vaults/vault-prod/reveal', { method: 'POST', body: { secret_path: secretPath } });
+    if (outageReveal.status !== 503 || outageReveal.data?.error !== 'provider_unavailable') {
+      throw new Error(`Reveal did not fail closed during provider outage: ${outageReveal.status}`);
     }
+    if (outageReveal.text.includes(sentinel)) {
+      throw new Error('Sentinel plaintext leaked during provider outage failure response.');
+    }
+  } finally {
+    run('podman', ['start', 'keyhelix-local-openbao'], checkout, { timeout: 30000 });
+    await providers.ensureProviders({ quiet: true });
   }
   timings.providerOutageMs = Math.round(performance.now() - outageStart);
 
@@ -292,11 +312,12 @@ try {
 
   console.log(JSON.stringify({
     passed: true,
-    sourceProof: fromWorktree ? 'working tree snapshot' : 'git index tree',
+    sourceProof: installed ? 'installed artifact' : (fromWorktree ? 'working tree snapshot' : 'git index tree'),
+    installedRelease: installed ? JSON.parse(await readFile(join(checkout, 'RELEASE.json'), 'utf8')) : null,
     stagedTree: tree,
-    webOnly: { proof: 'real git clone -> npm run setup -> web startup', coreReady: false },
+    webOnly: { proof: installed ? 'installed web startup' : 'real git clone -> npm run setup -> web startup', coreReady: false },
     workflow: {
-      proof: 'cloned checkout -> npm start -> browser sign-in/write/step-up/reveal/member denial',
+      proof: (installed ? 'installed runtime' : 'cloned runtime') + ' -> browser sign-in/write/step-up/reveal/member denial',
       secretPath,
       exercised: ['owner session', 'scoped write', 'step-up reveal', 'transient clear', 'member grant revocation', 'provider outage fail-closed'],
       providerOwnsBytes: { sentinelOccurrences: leaked },
@@ -316,5 +337,6 @@ try {
   }));
 } finally {
   for (const server of servers) await stop(server);
+  if (installedProviders) await installedProviders.stopProviders();
   await rm(temp, { recursive: true, force: true });
 }

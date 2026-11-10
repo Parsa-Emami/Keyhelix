@@ -357,10 +357,10 @@
     },
     {
       "id": "C40",
-      "status": "planned",
+      "status": "in_progress",
       "evidence": [],
       "source_identity": null,
-      "notes": ""
+      "notes": "Release automation is implemented. Verification requires successful GitHub publication and a clean installation of the downloaded public assets."
     }
   ],
   "web_progress": "plans/web-roadmap.json",

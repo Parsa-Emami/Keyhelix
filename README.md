@@ -4,7 +4,7 @@
 
 [CI source integrity and dependency updates](docs/engineering/CI_SOURCE_INTEGRITY.md)
 
-Open-source local-first secret management and cryptographic authorization workspace under [Apache-2.0](LICENSE). **Current implementation: C01–C34 complete local engine, provider integration, web workspace, reproducible release packaging, hardened network boundaries, accessible UX, and full open-source guides verified; C35–C40 signed distribution and installed-host proofs remain.**
+Open-source local-first secret management and cryptographic authorization workspace under [Apache-2.0](LICENSE). **C01–C39 are verified. C40 tracks the public v1 release and its installed acceptance.**
 
 ---
 
@@ -44,9 +44,11 @@ For detailed instructions, see the **[User Guide](docs/release/USER_GUIDE.md)** 
 
 ## Source Builds & Reproducible Packaging
 
+See [release assets and verification](docs/release/ARTIFACTS.md#public-github-release) for the Linux binary distribution.
+
 KeyHelix can be compiled directly from source:
 
-- **Build Go BFF Engine**: `npm run build:engine` (produces `bin/keyhelix`)
+- **Build Go BFF Engine**: `npm run build:engine` (produces `dist/engine/keyhelix`)
 - **Build Web Application**: `npm run build` (compiles assets to `dist/web/`)
 - **Produce Reproducible Release Artifacts**: `npm run package` (bundles engine binary, web UI, offline contracts, CycloneDX SBOM, third-party notices, and SHA-256 checksums into `dist/release/`)
 

@@ -21,7 +21,7 @@ import (
 	"github.com/parsa-emami/keyhelix/internal/contracts"
 )
 
-const version = "0.0.1"
+const version = "1.0.0"
 
 func health() map[string]any {
 	return map[string]any{

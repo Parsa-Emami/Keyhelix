@@ -79,5 +79,13 @@
     "C39": "Evidence-backed open-source v1 readiness gate enforced and verified across C01-C38 proofs, clone-to-value, packaging, licenses, and recovery invariants.",
     "provider_ownership": "No secret bytes, tokens, or plaintext credentials are persisted or cached. OpenBao owns sealed secret bytes; directory scan confirmed exactly 0 occurrences of secret sentinels at rest."
   },
-  "next_recommended_task": "C40: chore(release): publish and install the verified open-source v1"
+  "next_recommended_task": "C40: chore(release): publish and install the verified open-source v1",
+  "c40_handoff": {
+    "base_commit": "7fcdee2b877871ac076f6a602f27410c5674f9a4",
+    "status": "in_progress",
+    "next_task": "Verify the current-source GitHub publication and installed public workflow before marking C40 verified.",
+    "release_workflow": ".github/workflows/release.yml",
+    "local_checks": "docs/evidence/C40.json",
+    "launch_record": "docs/evidence/launch.json"
+  }
 }

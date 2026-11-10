@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task": "C40",
+  "license": "Apache-2.0",
+  "provenance": "Repository-authored synthetic cases. Provider acceptance reuses the C30 synthetic reference identities and secret metadata.",
+  "positive": {
+    "source_commit_matches": true,
+    "attestation_verified": true,
+    "browser_workflow_passed": true,
+    "restart_preserved_state": true,
+    "provider_outage_failed_closed": true,
+    "provider_restore_preserved_revocation": true,
+    "plaintext_occurrences": 0
+  },
+  "negative": {
+    "writer_killed_before_manifest_rename": "previous authoritative record survives and an unacknowledged operation remains retryable",
+    "writer_killed_after_manifest_rename": "complete new record survives and a lost acknowledgment replays without a duplicate write",
+    "metadata_quota": "reject before publication",
+    "changed_download": "reject before extraction"
+  }
+}

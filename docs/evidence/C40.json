@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "commit_id": "C40",
+  "planning_template": false,
+  "passed": false,
+  "source_identity": "sha256:0558dc36b6c5f3ee1857cf218ac5b1efd186a215c7c89e86bde8bb38191c4a90",
+  "source_identity_method": "Exact staged source inventory excluding historical checksum manifest and evidence records",
+  "date": "2026-11-10",
+  "toolchain": {
+    "go": "1.27.2",
+    "node": "24.22.1",
+    "npm": "11.9.0",
+    "actionlint": "1.7.12"
+  },
+  "fixture": {
+    "path": "tests/fixtures/keyhelix/C40/scenarios.json",
+    "license": "Apache-2.0",
+    "sha256": "3c406ae9500af87af0e66fb7b5dfc2cd9a0fe3e7aa697450d293b649b25910be"
+  },
+  "commands": [
+    {
+      "command": "go test -count=1 ./...",
+      "exit_code": 0,
+      "result": "14 packages passed"
+    },
+    {
+      "command": "go test -race -count=1 ./...",
+      "exit_code": 0,
+      "result": "14 packages passed"
+    },
+    {
+      "command": "go vet ./...",
+      "exit_code": 0,
+      "result": "No findings"
+    },
+    {
+      "command": "go test -count=1 -v ./internal/storage -run TestC40",
+      "exit_code": 0,
+      "result": "SIGKILL before and after manifest rename, restart, lost acknowledgment replay and quota rejection passed"
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "result": "52 tests passed"
+    },
+    {
+      "command": "npm run release:check",
+      "exit_code": 0,
+      "result": "38 verified prerequisites"
+    },
+    {
+      "command": "actionlint .github/workflows/release.yml .github/workflows/installed-release.yml",
+      "exit_code": 0,
+      "result": "No findings"
+    }
+  ],
+  "results": {
+    "publication_verified": false,
+    "installed_public_workflow_verified": false
+  }
+}

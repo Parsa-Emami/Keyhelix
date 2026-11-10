@@ -7,6 +7,8 @@ export default defineConfig({
     baseURL: 'http://127.0.0.1:4173', browserName: 'chromium', headless: true,
     launchOptions: process.env.WEB_TEST_CHROMIUM ? { executablePath: process.env.WEB_TEST_CHROMIUM, args: ['--no-sandbox'] } : {},
   },
-  webServer: { command: 'npm start', url: 'http://127.0.0.1:4173/readyz', reuseExistingServer: false, timeout: 180000 },
+  webServer: {
+    command: process.env.KEYHELIX_INSTALLED_RELEASE ? 'node scripts/start-local.mjs --root web --providers reuse' : 'npm start',
+    cwd: process.env.KEYHELIX_INSTALLED_RELEASE, url: 'http://127.0.0.1:4173/readyz', reuseExistingServer: false, timeout: 180000 },
   reporter: 'list',
 });

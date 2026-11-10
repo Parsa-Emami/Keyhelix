@@ -35,7 +35,7 @@ func TestLifecycle(t *testing.T) {
 		t.Fatal(err)
 	}
 	response.Body.Close()
-	if response.StatusCode != 200 || result["scope"] != "engine-runtime" || result["coreReady"] != false || result["version"] != "0.0.1" || !strings.HasPrefix(result["toolchain"].(string), "go1.") {
+	if response.StatusCode != 200 || result["scope"] != "engine-runtime" || result["coreReady"] != false || result["version"] != "1.0.0" || !strings.HasPrefix(result["toolchain"].(string), "go1.") {
 		t.Fatalf("invalid health: %v", result)
 	}
 	response, err = client.Get("http://" + ready.Address + "/api/v1/secrets")
