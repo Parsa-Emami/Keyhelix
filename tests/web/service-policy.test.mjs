@@ -42,7 +42,9 @@ test('C38 deliverables: MAINTENANCE.md exists and covers dependency governance a
   assert.ok(content.includes('Semantic Versioning') || content.includes('SemVer'), 'MAINTENANCE.md must document SemVer');
   assert.ok(content.includes('N-1 Reader Compatibility') || content.includes('N-1'), 'MAINTENANCE.md must document N-1 compatibility');
   assert.ok(content.includes('Upgrade Safety') || content.includes('Rollback'), 'MAINTENANCE.md must document upgrade and rollback guardrails');
-  assert.ok(content.includes('48 hours'), 'MAINTENANCE.md must document 48h initial security response SLA');
+  assert.ok(content.includes('No 48-hour acknowledgement or fixed remediation deadline is guaranteed'), 'MAINTENANCE.md must not claim unsupported response deadlines');
+  assert.ok(content.includes('No alternate mailbox is verified'), 'MAINTENANCE.md must not invent security contacts');
+  assert.doesNotMatch(content, /[\w.+-]+@[\w.-]+\.local\b/i, 'MAINTENANCE.md must not advertise non-routable security email');
   assert.ok(content.includes('Deprecation Policy') || content.includes('deprecation'), 'MAINTENANCE.md must document deprecation policy');
 });
 

@@ -32,8 +32,10 @@ test('C34 deliverables: all required public guides exist and contain required co
 
   // 2. Security Policy assertions
   assert.ok(securityPolicy.includes('https://github.com/Parsa-Emami/Keyhelix/security/advisories/new'), 'SECURITY.md must provide private advisory URL');
-  assert.ok(securityPolicy.includes('security@keyhelix.local'), 'SECURITY.md must provide security contact email');
-  assert.ok(securityPolicy.includes('Within 48 hours'), 'SECURITY.md must provide 48h initial response SLA');
+  assert.ok(securityPolicy.includes('no verified alternative security mailbox'), 'SECURITY.md must not invent a security inbox');
+  assert.ok(securityPolicy.includes('If the\nform is not available'), 'SECURITY.md must explain how to avoid public vulnerability disclosures if private reporting is disabled');
+  assert.ok(securityPolicy.includes('no guaranteed 48-hour response'), 'SECURITY.md must not promise an unverified response SLA');
+  assert.doesNotMatch(securityPolicy, /[\w.+-]+@[\w.-]+\.local\b/i, 'SECURITY.md must not recommend a non-routable email address');
   assert.ok(securityPolicy.includes('Do not report security vulnerabilities through public GitHub Issues'), 'SECURITY.md must prohibit public disclosure');
   assert.ok(securityPolicy.includes('Supported Versions'), 'SECURITY.md must contain supported versions policy');
   assert.ok(securityPolicy.includes('Provider Owns Secret Bytes'), 'SECURITY.md must enforce provider secret bytes ownership');
@@ -64,6 +66,7 @@ test('C34 deliverables: all required public guides exist and contain required co
   assert.ok(readme.includes('OPEN_SOURCE.md'), 'README.md must link to Open Source Contract');
   assert.ok(readme.includes('CONTRIBUTING.md'), 'README.md must link to Contributing');
   assert.ok(readme.includes('docs/engineering/CLONE_TO_RUN.md'), 'README.md must link to Clone to Run');
+  assert.ok(!readme.includes('48h SLA'), 'README.md must not promise an unverified security response SLA');
 });
 
 test('C34 fixtures: positive, negative, and expected-output conform to N34 contract', async () => {
