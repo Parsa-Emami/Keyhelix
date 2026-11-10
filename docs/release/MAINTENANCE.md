@@ -68,9 +68,10 @@ KeyHelix adheres strictly to **Semantic Versioning 2.0.0** (`MAJOR.MINOR.PATCH`)
 - **Critical Security Patches**: Critical vulnerabilities affecting cryptographic boundaries (OpenBao integration, token step-up verification, or plaintext leaks) are prioritized for immediate patch releases.
 
 ### 5.2 Vulnerability Reporting & Disclosure
-- **Private Reporting Route**: Vulnerabilities must be submitted privately via GitHub Security Advisories or by emailing `security@keyhelix.local`.
-- **Prohibition of Public Issues**: Reporters must not open public GitHub Issues for unpatched vulnerabilities.
-- **Initial Response SLA**: The project maintainers acknowledge and initiate triage for reported vulnerabilities within **48 hours**.
+- **Private Reporting Route**: Use [GitHub private vulnerability reporting](https://github.com/Parsa-Emami/Keyhelix/security/advisories/new) only when the repository has enabled the form; confirm its availability before sharing details.
+- **If Reporting Is Unavailable**: Retain sensitive findings privately; ask for a private route without disclosing the vulnerability in public. No alternate mailbox is verified.
+- **Prohibition of Public Issues**: Reporters must not disclose unpatched vulnerabilities, credentials, or reproduction exploits in public issues, pull requests or discussions.
+- **Response Expectations**: Security maintenance is best effort. No 48-hour acknowledgement or fixed remediation deadline is guaranteed. Follow [SECURITY.md](../../SECURITY.md) for the current scope.
 
 ---
 
