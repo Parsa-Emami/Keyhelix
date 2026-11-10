@@ -9,7 +9,7 @@
   },
   "web_lockfile": {
     "path": "package-lock.json",
-    "sha256": "a2f18967d533fd9f8cc680d3a1ad9e44bf8a1bc405468305992f877aae77f254",
+    "sha256": "f7ce3a1d6a7d1df4855f2a6edd4f6ffc45fbca1c84ffe7ec42f5ece244284de3",
     "dependencies": {
       "react": "19.3.1",
       "react-dom": "19.3.1",

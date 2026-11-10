@@ -2,9 +2,49 @@
   "schema_version": 1,
   "task": "C40",
   "tag": "v1.0.0",
-  "passed": false,
-  "published": false,
-  "public_installation_verified": false,
+  "passed": true,
+  "published": true,
+  "public_installation_verified": true,
   "release_manifest": "docs/release/RELEASE_MANIFEST.json",
-  "evidence": "docs/evidence/C40.json"
+  "evidence": "docs/evidence/C40.json",
+  "source_commit": "a4f77a6819c67e095462c72c20f9d5ae788a9488",
+  "source_tree": "f5bc3375fa244c60fc64dac32c55c263153b7d20",
+  "release_id": 439974042,
+  "release_url": "https://github.com/Parsa-Emami/Keyhelix/releases/tag/v1.0.0",
+  "published_at": "2026-11-10T05:17:48Z",
+  "workflow_url": "https://github.com/Parsa-Emami/Keyhelix/actions/runs/42760258392",
+  "installed_job_url": "https://github.com/Parsa-Emami/Keyhelix/actions/runs/42760258392/job/129647149931",
+  "assets": [
+    {
+      "id": 730212888,
+      "name": "keyhelix-v1.0.0-linux-x64.tar.gz",
+      "size": 7531712,
+      "digest": "sha256:ad015f9f3889d99658731e503801be13bf775c17896e6ac4a6df2e44518ad5ca"
+    },
+    {
+      "id": 730212883,
+      "name": "keyhelix-v1.0.0-source.tar.gz",
+      "size": 691549,
+      "digest": "sha256:f6d9b4d766765e51bcb730c2fc2e682e870d4f7a441927fd5e163f33f3030e96"
+    },
+    {
+      "id": 730212878,
+      "name": "keyhelix-v1.0.0.cdx.json",
+      "size": 38869,
+      "digest": "sha256:fd22d2d28e256065bf284eb7ae30eef93cf4f560ffeee4008b77d8d49660374d"
+    },
+    {
+      "id": 730212876,
+      "name": "RELEASE.json",
+      "size": 3717,
+      "digest": "sha256:e2274b4928caf935f33eb151677594f622b33a2075cdab553c55fee56c436919"
+    },
+    {
+      "id": 730212879,
+      "name": "SHA256SUMS.txt",
+      "size": 365,
+      "digest": "sha256:06c20a251f8826406c2d12bda38b00fe58a87ac9961632a93f978ece02634b1c"
+    }
+  ],
+  "artifact_source_inventory_sha256": "b0a7010288adafc9f636b77510932485ea8a6bba0943d8ad623d8ef75bc747aa"
 }

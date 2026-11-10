@@ -1,7 +1,7 @@
 {
-  "version": "0.0.0",
+  "version": "1.0.0",
   "project": "KeyHelix",
-  "readiness": "CORE_READY",
+  "readiness": "OSS_V1_PUBLISHED",
   "market_validation": "UNVALIDATED",
   "commits": [
     {
@@ -357,10 +357,12 @@
     },
     {
       "id": "C40",
-      "status": "in_progress",
-      "evidence": [],
-      "source_identity": null,
-      "notes": "Release automation is implemented. Verification requires successful GitHub publication and a clean installation of the downloaded public assets."
+      "status": "verified",
+      "evidence": [
+        "docs/evidence/C40.json"
+      ],
+      "source_identity": "sha256:0558dc36b6c5f3ee1857cf218ac5b1efd186a215c7c89e86bde8bb38191c4a90",
+      "notes": "GitHub published v1.0.0 from the exact CI-verified source. The clean installed job verified attestation, provider ownership, restart, fail-closed outage and provider restore from the public download."
     }
   ],
   "web_progress": "plans/web-roadmap.json",

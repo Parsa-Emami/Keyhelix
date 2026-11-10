@@ -82,10 +82,13 @@
   "next_recommended_task": "C40: chore(release): publish and install the verified open-source v1",
   "c40_handoff": {
     "base_commit": "7fcdee2b877871ac076f6a602f27410c5674f9a4",
-    "status": "in_progress",
-    "next_task": "Verify the current-source GitHub publication and installed public workflow before marking C40 verified.",
+    "status": "verified",
+    "next_task": null,
     "release_workflow": ".github/workflows/release.yml",
     "local_checks": "docs/evidence/C40.json",
-    "launch_record": "docs/evidence/launch.json"
+    "launch_record": "docs/evidence/launch.json",
+    "published_source": "a4f77a6819c67e095462c72c20f9d5ae788a9488",
+    "release_url": "https://github.com/Parsa-Emami/Keyhelix/releases/tag/v1.0.0",
+    "installed_job_url": "https://github.com/Parsa-Emami/Keyhelix/actions/runs/42760258392/job/129647149931"
   }
 }

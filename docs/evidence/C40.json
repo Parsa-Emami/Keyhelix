@@ -2,7 +2,7 @@
   "schema_version": 1,
   "commit_id": "C40",
   "planning_template": false,
-  "passed": false,
+  "passed": true,
   "source_identity": "sha256:0558dc36b6c5f3ee1857cf218ac5b1efd186a215c7c89e86bde8bb38191c4a90",
   "source_identity_method": "Exact staged source inventory excluding historical checksum manifest and evidence records",
   "date": "2026-11-10",
@@ -15,7 +15,9 @@
   "fixture": {
     "path": "tests/fixtures/keyhelix/C40/scenarios.json",
     "license": "Apache-2.0",
-    "sha256": "3c406ae9500af87af0e66fb7b5dfc2cd9a0fe3e7aa697450d293b649b25910be"
+    "sha256": "3c406ae9500af87af0e66fb7b5dfc2cd9a0fe3e7aa697450d293b649b25910be",
+    "reference": "tests/fixtures/keyhelix/C30/positive.json",
+    "reference_sha256": "a90639db03389f1c122e45b07c81d9616f04d1493303a462ca921d97b2c30644"
   },
   "commands": [
     {
@@ -52,10 +54,125 @@
       "command": "actionlint .github/workflows/release.yml .github/workflows/installed-release.yml",
       "exit_code": 0,
       "result": "No findings"
+    },
+    {
+      "command": "npm run test:release",
+      "exit_code": 0,
+      "result": "Seven packaging, signed upgrade, rollback and tamper checks passed locally. The web-foundation job also ran this command on the published source."
+    },
+    {
+      "command": "bash scripts/release-assets.sh verify (GitHub-hosted installed job)",
+      "exit_code": 0,
+      "result": "Repository, workflow, main source ref and published commit attestation matched. Modified metadata was rejected."
+    },
+    {
+      "command": "KEYHELIX_INSTALLED_RELEASE=<verified-public-runtime> node scripts/clone-smoke.mjs",
+      "exit_code": 0,
+      "result": "Real browser workflow, restart, OpenBao outage and isolated provider restore passed with zero plaintext sentinel occurrences."
+    },
+    {
+      "command": "sha256sum --strict -c SHA256SUMS.txt (independent public re-download)",
+      "exit_code": 0,
+      "result": "Downloaded all five public files and matched GitHub digests, the signed checksum manifest and the published source tag."
     }
   ],
   "results": {
-    "publication_verified": false,
-    "installed_public_workflow_verified": false
-  }
+    "publication_verified": true,
+    "installed_public_workflow_verified": true,
+    "downloaded_asset_count": 5,
+    "installed_workflow": {
+      "proof": "installed runtime -> browser sign-in/write/step-up/reveal/member denial",
+      "secretPath": "app/prod/c30-clone-mwa8p8t0",
+      "exercised": [
+        "owner session",
+        "scoped write",
+        "step-up reveal",
+        "transient clear",
+        "member grant revocation",
+        "provider outage fail-closed"
+      ],
+      "providerOwnsBytes": {
+        "sentinelOccurrences": 0
+      },
+      "restarted": true,
+      "providerOutageFailClosed": true,
+      "restore": {
+        "snapshot_sha256": "bc713f719a91c3594b5b270ff871de2795492c58b02e5e96d63c77a302191e18",
+        "snapshot_bytes": 27161,
+        "readable_after_restore": true,
+        "revoked_grants_still_revoked": true
+      }
+    }
+  },
+  "published_source_commit": "a4f77a6819c67e095462c72c20f9d5ae788a9488",
+  "published_git_tree": "f5bc3375fa244c60fc64dac32c55c263153b7d20",
+  "release_build": {
+    "node": "v24.19.0",
+    "npm": "11.17.0",
+    "goDriver": "go version go1.26.10 linux/amd64",
+    "engineToolchain": "go1.27.2",
+    "platform": "linux/amd64"
+  },
+  "providers": [
+    {
+      "id": "keycloak",
+      "image": "quay.io/keycloak/keycloak",
+      "version": "26.8.1",
+      "digest": "sha256:a78d6b79572168cb25886b80a8b5b8d4ed4390743e3eecb810538683e209dd6b",
+      "license": "Apache-2.0",
+      "embedded": false
+    },
+    {
+      "id": "openbao",
+      "image": "quay.io/openbao/openbao",
+      "version": "2.7.2",
+      "digest": "sha256:5046911075e137e154ce49ab051502f4ec7cf367d484ae4a4dce665d9b90561f",
+      "license": "MPL-2.0",
+      "embedded": false
+    }
+  ],
+  "ci": {
+    "run_id": 42760258392,
+    "url": "https://github.com/Parsa-Emami/Keyhelix/actions/runs/42760258392",
+    "runner_profile": "GitHub-hosted Ubuntu 24.04 x86_64",
+    "jobs": {
+      "prepare": {
+        "id": 129644021961,
+        "conclusion": "success",
+        "url": "https://github.com/Parsa-Emami/Keyhelix/actions/runs/42760258392/job/129644021961"
+      },
+      "candidate_install": {
+        "id": 129646081544,
+        "conclusion": "success",
+        "url": "https://github.com/Parsa-Emami/Keyhelix/actions/runs/42760258392/job/129646081544"
+      },
+      "publish": {
+        "id": 129647032645,
+        "conclusion": "success",
+        "url": "https://github.com/Parsa-Emami/Keyhelix/actions/runs/42760258392/job/129647032645"
+      },
+      "public_install": {
+        "id": 129647149931,
+        "conclusion": "success",
+        "url": "https://github.com/Parsa-Emami/Keyhelix/actions/runs/42760258392/job/129647149931"
+      }
+    },
+    "current_source_workflows": {
+      "plan": 42760258260,
+      "contracts": 42760258284,
+      "engine": 42760258264,
+      "web": 42760258266,
+      "release_gate": 42760258637
+    },
+    "public_install_report": {
+      "id": 13737962143,
+      "name": "keyhelix-installed-public",
+      "digest": "sha256:94d377c564a5d378e0d046c0806b44372735b65e997899e64fb6b1790608f408",
+      "expires_at": "2026-12-10T05:20:21Z"
+    }
+  },
+  "build_observations": [
+    "The published build recorded the bundled npm 11.17.0. Local checks used npm 11.9.0. Both used the committed package lock.",
+    "The reference web lockfile digest predates the published source snapshot. The repository now records the checksum for the unchanged package-lock.json. The public asset hashes and source archive digest were verified independently."
+  ]
 }

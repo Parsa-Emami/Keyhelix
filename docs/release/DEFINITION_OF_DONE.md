@@ -1,6 +1,6 @@
 # KeyHelix: completion endpoint
 
-Current: C01–C35 verified (`core_ready: true`); C36–C40 OSS publication and installed-host proof pending.
+Current: C01–C40 verified. [The launch record](../evidence/launch.json) links the public release and installed acceptance.
 
 ## C30: locally usable (Verified)
 
@@ -8,7 +8,7 @@ All C01–C30 acceptance and negative cases have source-bound evidence. A suppor
 
 ## C31: complete reproducible artifact (Verified)
 
-`npm run package` produces a complete local artifact containing the actual Go engine, web UI, offline contracts/rules references, provider templates, source archive/build recipes, CycloneDX SBOM, upstream notices and license texts, SHA-256 checksums and provenance. Unknown licenses and secret-bearing payloads fail closed; publication is atomic and recovers the prior or new complete state after a killed writer or exhausted quota. The artifact records whether the source tree was dirty. Publication, signatures and installed-host workflow remain C39/C40 work.
+`npm run package` produces a complete local artifact containing the actual Go engine, web UI, offline contracts/rules references, provider templates, source archive/build recipes, CycloneDX SBOM, upstream notices and license texts, SHA-256 checksums and provenance. Unknown licenses and secret-bearing payloads fail closed; publication is atomic and recovers the prior or new complete state after a killed writer or exhausted quota. The artifact records whether the source tree was dirty. C40 verifies the public distribution separately.
 
 ## C39/C40: complete OSS v1
 

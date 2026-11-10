@@ -1,6 +1,6 @@
 # Continue KeyHelix
 
-Current: C01–C35 core domain engine, OpenBao/Keycloak local provider integration, React web workspace, reproducible release artifact, network hardening, UX accessibility, OSS documentation, and signed data-safe upgrade verification implemented (`core_ready: true`). Tasks C36–C40 remain for OSS v1 publication and installed-host proof.
+Current: C01–C40 verified. [KeyHelix v1.0.0](https://github.com/Parsa-Emami/Keyhelix/releases/tag/v1.0.0) is published and its full reference workflow passed from the public download.
 
 ```sh
 npm run setup

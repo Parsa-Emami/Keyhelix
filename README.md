@@ -4,7 +4,7 @@
 
 [CI source integrity and dependency updates](docs/engineering/CI_SOURCE_INTEGRITY.md)
 
-Open-source local-first secret management and cryptographic authorization workspace under [Apache-2.0](LICENSE). **C01–C39 are verified. C40 tracks the public v1 release and its installed acceptance.**
+Open-source local-first secret management and cryptographic authorization workspace under [Apache-2.0](LICENSE). **C01–C40 are verified.** [Download v1.0.0 for Linux x86_64](https://github.com/Parsa-Emami/Keyhelix/releases/tag/v1.0.0).
 
 ---
 
