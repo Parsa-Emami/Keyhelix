@@ -59,7 +59,7 @@ KeyHelix can be compiled directly from source:
 1. **Provider Owns Secret Bytes**: OpenBao owns all sealed secret bytes; the engine stores only encrypted metadata envelopes and digests. Plaintext is never persisted to disk or databases.
 2. **Zero Telemetry & Cache Segregation**: Zero outbound network telemetry or analytics. Sensitive routes emit `Cache-Control: no-store`.
 3. **Loopback & Origin Confinement**: Binds strictly to loopback (`127.0.0.1:0` for engine, `127.0.0.1:4173` for web). Mitigates DNS rebinding via `Host` header validation and enforces same-origin semantics on `/api/*`.
-4. **Vulnerability Disclosure**: Review our security policy and confirmed reporting route in **[SECURITY.md](SECURITY.md)**.
+4. **Vulnerability Disclosure**: Review the supported scope and availability of private reporting in **[SECURITY.md](SECURITY.md)**.
 
 ---
 
@@ -92,7 +92,7 @@ Each roadmap card in `plans/commits/Cxx.md` specifies exact paths, resources, fi
 - **[Clone-to-Run Guide](docs/engineering/CLONE_TO_RUN.md)** — Step-by-step developer and operator setup
 - **[Open-Source Contract](OPEN_SOURCE.md)** — Apache-2.0 licensing, zero paid cloud guarantee, and upstream inventory
 - **[Contributing Guide](CONTRIBUTING.md)** — Contribution workflow, DCO, testing standards, and PR guidelines
-- **[Security Policy](SECURITY.md)** — Coordinated vulnerability disclosure, 48h SLA, and security invariants
+- **[Security Policy](SECURITY.md)** — Private reporting guidance, disclosure expectations, and security invariants
 - **[Third-Party Notices](THIRD_PARTY_NOTICES.md)** — Upstream license inventory
 - **[Definition of Done](docs/release/DEFINITION_OF_DONE.md)** — Release readiness and gate criteria
 - **[Architecture (ADR-0003)](docs/architecture/ADR-0003-open-source-local-first.md)** — Open-source local-first architecture decision record
